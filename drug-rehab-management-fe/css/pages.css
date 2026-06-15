@@ -1,0 +1,79 @@
+/* Login Page Specific */
+.login-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 400px;
+    padding: var(--spacing-md);
+}
+
+.login-card {
+    background-color: var(--surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    padding: var(--spacing-xl);
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+}
+
+.login-header .logo {
+    width: 64px;
+    height: 64px;
+    background-color: var(--primary-light);
+    color: var(--primary);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin: 0 auto 16px;
+}
+
+.login-header h2 { font-size: 1.5rem; margin-bottom: 4px; }
+.login-header p { color: var(--muted-text); font-size: 0.9rem; }
+
+.login-footer {
+    text-align: center;
+    margin-top: var(--spacing-xl);
+    font-size: 0.9rem;
+}
+
+/* Dashboard Grids */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+.dashboard-content-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: var(--spacing-lg);
+}
+
+/* Detail Views */
+.detail-row {
+    display: flex;
+    margin-bottom: 10px;
+    border-bottom: 1px dashed var(--border-color);
+    padding-bottom: 10px;
+}
+.detail-label {
+    width: 150px;
+    color: var(--muted-text);
+    font-weight: 500;
+}
+.detail-value {
+    flex: 1;
+    color: var(--text-main);
+    font-weight: 500;
+}

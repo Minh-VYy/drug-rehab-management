@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đăng ký tài khoản — RehabCare Đà Nẵng</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/public-base.css" />
+
+  <link rel="stylesheet" href="css/public-auth.css" />
+
+  <link rel="stylesheet" href="css/public-register.css" />
+</head>
+<body class="auth-page">
+<div class="auth-layout">
+
+  <!-- ===== LEFT PANEL ===== -->
+  <div class="auth-left">
+    <canvas id="registerCanvas"></canvas>
+    <div class="auth-grid"></div>
+    <div class="auth-orb orb-a"></div>
+    <div class="auth-orb orb-b"></div>
+    <div class="auth-orb orb-c"></div>
+
+    <!-- Floating chips -->
+    <div class="stat-chip chip-top">
+      <div class="chip-icon chip-green"><i class="fa-solid fa-user-plus"></i></div>
+      <div class="chip-text"><strong>Đăng ký miễn phí</strong><span>Dành cho người thân HV</span></div>
+    </div>
+    <div class="stat-chip chip-bot">
+      <div class="chip-icon chip-white"><i class="fa-solid fa-clock"></i></div>
+      <div class="chip-text"><strong>Phê duyệt nhanh</strong><span>Trong vòng 24 giờ</span></div>
+    </div>
+
+    <div class="auth-left-content">
+      <div class="auth-logo-wrap">
+        <img src="assets/images/logo.png" alt="RehabCare Logo" />
+      </div>
+
+      <h2>Tạo tài khoản<br/><span>Người thân</span></h2>
+      <p>Theo dõi hành trình phục hồi của người thân và kết nối với đội ngũ y bác sĩ trung tâm.</p>
+
+      <div class="auth-features">
+        <div class="auth-feature">
+          <div class="auth-feat-icon"><i class="fa-solid fa-eye"></i></div>
+          <span>Theo dõi tiến độ điều trị</span>
+        </div>
+        <div class="auth-feature">
+          <div class="auth-feat-icon"><i class="fa-solid fa-calendar-plus"></i></div>
+          <span>Đăng ký lịch thăm gặp</span>
+        </div>
+        <div class="auth-feature">
+          <div class="auth-feat-icon"><i class="fa-solid fa-headset"></i></div>
+          <span>Gửi yêu cầu hỗ trợ</span>
+        </div>
+      </div>
+
+      <!-- Step progress -->
+      <div class="step-progress" id="sideProgress">
+        <div class="step-progress-label">Tiến trình đăng ký</div>
+        <div class="step-dots">
+          <div class="step-dot active" id="dot0"></div>
+          <div class="step-line"></div>
+          <div class="step-dot" id="dot1"></div>
+          <div class="step-line"></div>
+          <div class="step-dot" id="dot2"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== RIGHT FORM ===== -->
+  <div class="auth-right">
+    <div class="auth-card">
+      <!-- Mini logo -->
+      <div class="card-logo">
+        <img src="assets/images/logo.png" alt="Logo" />
+        <div class="card-logo-text">
+          <strong>RehabCare Đà Nẵng</strong>
+          <span>Đăng ký tài khoản người thân</span>
+        </div>
+      </div>
+
+      <h1>Tạo tài khoản</h1>
+      <p class="sub">Điền thông tin chính xác để tạo tài khoản theo dõi người thân tại trung tâm.</p>
+
+      <div id="registerAlert" class="alert"></div>
+
+      <!-- Step tabs -->
+      <div class="step-tabs">
+        <div class="step-tab active" id="tab0"><span class="step-tab-num">1</span>Thông tin cá nhân</div>
+        <div class="step-tab"        id="tab1"><span class="step-tab-num">2</span>Tài khoản</div>
+        <div class="step-tab"        id="tab2"><span class="step-tab-num">3</span>Xác nhận</div>
+      </div>
+
+      <!-- ===== STEP 1 ===== -->
+      <div class="step-panel active" id="panel0">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Họ và tên <span class="req">*</span></label>
+            <input id="reg_name" class="form-control" type="text" placeholder="Nguyễn Thị Lan" />
+            <div id="reg_name_err" class="form-error"></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Ngày sinh</label>
+            <input class="form-control" type="date" id="reg_dob" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Số điện thoại <span class="req">*</span></label>
+            <input id="reg_phone" class="form-control" type="tel" placeholder="0901234567" />
+            <div id="reg_phone_err" class="form-error"></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email <span class="req">*</span></label>
+            <input id="reg_email" class="form-control" type="email" placeholder="lan@gmail.com" />
+            <div id="reg_email_err" class="form-error"></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Địa chỉ</label>
+          <input class="form-control" type="text" placeholder="Số nhà, phường, quận, tỉnh/thành" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mối quan hệ với người cai nghiện <span class="req">*</span></label>
+          <select class="form-control" id="reg_relation">
+            <option value="">— Chọn quan hệ —</option>
+            <option>Bố / Mẹ</option><option>Vợ / Chồng</option>
+            <option>Anh / Chị / Em</option><option>Con</option><option>Người thân khác</option>
+          </select>
+          <div id="reg_relation_err" class="form-error"></div>
+        </div>
+        <div class="form-nav">
+          <button class="btn btn-primary btn-lg btn-block" onclick="goStep(1)">
+            Tiếp theo <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- ===== STEP 2 ===== -->
+      <div class="step-panel" id="panel1">
+        <div class="form-group">
+          <label class="form-label">Tên đăng nhập <span class="req">*</span></label>
+          <input id="reg_username" class="form-control" type="text" placeholder="Ít nhất 4 ký tự, không dấu, không khoảng cách" />
+          <div id="reg_username_err" class="form-error"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Mật khẩu <span class="req">*</span></label>
+            <input id="reg_password" class="form-control" type="password" placeholder="Ít nhất 6 ký tự" />
+            <div id="reg_password_err" class="form-error"></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Xác nhận mật khẩu <span class="req">*</span></label>
+            <input id="reg_confirm" class="form-control" type="password" placeholder="Nhập lại mật khẩu" />
+            <div id="reg_confirm_err" class="form-error"></div>
+          </div>
+        </div>
+        <!-- Password strength -->
+        <div style="margin-bottom:1rem;">
+          <div class="pw-strength-bars" id="pwStrengthBars">
+            <div class="strength-bar"></div>
+            <div class="strength-bar"></div>
+            <div class="strength-bar"></div>
+            <div class="strength-bar"></div>
+          </div>
+          <div id="pwStrengthLabel" style="font-size:.73rem;color:#94a3b8;"></div>
+        </div>
+        <div class="form-nav">
+          <button class="btn btn-secondary" onclick="goStep(0)"><i class="fa-solid fa-arrow-left"></i> Quay lại</button>
+          <button class="btn btn-primary btn-lg" onclick="goStep(2)">Tiếp theo <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      </div>
+
+      <!-- ===== STEP 3 ===== -->
+      <div class="step-panel" id="panel2">
+        <div style="text-align:center;margin-bottom:1.5rem;">
+          <div style="width:60px;height:60px;background:var(--p-light);border-radius:50%;display:grid;place-items:center;margin:0 auto .9rem;font-size:1.7rem;color:var(--p);">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+          <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:.35rem;">Kiểm tra thông tin</h3>
+          <p style="font-size:.84rem;color:var(--muted);">Vui lòng xác nhận trước khi hoàn tất đăng ký.</p>
+        </div>
+
+        <div class="confirm-box">
+          <div class="confirm-grid">
+            <div class="confirm-item">
+              <span class="lbl">Họ tên</span>
+              <span class="val" id="confirm_name">—</span>
+            </div>
+            <div class="confirm-item">
+              <span class="lbl">Số điện thoại</span>
+              <span class="val" id="confirm_phone">—</span>
+            </div>
+            <div class="confirm-item">
+              <span class="lbl">Email</span>
+              <span class="val" id="confirm_email">—</span>
+            </div>
+            <div class="confirm-item">
+              <span class="lbl">Quan hệ</span>
+              <span class="val" id="confirm_relation">—</span>
+            </div>
+            <div class="confirm-item full">
+              <span class="lbl">Tên đăng nhập</span>
+              <span class="val accent" id="confirm_user">—</span>
+            </div>
+          </div>
+        </div>
+
+        <ul class="feature-list" style="margin-bottom:1rem;">
+          <li><i class="fa-solid fa-circle-check"></i> Tài khoản sẽ chờ xét duyệt (trong vòng 24h làm việc)</li>
+          <li><i class="fa-solid fa-circle-check"></i> Bạn sẽ nhận email thông báo khi tài khoản được kích hoạt</li>
+          <li><i class="fa-solid fa-circle-check"></i> Dữ liệu cá nhân được bảo mật theo quy định</li>
+        </ul>
+
+        <div class="agree-row">
+          <input type="checkbox" id="agreeTerms" />
+          <label for="agreeTerms">Tôi đồng ý với <a href="#">Chính sách bảo mật</a> và <a href="#">Điều khoản sử dụng</a> của hệ thống.</label>
+        </div>
+
+        <div class="form-nav">
+          <button class="btn btn-secondary" onclick="goStep(1)"><i class="fa-solid fa-arrow-left"></i> Quay lại</button>
+          <button class="btn btn-green btn-lg" onclick="submitRegister()"><i class="fa-solid fa-user-plus"></i> Hoàn tất đăng ký</button>
+        </div>
+      </div>
+
+      <div class="auth-footer-link">
+        Đã có tài khoản? <a href="login.html">Đăng nhập ngay</a>
+        <span class="sep">|</span>
+        <a href="index.html" style="color:var(--muted);font-weight:500;"><i class="fa-solid fa-arrow-left"></i> Trang chủ</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/main.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/api.js"></script>
+<script src="js/public-particles.js"></script>
+
+<script src="js/public-register.js"></script>
+</body>
+</html>

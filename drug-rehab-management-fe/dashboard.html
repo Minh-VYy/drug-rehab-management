@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Quản lý TT Cai nghiện Đà Nẵng</title>
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-background">
+    <div id="app-layout" class="layout-wrapper">
+        <!-- Sidebar container -->
+        <aside id="sidebar-container" class="sidebar"></aside>
+
+        <div class="main-wrapper">
+            <!-- Topbar container -->
+            <header id="topbar-container" class="topbar"></header>
+
+            <!-- Main content container -->
+            <main id="main-content" class="content">
+                <!-- Content will be loaded dynamically here by router -->
+                <div class="loading-state" style="display: flex; justify-content: center; align-items: center; height: 100%;">
+                    <i class="fa-solid fa-circle-notch fa-spin fa-2x text-primary"></i>
+                    <span class="ml-2">Đang tải dữ liệu...</span>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modals and Toasts Containers -->
+    <div id="modal-container"></div>
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Scripts Data Mock -->
+    <!-- (Trong thực tế sẽ fetch từ API) -->
+    
+    <!-- Core Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    
+    <!-- UI Components -->
+    <script src="js/components/card.js"></script>
+    <script src="js/components/table.js"></script>
+    <script src="js/components/badge.js"></script>
+    <script src="js/components/modal.js"></script>
+    <script src="js/components/toast.js"></script>
+    <script src="js/components/chart.js"></script>
+    <script src="js/components/sidebar.js"></script>
+    <script src="js/components/topbar.js"></script>
+    
+    <!-- Pages Views -->
+    <script src="js/pages/doctor-dashboard.js"></script>
+    <script src="js/pages/family-dashboard.js"></script>
+    <script src="js/pages/admin-dashboard.js"></script>
+    <script src="js/pages/common-pages.js"></script> <!-- Các page dùng chung tạm thời -->
+
+    <!-- Router & App Init -->
+    <script src="js/router.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
