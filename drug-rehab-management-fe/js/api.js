@@ -98,6 +98,10 @@ const Api = {
         return this.get('/admin/dashboard');
     },
 
+    getRoleDashboard(role) {
+        return this.get(`/public/dashboards/${role}`);
+    },
+
     // ==========================================
     // COMMON APIS (Profile & Notification)
     // ==========================================

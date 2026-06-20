@@ -118,7 +118,7 @@ window.StageApprovalPage = (function () {
   }
 
   function clearRejectError() {
-    document.getElementById("errStageRejectReason").textContent = "";
+    document.getElementById("errStageRejectReason").textContent = "Vui lòng nhập lý do từ chối";
   }
 
   function showLoading(show) {
@@ -241,17 +241,17 @@ window.StageApprovalPage = (function () {
           <td>${p.ngayDeXuat}</td>
           <td>${getStatusBadge(p.trangThai)}</td>
           <td>
-            <div class="table-actions">
-              <button class="btn-icon" title="Xem chi tiết" data-action="view" data-id="${p.maDeXuat}">
+            <div class="table-actions manager-action-group manager-stage-actions">
+              <button class="btn btn-sm btn-outline btn-icon manager-action-btn manager-action-view" title="Xem chi tiết" aria-label="Xem chi tiết" data-action="view" data-id="${p.maDeXuat}">
                 <i class="fa-solid fa-eye"></i>
               </button>
               ${
                 p.trangThai === "ChoDuyet"
                   ? `
-                <button class="btn-icon" title="Duyệt" data-action="approve" data-id="${p.maDeXuat}">
+                <button class="btn btn-sm btn-success btn-icon manager-action-btn manager-action-approve" title="Duyệt" aria-label="Duyệt" data-action="approve" data-id="${p.maDeXuat}">
                   <i class="fa-solid fa-check"></i>
                 </button>
-                <button class="btn-icon" title="Từ chối" data-action="reject" data-id="${p.maDeXuat}">
+                <button class="btn btn-sm btn-danger btn-icon manager-action-btn manager-action-reject" title="Từ chối" aria-label="Từ chối" data-action="reject" data-id="${p.maDeXuat}">
                   <i class="fa-solid fa-xmark"></i>
                 </button>
               `
@@ -265,7 +265,7 @@ window.StageApprovalPage = (function () {
       .join("");
   }
 
-  // ====== MODAL CHI TIẾT ======
+  // ====== MODAL TỪ CHỐI ======
   function openDetailModal(maDeXuat) {
     const p = proposals.find((x) => x.maDeXuat === maDeXuat);
     if (!p) return;
@@ -296,9 +296,9 @@ window.StageApprovalPage = (function () {
           <div class="module-detail-label">Ngày đề xuất</div>
           <div class="module-detail-value">${p.ngayDeXuat}</div>
         </div>
-        <div class="module-detail-item module-detail-item-full">
+        <div class="module-detail-item module-detail-full">
           <div class="module-detail-label">Lý do chuyển giai đoạn</div>
-          <div class="module-detail-value">${p.lyDoChuyen}</div>
+          <div class="module-detail-value">${p.lyDoChuyen || "-"}</div>
         </div>
         <div class="module-detail-item">
           <div class="module-detail-label">Trạng thái</div>
@@ -312,26 +312,22 @@ window.StageApprovalPage = (function () {
           <div class="module-detail-label">Ngày duyệt</div>
           <div class="module-detail-value">${p.ngayDuyet || "-"}</div>
         </div>
-        ${
-          p.trangThai === "TuChoi"
-            ? `
-          <div class="module-detail-item module-detail-item-full">
+        ${p.lyDoTuChoi ? `
+          <div class="module-detail-item module-detail-full">
             <div class="module-detail-label">Lý do từ chối</div>
-            <div class="module-detail-value">${p.lyDoTuChoi || "-"}</div>
+            <div class="module-detail-value">${p.lyDoTuChoi}</div>
           </div>
-        `
-            : ""
-        }
+        ` : ""}
       </div>
     `;
 
     document.getElementById("stageDetailFooter").innerHTML =
       p.trangThai === "ChoDuyet"
         ? `
-        <button class="btn btn-outline" data-action="reject" data-id="${p.maDeXuat}">Từ chối</button>
-        <button class="btn btn-primary" data-action="approve" data-id="${p.maDeXuat}">Duyệt chuyển giai đoạn</button>
+        <button class="btn btn-outline manager-modal-action manager-modal-reject" data-action="reject" data-id="${p.maDeXuat}"><i class="fa-solid fa-xmark"></i> Từ chối</button>
+        <button class="btn btn-primary manager-modal-action manager-modal-approve" data-action="approve" data-id="${p.maDeXuat}"><i class="fa-solid fa-check"></i> Duyệt chuyển giai đoạn</button>
       `
-        : `<button class="btn btn-outline" id="stageDetailCloseBtn2">Đóng</button>`;
+        : `<button class="btn btn-outline manager-modal-action" id="stageDetailCloseBtn2"><i class="fa-solid fa-xmark"></i> Đóng</button>`;
 
     document.getElementById("stageDetailModal").classList.add("active");
 
@@ -433,7 +429,7 @@ window.StageApprovalPage = (function () {
     document.getElementById("stageRejectOkBtn").addEventListener("click", handleRejectSubmit);
   }
 
-  // ====== PUBLIC API ======
+  // ====== GỌI API (fallback mock khi lỗi) ======
   function init() {
     bindEvents();
     fetchProposals();

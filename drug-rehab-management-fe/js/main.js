@@ -371,10 +371,89 @@ function registerAppRoutes() {
     if (typeof ForbiddenPage !== 'undefined') ForbiddenPage.render('main-content');
   });
 
+  // Family routes
+  Router.addRoute('/register-rehab', () => {
+    if (typeof VoluntaryRegistrationPage !== 'undefined') {
+      VoluntaryRegistrationPage.render('main-content');
+    }
+  });
+
+  Router.addRoute('/visit-register', () => {
+    if (typeof VisitRegistrationPage !== 'undefined') {
+      VisitRegistrationPage.render('main-content');
+    }
+  });
+
+  Router.addRoute('/treatment-path', () => {
+    if (typeof RecoveryPathPage !== 'undefined') {
+      RecoveryPathPage.render('main-content');
+    }
+  });
+
+  Router.addRoute('/support', () => {
+    if (typeof SupportRequestPage !== 'undefined') {
+      SupportRequestPage.render('main-content');
+    }
+  });
+
+  Router.addRoute('/voluntary-history', () => {
+    if (typeof VoluntaryHistoryPage !== 'undefined') {
+      VoluntaryHistoryPage.render('main-content');
+    }
+  });
+
+  Router.addRoute('/visit-history', () => {
+    if (typeof VisitHistoryPage !== 'undefined') {
+      VisitHistoryPage.render('main-content');
+    }
+  });
+
+  Router.addRoute('/medical-record-view', () => {
+    if (typeof MedicalRecordViewPage !== 'undefined') {
+      MedicalRecordViewPage.render('main-content');
+    }
+  });
+
   // Doctor routes
   Router.addRoute('/medical-records', () => {
     if (typeof MedicalRecordPage !== 'undefined') {
       MedicalRecordPage.render('main-content');
+    }
+  });
+
+  Router.addRoute('/treatment-plan-create', () => {
+    if (typeof TreatmentPlanCreatePage !== 'undefined') {
+      TreatmentPlanCreatePage.render('main-content');
+    }
+  });
+
+  Router.addRoute('/treatment-diary', () => {
+    if (typeof TreatmentDiaryPage !== 'undefined') {
+      TreatmentDiaryPage.render('main-content');
+    }
+  });
+
+  Router.addRoute('/medicine-schedule', () => {
+    if (typeof MedicineSchedulePage !== 'undefined') {
+      MedicineSchedulePage.render('main-content');
+    }
+  });
+
+  Router.addRoute('/counseling-schedule', () => {
+    if (typeof CounselingSchedulePage !== 'undefined') {
+      CounselingSchedulePage.render('main-content');
+    }
+  });
+
+  Router.addRoute('/stage-proposal', () => {
+    if (typeof StageProposalPage !== 'undefined') {
+      StageProposalPage.render('main-content');
+    }
+  });
+
+  Router.addRoute('/completion-proposal', () => {
+    if (typeof CompletionProposalPage !== 'undefined') {
+      CompletionProposalPage.render('main-content');
     }
   });
 
@@ -460,6 +539,24 @@ function registerAppRoutes() {
     }
   });
 
+  Router.addRoute('/transfer-list', () => {
+    if (typeof HandoverManagementPage !== 'undefined') {
+      HandoverManagementPage.render('main-content');
+    }
+  });
+
+  Router.addRoute('/handover-management', () => {
+    if (typeof HandoverManagementPage !== 'undefined') {
+      HandoverManagementPage.render('main-content');
+    }
+  });
+
+  Router.addRoute('/handover-history', () => {
+    if (typeof HandoverHistoryPage !== 'undefined') {
+      HandoverHistoryPage.render('main-content');
+    }
+  });
+
   // Staff routes
   Router.addRoute('/receive', () => {
     if (typeof IntakeConfirmationPage !== 'undefined') {
@@ -522,6 +619,11 @@ function renderRoleDashboard() {
 
   if (user.role === ROLES.STAFF && typeof StaffDashboardPage !== 'undefined') {
     StaffDashboardPage.render('main-content');
+    return;
+  }
+
+  if (user.role === ROLES.POLICE && typeof PoliceDashboardPage !== 'undefined') {
+    PoliceDashboardPage.render('main-content');
     return;
   }
 

@@ -1,75 +1,141 @@
-<div class="page-header">
-  <div>
-    <h2 class="page-title">Báo cáo <span class="text-highlight">quản lý</span></h2>
-    <p class="page-subtitle">Tổng quan hoạt động điều trị và phê duyệt trong trung tâm.</p>
-  </div>
-</div>
+<section class="manager-report-page">
+  <div class="manager-report-hero">
+    <div class="manager-report-hero-main">
+      <span class="manager-report-kicker">
+        <i class="fa-solid fa-chart-line"></i>
+        Báo cáo vận hành
+      </span>
+      <h2 class="page-title">Báo cáo <span class="text-highlight">quản lý</span></h2>
+      <p class="page-subtitle">Theo dõi năng lực xử lý phê duyệt, phân bổ giai đoạn và hiệu quả điều trị trong trung tâm.</p>
+    </div>
 
-<div class="stats-grid">
-  <div class="stat-card">
+    <div class="manager-report-actions">
+      <select id="reportTimeFilter" class="filter-select">
+        <option value="month">Tháng này</option>
+        <option value="quarter">Quý này</option>
+        <option value="year">Năm nay</option>
+      </select>
+      <button class="btn btn-outline manager-report-action-btn" id="reportRefreshBtn">
+        <i class="fa-solid fa-rotate"></i>
+        Làm mới
+      </button>
+      <button class="btn btn-primary manager-report-action-btn" id="reportExportBtn">
+        <i class="fa-solid fa-file-export"></i>
+        Xuất báo cáo
+      </button>
+    </div>
+  </div>
+
+  <div class="manager-report-status-strip">
+    <div>
+      <span class="manager-report-status-label">Cập nhật gần nhất</span>
+      <strong id="reportUpdatedAt">--:--</strong>
+    </div>
+    <div>
+      <span class="manager-report-status-label">Nguồn dữ liệu</span>
+      <strong id="reportDataSource">Đang tải</strong>
+    </div>
+    <div>
+      <span class="manager-report-status-label">Nhận định nhanh</span>
+      <strong id="reportInsightText">Đang tổng hợp...</strong>
+    </div>
+  </div>
+</section>
+
+<div class="manager-report-kpi-grid">
+  <article class="stat-card manager-report-kpi">
     <div class="stat-card-icon stat-icon-blue"><i class="fa-solid fa-user-injured"></i></div>
     <div class="stat-value" id="statReportTotal">0</div>
     <div class="stat-label">Đang điều trị</div>
-  </div>
+    <div class="manager-report-kpi-trend" id="statReportTotalTrend">Ổn định</div>
+  </article>
 
-  <div class="stat-card">
+  <article class="stat-card manager-report-kpi">
     <div class="stat-card-icon stat-icon-green"><i class="fa-solid fa-circle-check"></i></div>
     <div class="stat-value" id="statReportCompleted">0</div>
-    <div class="stat-label">Đã hoàn thành (tháng)</div>
-  </div>
+    <div class="stat-label">Đã hoàn thành trong kỳ</div>
+    <div class="manager-report-kpi-trend trend-good" id="statReportCompletedTrend">+0 so với kỳ trước</div>
+  </article>
 
-  <div class="stat-card">
+  <article class="stat-card manager-report-kpi">
     <div class="stat-card-icon stat-icon-orange"><i class="fa-solid fa-clock"></i></div>
     <div class="stat-value" id="statReportPending">0</div>
     <div class="stat-label">Đang chờ phê duyệt</div>
-  </div>
+    <div class="manager-report-kpi-trend trend-watch" id="statReportPendingTrend">Cần theo dõi</div>
+  </article>
 
-  <div class="stat-card">
+  <article class="stat-card manager-report-kpi">
     <div class="stat-card-icon stat-icon-purple"><i class="fa-solid fa-chart-line"></i></div>
     <div class="stat-value" id="statReportRate">0%</div>
     <div class="stat-label">Tỷ lệ duyệt thành công</div>
-  </div>
+    <div class="manager-report-kpi-trend trend-good" id="statReportRateTrend">Đạt mục tiêu</div>
+  </article>
 </div>
 
-<div class="card">
-  <div class="card-header">
-    <div>
-      <span class="card-title">Thống kê theo giai đoạn điều trị</span>
-      <p class="card-subtitle">Số lượng người cai nghiện đang ở từng giai đoạn</p>
+<div class="manager-report-grid">
+  <section class="card manager-report-card manager-report-stage-card">
+    <div class="card-header">
+      <div>
+        <span class="card-title"><i class="fa-solid fa-chart-pie icon-header"></i> Phân bổ theo giai đoạn</span>
+        <p class="card-subtitle">Cơ cấu người cai nghiện đang điều trị theo từng giai đoạn.</p>
+      </div>
     </div>
-  </div>
 
-  <div class="table-wrapper">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Giai đoạn</th>
-          <th>Số người đang điều trị</th>
-          <th>Tỷ lệ (%)</th>
-        </tr>
-      </thead>
-      <tbody id="reportStageTableBody"></tbody>
-    </table>
-  </div>
+    <div class="manager-report-stage-layout">
+      <div class="manager-report-donut-wrap">
+        <div class="manager-report-donut" id="reportStageDonut">
+          <div class="manager-report-donut-center">
+            <strong id="reportStageTotal">0</strong>
+            <span>học viên</span>
+          </div>
+        </div>
+        <div class="manager-report-stage-summary" id="reportStageSummary">Đang tải dữ liệu giai đoạn...</div>
+      </div>
+
+      <div class="manager-report-stage-list" id="reportStageTableBody"></div>
+    </div>
+  </section>
+
+  <section class="card manager-report-card manager-report-pipeline-card">
+    <div class="card-header">
+      <div>
+        <span class="card-title"><i class="fa-solid fa-chart-simple icon-header"></i> Pipeline phê duyệt</span>
+        <p class="card-subtitle">Tổng hợp đề xuất đã xử lý, từ chối và còn chờ trong kỳ.</p>
+      </div>
+    </div>
+
+    <div class="manager-report-pipeline" id="reportPipelineSummary"></div>
+    <div class="manager-report-pipeline-bar" id="reportPipelineBars"></div>
+
+    <div class="manager-report-trend">
+      <div class="manager-report-trend-header">
+        <span>Xu hướng 6 tháng</span>
+        <small>Đề xuất đã xử lý</small>
+      </div>
+      <div class="manager-report-trend-bars" id="reportMonthlyTrend"></div>
+    </div>
+  </section>
 </div>
 
-<div class="card">
-  <div class="card-header">
+<section class="card manager-report-card manager-report-performance-card">
+  <div class="card-header manager-report-performance-header">
     <div>
-      <span class="card-title">Hoạt động phê duyệt theo cán bộ quản lý</span>
-      <p class="card-subtitle">Số lượng đề xuất đã xử lý trong tháng</p>
+      <span class="card-title"><i class="fa-solid fa-users-gear icon-header"></i> Hiệu suất cán bộ quản lý</span>
+      <p class="card-subtitle">So sánh số lượng xử lý, tỷ lệ duyệt và lượng hồ sơ còn chờ.</p>
+    </div>
+
+    <div class="toolbar manager-report-toolbar">
+      <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="reportSearchInput" placeholder="Tìm tên cán bộ quản lý..." />
+      </div>
     </div>
   </div>
 
-  <div class="toolbar">
-    <div class="search-box">
-      <i class="fa-solid fa-magnifying-glass"></i>
-      <input type="text" id="reportSearchInput" placeholder="Tìm tên cán bộ quản lý..." />
-    </div>
-  </div>
+  <div class="manager-report-leaderboard" id="reportManagerCards"></div>
 
-  <div class="table-wrapper">
-    <table class="table">
+  <div class="table-wrapper manager-report-table-wrapper">
+    <table class="table manager-report-table">
       <thead>
         <tr>
           <th>Cán bộ quản lý</th>
@@ -77,6 +143,7 @@
           <th>Từ chối</th>
           <th>Chờ xử lý</th>
           <th>Tổng xử lý</th>
+          <th>Hiệu suất</th>
         </tr>
       </thead>
       <tbody id="reportManagerTableBody"></tbody>
@@ -84,6 +151,7 @@
   </div>
 
   <div class="table-loading" id="reportLoadingState" style="display:none;">
-    Đang tải dữ liệu...
+    <i class="fa-solid fa-spinner fa-spin"></i>
+    Đang tải dữ liệu báo cáo...
   </div>
-</div>
+</section>

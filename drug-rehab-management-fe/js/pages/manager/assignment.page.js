@@ -100,7 +100,7 @@ window.AssignmentPage = (function () {
   }
 
   function clearFormErrors() {
-    document.getElementById("errBacSiPhuTrach").textContent = "";
+    document.getElementById("errBacSiPhuTrach").textContent = "Vui lòng chọn bác sĩ phụ trách";
   }
 
   function showLoading(show) {
@@ -207,8 +207,8 @@ window.AssignmentPage = (function () {
           <td>${a.khuPhong || "-"}</td>
           <td>${getStatusBadge(a.trangThai)}</td>
           <td>
-            <div class="table-actions">
-              <button class="btn-icon" title="Phân công" data-action="assign" data-id="${a.maHoSo}">
+            <div class="table-actions manager-action-group manager-assign-actions">
+              <button class="btn btn-sm btn-primary btn-icon manager-action-btn manager-action-assign" title="Phân công" aria-label="Phân công" data-action="assign" data-id="${a.maHoSo}">
                 <i class="fa-solid fa-user-pen"></i>
               </button>
             </div>
@@ -303,7 +303,7 @@ window.AssignmentPage = (function () {
     document.getElementById("assignFormSaveBtn").addEventListener("click", handleAssignSave);
   }
 
-  // ====== PUBLIC API ======
+  // ====== GỌI API (fallback mock khi lỗi) ======
   function init() {
     bindEvents();
     fetchAssignments();
