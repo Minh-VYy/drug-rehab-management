@@ -1,73 +1,124 @@
 <div class="page-header">
-    <div class="page-title-group">
-        <h2 class="page-title"><i class="fa-solid fa-user-doctor"></i> Phân công phụ trách</h2>
-        <p class="page-subtitle">Phân công bác sĩ theo dõi và điều trị cho các học viên.</p>
-    </div>
+  <div>
+    <h2 class="page-title">Phân công <span class="text-highlight">phụ trách</span></h2>
+    <p class="page-subtitle">Phân công bác sĩ/cán bộ phụ trách điều trị cho từng người cai nghiện.</p>
+  </div>
 </div>
 
-<div class="card p-lg">
-    <!-- Filter Bar -->
-    <div style="display:flex; flex-wrap:wrap; gap:16px; margin-bottom:24px; align-items:center; justify-content:space-between;">
-        <div style="display:flex; gap:16px; flex:1; min-width:300px;">
-            <div class="search-box" style="flex:1;">
-                <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                <input type="text" id="assign-search" class="search-input" placeholder="Tìm theo mã, tên học viên..." oninput="AssignmentPage.applyFilter()">
-            </div>
-            <select class="form-control" id="assign-status-filter" style="width:220px;" onchange="AssignmentPage.applyFilter()">
-                <option value="all">Tất cả trạng thái</option>
-                <option value="unassigned">Chưa phân công</option>
-                <option value="assigned">Đã phân công</option>
-            </select>
-        </div>
-        <button class="btn btn-primary" onclick="AssignmentPage.refresh()">
-            <i class="fa-solid fa-arrows-rotate"></i> Làm mới
-        </button>
-    </div>
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-blue"><i class="fa-solid fa-user-injured"></i></div>
+    <div class="stat-value" id="statTotalAssign">0</div>
+    <div class="stat-label">Tổng người cai nghiện</div>
+  </div>
 
-    <!-- Table -->
-    <div class="table-responsive" id="assign-table">
-        <!-- Rendered by JS -->
-    </div>
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-green"><i class="fa-solid fa-circle-check"></i></div>
+    <div class="stat-value" id="statAssigned">0</div>
+    <div class="stat-label">Đã phân công</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-orange"><i class="fa-solid fa-clock"></i></div>
+    <div class="stat-value" id="statUnassigned">0</div>
+    <div class="stat-label">Chưa phân công</div>
+  </div>
 </div>
 
-<!-- Modal Phân Công -->
-<div class="modal-overlay" id="assignModal">
-    <div class="modal-container" style="max-width:500px;">
-        <div class="modal-header">
-            <h3 class="modal-title" id="assignModalTitle">Phân công bác sĩ</h3>
-            <button class="modal-close" onclick="Modal.close('assignModal')"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="modal-body">
-            <div class="form-group">
-                <label class="form-label">Học viên</label>
-                <input type="text" class="form-control" id="assign-patient-name" disabled>
-                <input type="hidden" id="assign-patient-id">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Bác sĩ phụ trách <span class="required">*</span></label>
-                <select class="form-control" id="assign-doctor">
-                    <!-- Danh sách bác sĩ render bởi JS -->
-                </select>
-                <div class="form-error" id="assign-doctor-error" style="display:none;"><i class="fa-solid fa-circle-exclamation"></i> Vui lòng chọn bác sĩ</div>
-            </div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
-                <div class="form-group">
-                    <label class="form-label">Ngày bắt đầu <span class="required">*</span></label>
-                    <input type="date" class="form-control" id="assign-start-date">
-                    <div class="form-error" id="assign-start-error" style="display:none;"><i class="fa-solid fa-circle-exclamation"></i> Vui lòng chọn ngày bắt đầu</div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Ngày kết thúc dự kiến <span class="required">*</span></label>
-                    <input type="date" class="form-control" id="assign-end-date">
-                    <div class="form-error" id="assign-end-error" style="display:none;"><i class="fa-solid fa-circle-exclamation"></i> Ngày kết thúc phải sau ngày bắt đầu</div>
-                </div>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button class="btn btn-outline" onclick="Modal.close('assignModal')">Hủy</button>
-            <button class="btn btn-primary" onclick="AssignmentPage.saveAssignment()">
-                <i class="fa-solid fa-floppy-disk"></i> Lưu phân công
-            </button>
-        </div>
+<div class="card">
+  <div class="card-header">
+    <div>
+      <span class="card-title">Danh sách phân công</span>
+      <p class="card-subtitle">Người cai nghiện và bác sĩ/cán bộ phụ trách tương ứng</p>
     </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="assignSearchInput" placeholder="Tìm mã hồ sơ, họ tên người cai nghiện..." />
+    </div>
+
+    <select id="assignStatusFilter" class="filter-select">
+      <option value="all">Tất cả trạng thái</option>
+      <option value="DaPhanCong">Đã phân công</option>
+      <option value="ChuaPhanCong">Chưa phân công</option>
+    </select>
+  </div>
+
+  <div class="table-wrapper">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Mã hồ sơ</th>
+          <th>Họ tên người cai nghiện</th>
+          <th>Giai đoạn hiện tại</th>
+          <th>Bác sĩ phụ trách</th>
+          <th>Cán bộ phụ trách</th>
+          <th>Khu/phòng</th>
+          <th>Trạng thái</th>
+          <th>Thao tác</th>
+        </tr>
+      </thead>
+      <tbody id="assignTableBody"></tbody>
+    </table>
+  </div>
+
+  <div class="table-loading" id="assignLoadingState" style="display:none;">
+    Đang tải dữ liệu...
+  </div>
+
+  <div class="table-empty" id="assignEmptyState" style="display:none;">
+    Không tìm thấy dữ liệu phù hợp.
+  </div>
+</div>
+
+<div class="modal-overlay" id="assignFormModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h3>Phân công phụ trách</h3>
+      <button class="modal-close" id="assignFormCloseBtn"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="modal-body">
+      <div class="module-detail-grid" style="margin-bottom:16px;">
+        <div class="module-detail-item">
+          <div class="module-detail-label">Mã hồ sơ</div>
+          <div class="module-detail-value" id="assignInfoMaHoSo"></div>
+        </div>
+        <div class="module-detail-item">
+          <div class="module-detail-label">Họ tên người cai nghiện</div>
+          <div class="module-detail-value" id="assignInfoHoTen"></div>
+        </div>
+      </div>
+
+      <div class="module-form-grid">
+        <div class="form-group">
+          <label>Bác sĩ phụ trách <span class="required">*</span></label>
+          <select id="formBacSiPhuTrach" class="form-control"></select>
+          <span class="form-error" id="errBacSiPhuTrach"></span>
+        </div>
+
+        <div class="form-group">
+          <label>Cán bộ phụ trách</label>
+          <select id="formCanBoPhuTrach" class="form-control"></select>
+        </div>
+
+        <div class="form-group">
+          <label>Khu/phòng</label>
+          <input type="text" id="formKhuPhong" class="form-control" placeholder="VD: Khu A - Phòng 102" />
+        </div>
+
+        <div class="form-group">
+          <label>Ghi chú phân công</label>
+          <textarea id="formGhiChuPhanCong" class="form-control" rows="2" placeholder="Ghi chú (không bắt buộc)"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="assignFormCancelBtn">Hủy</button>
+      <button class="btn btn-primary" id="assignFormSaveBtn">Lưu phân công</button>
+    </div>
+  </div>
 </div>

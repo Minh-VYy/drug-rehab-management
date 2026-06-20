@@ -1,67 +1,89 @@
 <div class="page-header">
-    <div class="page-title-group">
-        <h2 class="page-title"><i class="fa-solid fa-chart-line"></i> Báo cáo tổng quan</h2>
-        <p class="page-subtitle">Thống kê số lượng phác đồ, tiến độ điều trị và tình hình học viên.</p>
-    </div>
-    <div class="page-actions">
-        <select class="form-control" id="report-period" onchange="OverviewReportPage.refresh()">
-            <option value="this_month">Tháng này</option>
-            <option value="last_month">Tháng trước</option>
-            <option value="this_year" selected>Năm nay</option>
-        </select>
-        <button class="btn btn-primary" onclick="OverviewReportPage.exportReport()">
-            <i class="fa-solid fa-download"></i> Xuất PDF
-        </button>
-    </div>
+  <div>
+    <h2 class="page-title">Báo cáo <span class="text-highlight">quản lý</span></h2>
+    <p class="page-subtitle">Tổng quan hoạt động điều trị và phê duyệt trong trung tâm.</p>
+  </div>
 </div>
 
-<div class="dashboard-grid">
-    <!-- Stats Cards -->
-    <div class="card stat-card" style="border-left: 4px solid var(--primary);">
-        <div class="stat-icon" style="background: rgba(21,94,239,0.1); color: var(--primary);">
-            <i class="fa-solid fa-users"></i>
-        </div>
-        <div class="stat-info">
-            <div class="stat-value" id="rep-total-patients">0</div>
-            <div class="stat-label">Tổng học viên</div>
-        </div>
-    </div>
-    <div class="card stat-card" style="border-left: 4px solid var(--warning);">
-        <div class="stat-icon" style="background: rgba(245,158,11,0.1); color: var(--warning);">
-            <i class="fa-solid fa-stamp"></i>
-        </div>
-        <div class="stat-info">
-            <div class="stat-value" id="rep-pending-plans">0</div>
-            <div class="stat-label">Phác đồ chờ duyệt</div>
-        </div>
-    </div>
-    <div class="card stat-card" style="border-left: 4px solid var(--success);">
-        <div class="stat-icon" style="background: rgba(16,185,129,0.1); color: var(--success);">
-            <i class="fa-solid fa-award"></i>
-        </div>
-        <div class="stat-info">
-            <div class="stat-value" id="rep-completed">0</div>
-            <div class="stat-label">Học viên hoàn thành</div>
-        </div>
-    </div>
-    <div class="card stat-card" style="border-left: 4px solid #8b5cf6;">
-        <div class="stat-icon" style="background: rgba(139,92,246,0.1); color: #8b5cf6;">
-            <i class="fa-solid fa-user-doctor"></i>
-        </div>
-        <div class="stat-info">
-            <div class="stat-value" id="rep-doctors">0</div>
-            <div class="stat-label">Bác sĩ phụ trách</div>
-        </div>
-    </div>
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-blue"><i class="fa-solid fa-user-injured"></i></div>
+    <div class="stat-value" id="statReportTotal">0</div>
+    <div class="stat-label">Đang điều trị</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-green"><i class="fa-solid fa-circle-check"></i></div>
+    <div class="stat-value" id="statReportCompleted">0</div>
+    <div class="stat-label">Đã hoàn thành (tháng)</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-orange"><i class="fa-solid fa-clock"></i></div>
+    <div class="stat-value" id="statReportPending">0</div>
+    <div class="stat-label">Đang chờ phê duyệt</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-purple"><i class="fa-solid fa-chart-line"></i></div>
+    <div class="stat-value" id="statReportRate">0%</div>
+    <div class="stat-label">Tỷ lệ duyệt thành công</div>
+  </div>
 </div>
 
-<div class="dashboard-grid" style="grid-template-columns: 1fr 1fr; margin-top: 24px;">
-    <div class="card p-lg">
-        <h3 style="margin-top:0; margin-bottom:16px; font-size:1.1em; color:var(--text-dark);">Trạng thái điều trị</h3>
-        <div id="treatmentStatusChart"></div>
+<div class="card">
+  <div class="card-header">
+    <div>
+      <span class="card-title">Thống kê theo giai đoạn điều trị</span>
+      <p class="card-subtitle">Số lượng người cai nghiện đang ở từng giai đoạn</p>
     </div>
-    <div class="card p-lg">
-        <h3 style="margin-top:0; margin-bottom:16px; font-size:1.1em; color:var(--text-dark);">Phân bố theo loại ma túy</h3>
-        <div id="drugTypeChart"></div>
+  </div>
+
+  <div class="table-wrapper">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Giai đoạn</th>
+          <th>Số người đang điều trị</th>
+          <th>Tỷ lệ (%)</th>
+        </tr>
+      </thead>
+      <tbody id="reportStageTableBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div>
+      <span class="card-title">Hoạt động phê duyệt theo cán bộ quản lý</span>
+      <p class="card-subtitle">Số lượng đề xuất đã xử lý trong tháng</p>
     </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="reportSearchInput" placeholder="Tìm tên cán bộ quản lý..." />
+    </div>
+  </div>
+
+  <div class="table-wrapper">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Cán bộ quản lý</th>
+          <th>Đã duyệt</th>
+          <th>Từ chối</th>
+          <th>Chờ xử lý</th>
+          <th>Tổng xử lý</th>
+        </tr>
+      </thead>
+      <tbody id="reportManagerTableBody"></tbody>
+    </table>
+  </div>
+
+  <div class="table-loading" id="reportLoadingState" style="display:none;">
+    Đang tải dữ liệu...
+  </div>
 </div>

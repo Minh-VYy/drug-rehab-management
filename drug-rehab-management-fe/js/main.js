@@ -403,6 +403,12 @@ function registerAppRoutes() {
     }
   });
 
+  Router.addRoute('/overview-report', () => {
+    if (typeof OverviewReportPage !== 'undefined') {
+      OverviewReportPage.render('main-content');
+    }
+  });
+
   // Admin routes
   Router.addRoute('/medicines', () => {
     if (typeof MedicineCategoryPage !== 'undefined') {

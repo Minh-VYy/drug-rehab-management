@@ -1,219 +1,318 @@
-const AssignmentPage = {
-    patients: [],
-    doctors: [],
+window.AssignmentPage = (function () {
+  // ====== ENDPOINTS ======
+  const ENDPOINT_LIST = "/manager/assignments";
+  const ENDPOINT_STAFF_OPTIONS = "/manager/staff-options";
+  const ENDPOINT_ASSIGN = (maHoSo) => `/manager/assignments/${maHoSo}`;
 
-    async render(containerId) {
-        const success = await ViewLoader.load('views/manager/assignment.html', containerId);
-        if (success) await this.init();
+  function extractList(res) {
+    if (Array.isArray(res)) return res;
+    if (res && Array.isArray(res.data)) return res.data;
+    if (res && Array.isArray(res.items)) return res.items;
+    return [];
+  }
+
+  // ====== MOCK FALLBACK ======
+  const MOCK_ASSIGNMENTS = [
+    {
+      maHoSo: "BA-SEED002",
+      hoTenNguoiCaiNghien: "Nguyễn Văn B",
+      giaiDoanHienTai: "Giai đoạn 2 - Phục hồi",
+      bacSiPhuTrach: "BS. Trần Thị Mai",
+      canBoPhuTrach: "NV. Lê Thị Hồng",
+      khuPhong: "Khu A - Phòng 101",
+      ghiChuPhanCong: "Theo dõi sát do tiền sử tái phát.",
+      trangThai: "DaPhanCong",
     },
-
-    async init() {
-        if (typeof Topbar !== 'undefined') Topbar.setTitle('Phân công phụ trách điều trị');
-        
-        // Load data
-        await Promise.all([
-            this.loadPatients(),
-            this.loadDoctors()
-        ]);
-
-        this.applyFilter();
+    {
+      maHoSo: "BA-SEED003",
+      hoTenNguoiCaiNghien: "Lê Văn D",
+      giaiDoanHienTai: "Giai đoạn 3 - Tái hòa nhập",
+      bacSiPhuTrach: "BS. Trần Thị Mai",
+      canBoPhuTrach: "NV. Lê Thị Hồng",
+      khuPhong: "Khu B - Phòng 203",
+      ghiChuPhanCong: "",
+      trangThai: "DaPhanCong",
     },
-
-    async refresh() {
-        await this.init();
-        if (typeof window.Toast !== 'undefined') window.Toast.show('Đã làm mới dữ liệu', 'success');
+    {
+      maHoSo: "BA-RL005",
+      hoTenNguoiCaiNghien: "Phạm Thị E",
+      giaiDoanHienTai: "Giai đoạn 3 - Tái hòa nhập",
+      bacSiPhuTrach: "BS. Nguyễn Văn Thành",
+      canBoPhuTrach: "",
+      khuPhong: "Khu A - Phòng 105",
+      ghiChuPhanCong: "",
+      trangThai: "DaPhanCong",
     },
-
-    async loadPatients() {
-        if (typeof Api !== 'undefined' && typeof Api.getPatientsForAssignment !== 'undefined') {
-            try {
-                const res = await Api.getPatientsForAssignment();
-                if (Array.isArray(res)) {
-                    this.patients = res;
-                    return;
-                } else if (res && Array.isArray(res.data)) {
-                    this.patients = res.data;
-                    return;
-                }
-            } catch (err) {
-                console.warn('Lỗi API getPatientsForAssignment:', err);
-            }
-        }
-
-        // Mock Fallback
-        this.patients = [
-            { maNguoiCaiNghien: 'NCN-001', hoTen: 'Nguyễn Văn Trọng', trangThai: 'DANG_CAI_NGHIEN', bacSiPhuTrach: 'BS. Mai Hoàng Yến', maBacSi: 'BS001' },
-            { maNguoiCaiNghien: 'NCN-002', hoTen: 'Lý Hải Nam', trangThai: 'DANG_CAI_NGHIEN', bacSiPhuTrach: 'BS. Mai Hoàng Yến', maBacSi: 'BS001' },
-            { maNguoiCaiNghien: 'NCN-003', hoTen: 'Phạm Thị Dung', trangThai: 'DANG_KHAM_SUC_KHOE', bacSiPhuTrach: null, maBacSi: null },
-            { maNguoiCaiNghien: 'NCN-004', hoTen: 'Hoàng Văn Đạt', trangThai: 'DANG_KHAM_SUC_KHOE', bacSiPhuTrach: null, maBacSi: null },
-        ];
+    {
+      maHoSo: "BA-RL006",
+      hoTenNguoiCaiNghien: "Hoàng Văn F",
+      giaiDoanHienTai: "Giai đoạn 1 - Cắt cơn",
+      bacSiPhuTrach: "",
+      canBoPhuTrach: "",
+      khuPhong: "",
+      ghiChuPhanCong: "",
+      trangThai: "ChuaPhanCong",
     },
-
-    async loadDoctors() {
-        if (typeof Api !== 'undefined' && typeof Api.getDoctors !== 'undefined') {
-            try {
-                const res = await Api.getDoctors();
-                if (Array.isArray(res)) {
-                    this.doctors = res;
-                    return;
-                } else if (res && Array.isArray(res.data)) {
-                    this.doctors = res.data;
-                    return;
-                }
-            } catch (err) {
-                console.warn('Lỗi API getDoctors:', err);
-            }
-        }
-
-        // Mock Fallback
-        this.doctors = [
-            { maBacSi: 'BS001', hoTen: 'BS. Mai Hoàng Yến', chuyenKhoa: 'Nội tiết' },
-            { maBacSi: 'BS002', hoTen: 'BS. Trần Văn Hùng', chuyenKhoa: 'Tâm thần học' }
-        ];
+    {
+      maHoSo: "BA-RL008",
+      hoTenNguoiCaiNghien: "Võ Thị G",
+      giaiDoanHienTai: "Giai đoạn 1 - Cắt cơn",
+      bacSiPhuTrach: "",
+      canBoPhuTrach: "",
+      khuPhong: "",
+      ghiChuPhanCong: "",
+      trangThai: "ChuaPhanCong",
     },
+  ];
 
-    applyFilter() {
-        const search = (document.getElementById('assign-search')?.value || '').toLowerCase().trim();
-        const status = document.getElementById('assign-status-filter')?.value || 'all';
+  const MOCK_DOCTOR_OPTIONS = ["BS. Trần Thị Mai", "BS. Nguyễn Văn Thành"];
+  const MOCK_STAFF_OPTIONS = ["NV. Lê Thị Hồng", "NV. Đặng Văn Khoa"];
 
-        const filtered = this.patients.filter(p => {
-            const matchesSearch = !search || p.hoTen.toLowerCase().includes(search) || p.maNguoiCaiNghien.toLowerCase().includes(search);
-            
-            let matchesStatus = true;
-            if (status === 'unassigned') matchesStatus = !p.maBacSi;
-            if (status === 'assigned') matchesStatus = !!p.maBacSi;
+  // ====== STATE ======
+  let assignments = [];
+  let usingFallback = false;
+  let currentSearch = "";
+  let currentStatusFilter = "all";
+  let activeMaHoSo = null;
 
-            return matchesSearch && matchesStatus;
-        });
+  // ====== HELPERS ======
+  function getStatusBadge(status) {
+    const map = {
+      DaPhanCong: { label: "Đã phân công", cls: "badge-green" },
+      ChuaPhanCong: { label: "Chưa phân công", cls: "badge-orange" },
+    };
+    const item = map[status] || { label: status, cls: "badge-gray" };
+    return `<span class="badge ${item.cls}">${item.label}</span>`;
+  }
 
-        this.renderTable(filtered);
-    },
+  function getFilteredAssignments() {
+    return assignments.filter((a) => {
+      const matchStatus = currentStatusFilter === "all" || a.trangThai === currentStatusFilter;
 
-    renderTable(data) {
-        const target = document.getElementById('assign-table');
-        if (!target) return;
+      const keyword = currentSearch.trim().toLowerCase();
+      const matchSearch =
+        !keyword ||
+        a.maHoSo.toLowerCase().includes(keyword) ||
+        a.hoTenNguoiCaiNghien.toLowerCase().includes(keyword);
 
-        if (!data.length) {
-            target.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-state-icon"><i class="fa-solid fa-user-doctor"></i></div>
-                    <div class="empty-state-title">Không tìm thấy học viên</div>
-                    <div class="empty-state-msg">Không có học viên nào phù hợp với bộ lọc hiện tại.</div>
-                </div>`;
-            return;
-        }
+      return matchStatus && matchSearch;
+    });
+  }
 
-        const rows = data.map(p => {
-            const isAssigned = !!p.maBacSi;
-            const statusBadge = isAssigned 
-                ? '<span class="badge badge-success"><i class="fa-solid fa-check"></i> Đã phân công</span>'
-                : '<span class="badge badge-warning"><i class="fa-solid fa-clock"></i> Chưa phân công</span>';
+  function clearFormErrors() {
+    document.getElementById("errBacSiPhuTrach").textContent = "";
+  }
 
-            const actionBtn = isAssigned
-                ? `<button class="btn btn-sm btn-outline" onclick="AssignmentPage.openAssignModal('${p.maNguoiCaiNghien}')"><i class="fa-solid fa-rotate"></i> Đổi bác sĩ</button>`
-                : `<button class="btn btn-sm btn-primary" onclick="AssignmentPage.openAssignModal('${p.maNguoiCaiNghien}')"><i class="fa-solid fa-plus"></i> Phân công</button>`;
+  function showLoading(show) {
+    const loadingEl = document.getElementById("assignLoadingState");
+    const tbody = document.getElementById("assignTableBody");
+    if (loadingEl) loadingEl.style.display = show ? "block" : "none";
+    if (tbody && show) tbody.innerHTML = "";
+  }
 
-            return [
-                `<span class="td-code">${this.escapeHtml(p.maNguoiCaiNghien)}</span>`,
-                this.escapeHtml(p.hoTen),
-                this.escapeHtml(p.trangThai),
-                isAssigned ? `<strong style="color:var(--primary);">${this.escapeHtml(p.bacSiPhuTrach)}</strong>` : '<span style="color:var(--text-light);">Chưa có</span>',
-                statusBadge,
-                `<div class="action-btns">${actionBtn}</div>`
-            ];
-        });
-
-        if (typeof Table !== 'undefined') {
-            target.innerHTML = Table.renderTable(
-                ['Mã học viên', 'Tên học viên', 'Trạng thái', 'Bác sĩ phụ trách', 'Trạng thái PC', 'Thao tác'],
-                rows
-            );
-        }
-    },
-
-    openAssignModal(patientId) {
-        const p = this.patients.find(x => x.maNguoiCaiNghien === patientId);
-        if (!p) return;
-
-        document.getElementById('assign-patient-id').value = p.maNguoiCaiNghien;
-        document.getElementById('assign-patient-name').value = `${p.maNguoiCaiNghien} - ${p.hoTen}`;
-        
-        const docSelect = document.getElementById('assign-doctor');
-        docSelect.innerHTML = '<option value="">-- Chọn bác sĩ --</option>' + this.doctors.map(d => 
-            `<option value="${d.maBacSi}" ${p.maBacSi === d.maBacSi ? 'selected' : ''}>${this.escapeHtml(d.hoTen)} (${this.escapeHtml(d.chuyenKhoa)})</option>`
-        ).join('');
-
-        // Reset errors
-        document.getElementById('assign-doctor-error').style.display = 'none';
-        document.getElementById('assign-start-error').style.display = 'none';
-        document.getElementById('assign-end-error').style.display = 'none';
-
-        // Set default dates
-        const now = new Date();
-        document.getElementById('assign-start-date').value = now.toISOString().split('T')[0];
-        
-        const nextMonth = new Date(now);
-        nextMonth.setMonth(nextMonth.getMonth() + 1);
-        document.getElementById('assign-end-date').value = nextMonth.toISOString().split('T')[0];
-
-        if (typeof Modal !== 'undefined') Modal.open('assignModal');
-    },
-
-    async saveAssignment() {
-        const patientId = document.getElementById('assign-patient-id').value;
-        const doctorId = document.getElementById('assign-doctor').value;
-        const startDate = document.getElementById('assign-start-date').value;
-        const endDate = document.getElementById('assign-end-date').value;
-
-        let hasErr = false;
-        if (!doctorId) { document.getElementById('assign-doctor-error').style.display = 'flex'; hasErr = true; }
-        else document.getElementById('assign-doctor-error').style.display = 'none';
-
-        if (!startDate) { document.getElementById('assign-start-error').style.display = 'flex'; hasErr = true; }
-        else document.getElementById('assign-start-error').style.display = 'none';
-
-        if (!endDate || endDate < startDate) { document.getElementById('assign-end-error').style.display = 'flex'; hasErr = true; }
-        else document.getElementById('assign-end-error').style.display = 'none';
-
-        if (hasErr) return;
-
-        const payload = {
-            maBacSi: doctorId,
-            ngayBatDau: startDate,
-            ngayKetThucDuKien: endDate
-        };
-
-        try {
-            if (typeof Api !== 'undefined' && typeof Api.assignDoctor !== 'undefined') {
-                await Api.assignDoctor(patientId, payload);
-            }
-            
-            // Update local state for mock/fallback
-            const p = this.patients.find(x => x.maNguoiCaiNghien === patientId);
-            if (p) {
-                p.maBacSi = doctorId;
-                const doc = this.doctors.find(d => d.maBacSi === doctorId);
-                if (doc) p.bacSiPhuTrach = doc.hoTen;
-            }
-
-            if (typeof Modal !== 'undefined') Modal.close('assignModal');
-            if (typeof window.Toast !== 'undefined') window.Toast.show('Đã phân công bác sĩ thành công!', 'success');
-            this.applyFilter();
-
-        } catch (err) {
-            console.error('Lỗi phân công:', err);
-            if (typeof window.Toast !== 'undefined') window.Toast.show('Phân công thất bại. Vui lòng thử lại.', 'error');
-        }
-    },
-
-    escapeHtml(value) {
-        return String(value ?? '')
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
+  function showFallbackNotice() {
+    if (window.Toast && Toast.show) {
+      Toast.show("Chưa có API phân công, đang hiển thị dữ liệu mẫu để demo giao diện.", "error");
     }
-};
+  }
 
-window.AssignmentPage = AssignmentPage;
+  // ====== GỌI API (fallback mock khi lỗi) ======
+  function fetchAssignments() {
+    showLoading(true);
+
+    return Api.get(ENDPOINT_LIST)
+      .then((res) => {
+        assignments = extractList(res);
+        usingFallback = false;
+      })
+      .catch((err) => {
+        console.warn("Chưa có API GET /manager/assignments, dùng mock fallback:", err);
+        assignments = JSON.parse(JSON.stringify(MOCK_ASSIGNMENTS));
+        usingFallback = true;
+        showFallbackNotice();
+      })
+      .finally(() => {
+        showLoading(false);
+        renderStats();
+        renderTable();
+      });
+  }
+
+  function fetchStaffOptions() {
+    return Api.get(ENDPOINT_STAFF_OPTIONS)
+      .then((res) => {
+        const data = res && res.data ? res.data : null;
+        return {
+          bacSi: (data && data.bacSi) || MOCK_DOCTOR_OPTIONS,
+          canBo: (data && data.canBo) || MOCK_STAFF_OPTIONS,
+        };
+      })
+      .catch(() => ({ bacSi: MOCK_DOCTOR_OPTIONS, canBo: MOCK_STAFF_OPTIONS }));
+  }
+
+  function saveAssignment(maHoSo, payload) {
+    if (usingFallback) {
+      const idx = assignments.findIndex((a) => a.maHoSo === maHoSo);
+      if (idx !== -1) {
+        Object.assign(assignments[idx], payload);
+        assignments[idx].trangThai = payload.bacSiPhuTrach ? "DaPhanCong" : "ChuaPhanCong";
+      }
+      return Promise.resolve(assignments[idx]);
+    }
+
+    return Api.put(ENDPOINT_ASSIGN(maHoSo), payload).then(() => {
+      const idx = assignments.findIndex((a) => a.maHoSo === maHoSo);
+      if (idx !== -1) {
+        Object.assign(assignments[idx], payload);
+        assignments[idx].trangThai = payload.bacSiPhuTrach ? "DaPhanCong" : "ChuaPhanCong";
+      }
+      return assignments[idx];
+    });
+  }
+
+  // ====== RENDER STATS ======
+  function renderStats() {
+    document.getElementById("statTotalAssign").textContent = assignments.length;
+    document.getElementById("statAssigned").textContent =
+      assignments.filter((a) => a.trangThai === "DaPhanCong").length;
+    document.getElementById("statUnassigned").textContent =
+      assignments.filter((a) => a.trangThai === "ChuaPhanCong").length;
+  }
+
+  // ====== RENDER TABLE ======
+  function renderTable() {
+    const tbody = document.getElementById("assignTableBody");
+    const emptyState = document.getElementById("assignEmptyState");
+    if (!tbody) return;
+
+    const data = getFilteredAssignments();
+
+    if (data.length === 0) {
+      tbody.innerHTML = "";
+      if (emptyState) emptyState.style.display = "block";
+      return;
+    }
+
+    if (emptyState) emptyState.style.display = "none";
+
+    tbody.innerHTML = data
+      .map(
+        (a) => `
+        <tr>
+          <td><span class="text-link">${a.maHoSo}</span></td>
+          <td>${a.hoTenNguoiCaiNghien}</td>
+          <td>${a.giaiDoanHienTai}</td>
+          <td>${a.bacSiPhuTrach || "-"}</td>
+          <td>${a.canBoPhuTrach || "-"}</td>
+          <td>${a.khuPhong || "-"}</td>
+          <td>${getStatusBadge(a.trangThai)}</td>
+          <td>
+            <div class="table-actions">
+              <button class="btn-icon" title="Phân công" data-action="assign" data-id="${a.maHoSo}">
+                <i class="fa-solid fa-user-pen"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `
+      )
+      .join("");
+  }
+
+  // ====== MODAL PHÂN CÔNG ======
+  function fillSelectOptions(selectEl, options, selectedValue, allowEmpty) {
+    const opts = allowEmpty ? ["", ...options] : options;
+    selectEl.innerHTML = opts
+      .map((opt) => `<option value="${opt}" ${opt === selectedValue ? "selected" : ""}>${opt || "-- Chưa chọn --"}</option>`)
+      .join("");
+  }
+
+  function openAssignModal(maHoSo) {
+    const a = assignments.find((x) => x.maHoSo === maHoSo);
+    if (!a) return;
+
+    activeMaHoSo = maHoSo;
+    clearFormErrors();
+
+    document.getElementById("assignInfoMaHoSo").textContent = a.maHoSo;
+    document.getElementById("assignInfoHoTen").textContent = a.hoTenNguoiCaiNghien;
+    document.getElementById("formKhuPhong").value = a.khuPhong || "";
+    document.getElementById("formGhiChuPhanCong").value = a.ghiChuPhanCong || "";
+
+    fetchStaffOptions().then(({ bacSi, canBo }) => {
+      fillSelectOptions(document.getElementById("formBacSiPhuTrach"), bacSi, a.bacSiPhuTrach, true);
+      fillSelectOptions(document.getElementById("formCanBoPhuTrach"), canBo, a.canBoPhuTrach, true);
+    });
+
+    document.getElementById("assignFormModal").classList.add("active");
+  }
+
+  function closeAssignModal() {
+    document.getElementById("assignFormModal").classList.remove("active");
+    activeMaHoSo = null;
+  }
+
+  function handleAssignSave() {
+    clearFormErrors();
+
+    const bacSiPhuTrach = document.getElementById("formBacSiPhuTrach").value;
+    const canBoPhuTrach = document.getElementById("formCanBoPhuTrach").value;
+    const khuPhong = document.getElementById("formKhuPhong").value.trim();
+    const ghiChuPhanCong = document.getElementById("formGhiChuPhanCong").value.trim();
+
+    if (!bacSiPhuTrach) {
+      document.getElementById("errBacSiPhuTrach").textContent = "Vui lòng chọn bác sĩ phụ trách";
+      return;
+    }
+
+    if (!activeMaHoSo) return;
+
+    const payload = { bacSiPhuTrach, canBoPhuTrach, khuPhong, ghiChuPhanCong };
+
+    saveAssignment(activeMaHoSo, payload).then(() => {
+      closeAssignModal();
+      renderStats();
+      renderTable();
+
+      if (window.Toast && Toast.show) {
+        Toast.show("Đã lưu phân công phụ trách.", "success");
+      }
+    });
+  }
+
+  // ====== EVENTS ======
+  function bindEvents() {
+    document.getElementById("assignSearchInput").addEventListener("input", (e) => {
+      currentSearch = e.target.value;
+      renderTable();
+    });
+
+    document.getElementById("assignStatusFilter").addEventListener("change", (e) => {
+      currentStatusFilter = e.target.value;
+      renderTable();
+    });
+
+    document.getElementById("assignTableBody").addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-action]");
+      if (!btn) return;
+      if (btn.dataset.action === "assign") openAssignModal(btn.dataset.id);
+    });
+
+    document.getElementById("assignFormCloseBtn").addEventListener("click", closeAssignModal);
+    document.getElementById("assignFormCancelBtn").addEventListener("click", closeAssignModal);
+    document.getElementById("assignFormSaveBtn").addEventListener("click", handleAssignSave);
+  }
+
+  // ====== PUBLIC API ======
+  function init() {
+    bindEvents();
+    fetchAssignments();
+  }
+
+  async function render(containerId) {
+    const success = await ViewLoader.load("views/manager/assignment.html", containerId);
+    if (success) this.init();
+  }
+
+  return { render, init, bindEvents };
+})();

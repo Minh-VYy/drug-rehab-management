@@ -1,228 +1,448 @@
-const StageApprovalPage = {
-    proposals: [],
+window.StageApprovalPage = (function () {
+  // ====== ENDPOINTS ======
+  const ENDPOINT_LIST = "/manager/stage-proposals";
+  const ENDPOINT_APPROVE = (id) => `/manager/stage-proposals/${id}/approve`;
+  const ENDPOINT_REJECT = (id) => `/manager/stage-proposals/${id}/reject`;
 
-    async render(containerId) {
-        const success = await ViewLoader.load('views/manager/stage-approval.html', containerId);
-        if (success) await this.init();
+  function extractList(res) {
+    if (Array.isArray(res)) return res;
+    if (res && Array.isArray(res.data)) return res.data;
+    if (res && Array.isArray(res.items)) return res.items;
+    return [];
+  }
+
+  // ====== MOCK FALLBACK ======
+  const MOCK_PROPOSALS = [
+    {
+      maDeXuat: "DXCG001",
+      maHoSo: "BA-SEED002",
+      hoTenNguoiCaiNghien: "Nguyễn Văn B",
+      giaiDoanHienTai: "Giai đoạn 1 - Cắt cơn",
+      giaiDoanDeXuat: "Giai đoạn 2 - Phục hồi",
+      bacSiDeXuat: "BS. Trần Thị Mai",
+      ngayDeXuat: "18/06/2026",
+      lyDoChuyen: "Đã ổn định thể trạng, không còn triệu chứng cắt cơn cấp tính.",
+      trangThai: "ChoDuyet",
+      nguoiDuyet: null,
+      ngayDuyet: null,
+      lyDoTuChoi: null,
     },
-
-    async init() {
-        if (typeof Topbar !== 'undefined') Topbar.setTitle('Duyệt đề xuất chuyển giai đoạn');
-        await this.loadData();
-        this.applyFilter();
+    {
+      maDeXuat: "DXCG002",
+      maHoSo: "BA-RL005",
+      hoTenNguoiCaiNghien: "Phạm Thị E",
+      giaiDoanHienTai: "Giai đoạn 2 - Phục hồi",
+      giaiDoanDeXuat: "Giai đoạn 3 - Tái hòa nhập",
+      bacSiDeXuat: "BS. Nguyễn Văn Thành",
+      ngayDeXuat: "17/06/2026",
+      lyDoChuyen: "Hoàn thành đầy đủ liệu trình phục hồi tâm lý.",
+      trangThai: "ChoDuyet",
+      nguoiDuyet: null,
+      ngayDuyet: null,
+      lyDoTuChoi: null,
     },
-
-    async refresh() {
-        await this.loadData();
-        this.applyFilter();
-        if (typeof window.Toast !== 'undefined') window.Toast.show('Đã làm mới dữ liệu', 'success');
+    {
+      maDeXuat: "DXCG003",
+      maHoSo: "BA-SEED003",
+      hoTenNguoiCaiNghien: "Lê Văn D",
+      giaiDoanHienTai: "Giai đoạn 2 - Phục hồi",
+      giaiDoanDeXuat: "Giai đoạn 3 - Tái hòa nhập",
+      bacSiDeXuat: "BS. Trần Thị Mai",
+      ngayDeXuat: "10/06/2026",
+      lyDoChuyen: "Sức khỏe ổn định, sẵn sàng tái hòa nhập.",
+      trangThai: "DaDuyet",
+      nguoiDuyet: "QL. Phạm Thị Phương",
+      ngayDuyet: "12/06/2026",
+      lyDoTuChoi: null,
     },
-
-    async loadData() {
-        if (typeof Api !== 'undefined' && typeof Api.getStageProposals !== 'undefined') {
-            try {
-                const res = await Api.getStageProposals();
-                this.proposals = Array.isArray(res) ? res : Array.isArray(res?.data) ? res.data : [];
-                return;
-            } catch (err) {
-                console.warn('Lỗi API getStageProposals:', err);
-            }
-        }
-
-        // Mock Fallback
-        this.proposals = [
-            { maDeXuat: 'DX-001', maBenhAn: 'BA-001', hoTen: 'Nguyễn Văn Trọng', loaiDeXuat: 'CHUYEN_GIAI_DOAN', giaiDoanCu: 'Cắt cơn giải độc', giaiDoanMoi: 'Phục hồi hành vi', lyDo: 'Học viên đã cắt cơn ổn định, sức khỏe thể chất tốt.', nguoiDeXuat: 'BS. Mai Hoàng Yến', ngayDeXuat: '2026-06-15', trangThai: 'ChoDuyet' },
-            { maDeXuat: 'DX-002', maBenhAn: 'BA-002', hoTen: 'Lý Hải Nam', loaiDeXuat: 'CHUYEN_GIAI_DOAN', giaiDoanCu: 'Phục hồi hành vi', giaiDoanMoi: 'Lao động trị liệu', lyDo: 'Tiến triển tâm lý rất tốt, sẵn sàng lao động.', nguoiDeXuat: 'BS. Trần Văn Hùng', ngayDeXuat: '2026-06-10', trangThai: 'DaDuyet' },
-            { maDeXuat: 'DX-003', maBenhAn: 'BA-003', hoTen: 'Phạm Thị Dung', loaiDeXuat: 'RA_TRAI', giaiDoanCu: 'Tái hòa nhập cộng đồng', giaiDoanMoi: 'Hoàn thành', lyDo: 'Đã hoàn thành xuất sắc chương trình cai nghiện.', nguoiDeXuat: 'BS. Mai Hoàng Yến', ngayDeXuat: '2026-06-12', trangThai: 'ChoDuyet' }
-        ];
+    {
+      maDeXuat: "DXCG004",
+      maHoSo: "BA-RL006",
+      hoTenNguoiCaiNghien: "Hoàng Văn F",
+      giaiDoanHienTai: "Giai đoạn 1 - Cắt cơn",
+      giaiDoanDeXuat: "Giai đoạn 2 - Phục hồi",
+      bacSiDeXuat: "BS. Nguyễn Văn Thành",
+      ngayDeXuat: "05/06/2026",
+      lyDoChuyen: "Còn dấu hiệu phụ thuộc tâm lý nhẹ.",
+      trangThai: "TuChoi",
+      nguoiDuyet: "QL. Phạm Thị Phương",
+      ngayDuyet: "07/06/2026",
+      lyDoTuChoi: "Cần theo dõi thêm 2 tuần trước khi chuyển giai đoạn.",
     },
+  ];
 
-    applyFilter() {
-        const search = (document.getElementById('stage-search')?.value || '').toLowerCase().trim();
-        const status = document.getElementById('stage-status-filter')?.value || 'ChoDuyet';
+  // ====== STATE ======
+  let proposals = [];
+  let usingFallback = false;
+  let currentSearch = "";
+  let currentStatusFilter = "all";
+  let activeProposalId = null;
 
-        const filtered = this.proposals.filter(p => {
-            const matchesSearch = !search || p.hoTen.toLowerCase().includes(search) || p.maBenhAn.toLowerCase().includes(search) || p.nguoiDeXuat.toLowerCase().includes(search);
-            const matchesStatus = status === 'all' || p.trangThai === status;
-            return matchesSearch && matchesStatus;
-        });
+  // ====== HELPERS ======
+  function getStatusBadge(status) {
+    const map = {
+      ChoDuyet: { label: "Chờ duyệt", cls: "badge-orange" },
+      DaDuyet: { label: "Đã duyệt", cls: "badge-green" },
+      TuChoi: { label: "Từ chối", cls: "badge-red" },
+    };
+    const item = map[status] || { label: status, cls: "badge-gray" };
+    return `<span class="badge ${item.cls}">${item.label}</span>`;
+  }
 
-        this.renderTable(filtered);
-    },
+  function getCurrentManagerName() {
+    try {
+      if (window.Auth && Auth.getCurrentUser && Auth.getDisplayName) {
+        return Auth.getDisplayName(Auth.getCurrentUser());
+      }
+    } catch (e) {}
+    return "Cán bộ quản lý";
+  }
 
-    renderTable(data) {
-        const target = document.getElementById('stage-table');
-        if (!target) return;
+  function getTodayString() {
+    return new Date().toLocaleDateString("vi-VN");
+  }
 
-        if (!data.length) {
-            target.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-state-icon"><i class="fa-solid fa-file-signature"></i></div>
-                    <div class="empty-state-title">Không có đề xuất nào</div>
-                    <div class="empty-state-msg">Không có đề xuất nào phù hợp với bộ lọc.</div>
-                </div>`;
-            return;
-        }
+  function getFilteredProposals() {
+    return proposals.filter((p) => {
+      const matchStatus = currentStatusFilter === "all" || p.trangThai === currentStatusFilter;
 
-        const rows = data.map(p => {
-            let statusBadge = '';
-            let actionBtn = `<button class="btn btn-sm btn-outline" onclick="StageApprovalPage.openDetail('${p.maDeXuat}')"><i class="fa-solid fa-eye"></i> Xem</button>`;
+      const keyword = currentSearch.trim().toLowerCase();
+      const matchSearch =
+        !keyword ||
+        p.maDeXuat.toLowerCase().includes(keyword) ||
+        p.hoTenNguoiCaiNghien.toLowerCase().includes(keyword) ||
+        p.maHoSo.toLowerCase().includes(keyword);
 
-            if (p.trangThai === 'ChoDuyet') {
-                statusBadge = '<span class="badge badge-warning"><i class="fa-solid fa-clock"></i> Chờ duyệt</span>';
-                actionBtn += ` <button class="btn btn-sm btn-primary" onclick="StageApprovalPage.openDetail('${p.maDeXuat}')"><i class="fa-solid fa-pen-to-square"></i> Xử lý</button>`;
-            } else if (p.trangThai === 'DaDuyet') {
-                statusBadge = '<span class="badge badge-success"><i class="fa-solid fa-check"></i> Đã duyệt</span>';
-            } else {
-                statusBadge = '<span class="badge badge-danger"><i class="fa-solid fa-xmark"></i> Đã từ chối</span>';
-            }
+      return matchStatus && matchSearch;
+    });
+  }
 
-            const loaiLabel = p.loaiDeXuat === 'RA_TRAI' 
-                ? '<span class="badge" style="background:#8b5cf6;color:#fff;">Hoàn thành (Ra trại)</span>' 
-                : '<span class="badge badge-blue">Chuyển giai đoạn</span>';
+  function clearRejectError() {
+    document.getElementById("errStageRejectReason").textContent = "";
+  }
 
-            return [
-                `<span class="td-code">${this.escapeHtml(p.maDeXuat)}</span>`,
-                this.escapeHtml(p.hoTen),
-                loaiLabel,
-                `${this.escapeHtml(p.giaiDoanCu)} <i class="fa-solid fa-arrow-right" style="margin:0 5px;color:var(--text-light);font-size:10px;"></i> <strong>${this.escapeHtml(p.giaiDoanMoi)}</strong>`,
-                this.escapeHtml(p.nguoiDeXuat),
-                this.formatDate(p.ngayDeXuat),
-                statusBadge,
-                `<div class="action-btns">${actionBtn}</div>`
-            ];
-        });
+  function showLoading(show) {
+    const loadingEl = document.getElementById("stageLoadingState");
+    const tbody = document.getElementById("stageTableBody");
+    if (loadingEl) loadingEl.style.display = show ? "block" : "none";
+    if (tbody && show) tbody.innerHTML = "";
+  }
 
-        if (typeof Table !== 'undefined') {
-            target.innerHTML = Table.renderTable(
-                ['Mã đề xuất', 'Học viên', 'Loại đề xuất', 'Thay đổi giai đoạn', 'Người đề xuất', 'Ngày đề xuất', 'Trạng thái', 'Thao tác'],
-                rows
-            );
-        }
-    },
-
-    openDetail(id) {
-        const p = this.proposals.find(x => x.maDeXuat === id);
-        if (!p) return;
-
-        const isPending = p.trangThai === 'ChoDuyet';
-
-        const html = `
-            <div class="detail-grid">
-                <div class="detail-item">
-                    <div class="detail-label">Học viên</div>
-                    <div class="detail-value"><strong>${this.escapeHtml(p.hoTen)}</strong> (${this.escapeHtml(p.maBenhAn)})</div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-label">Người đề xuất</div>
-                    <div class="detail-value">${this.escapeHtml(p.nguoiDeXuat)}</div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-label">Ngày đề xuất</div>
-                    <div class="detail-value">${this.formatDate(p.ngayDeXuat)}</div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-label">Loại đề xuất</div>
-                    <div class="detail-value">${p.loaiDeXuat === 'RA_TRAI' ? 'Hoàn thành / Ra trại' : 'Chuyển giai đoạn'}</div>
-                </div>
-                <div class="detail-item span-2" style="background:rgba(21,94,239,0.05); padding:12px; border-radius:8px; border:1px solid rgba(21,94,239,0.1);">
-                    <div class="detail-label">Thay đổi giai đoạn</div>
-                    <div class="detail-value" style="display:flex; align-items:center; gap:12px;">
-                        <span style="color:var(--text-muted); text-decoration:line-through;">${this.escapeHtml(p.giaiDoanCu)}</span>
-                        <i class="fa-solid fa-arrow-right" style="color:var(--primary);"></i>
-                        <strong style="color:var(--primary); font-size:1.1em;">${this.escapeHtml(p.giaiDoanMoi)}</strong>
-                    </div>
-                </div>
-                <div class="detail-item span-2">
-                    <div class="detail-label">Lý do đề xuất</div>
-                    <div class="detail-value" style="font-style:italic;">"${this.escapeHtml(p.lyDo)}"</div>
-                </div>
-                
-                ${isPending ? `
-                <div class="detail-item span-2" style="margin-top:16px;">
-                    <label class="form-label">Ghi chú phản hồi (Dành cho Cán bộ quản lý)</label>
-                    <textarea class="form-control" id="stage-reply-note" rows="3" placeholder="Nhập lý do từ chối hoặc lời dặn dò..."></textarea>
-                    <div class="form-error" id="stage-reply-error" style="display:none;"><i class="fa-solid fa-circle-exclamation"></i> Vui lòng nhập lý do nếu từ chối</div>
-                </div>
-                ` : `
-                <div class="detail-item span-2">
-                    <div class="detail-label">Trạng thái</div>
-                    <div class="detail-value">${p.trangThai === 'DaDuyet' ? '<span style="color:var(--success);"><i class="fa-solid fa-check"></i> Đã phê duyệt</span>' : '<span style="color:var(--danger);"><i class="fa-solid fa-xmark"></i> Đã từ chối</span>'}</div>
-                </div>
-                `}
-            </div>
-        `;
-
-        document.getElementById('stageModalBody').innerHTML = html;
-
-        let footer = `<button class="btn btn-outline" onclick="Modal.close('stageModal')">Đóng</button>`;
-        if (isPending) {
-            footer = `
-                <button class="btn btn-outline" onclick="Modal.close('stageModal')">Hủy</button>
-                <button class="btn btn-danger" onclick="StageApprovalPage.handleReject('${id}')"><i class="fa-solid fa-xmark"></i> Từ chối</button>
-                <button class="btn btn-success" onclick="StageApprovalPage.handleApprove('${id}')"><i class="fa-solid fa-check"></i> Phê duyệt</button>
-            `;
-        }
-        document.getElementById('stageModalFooter').innerHTML = footer;
-
-        if (typeof Modal !== 'undefined') Modal.open('stageModal');
-    },
-
-    async handleApprove(id) {
-        const note = document.getElementById('stage-reply-note')?.value.trim() || '';
-        try {
-            if (typeof Api !== 'undefined' && typeof Api.approveStageProposal !== 'undefined') {
-                await Api.approveStageProposal(id, { ghiChu: note });
-            }
-            const p = this.proposals.find(x => x.maDeXuat === id);
-            if (p) p.trangThai = 'DaDuyet';
-
-            if (typeof Modal !== 'undefined') Modal.close('stageModal');
-            if (typeof window.Toast !== 'undefined') window.Toast.show('Đã phê duyệt đề xuất!', 'success');
-            this.applyFilter();
-        } catch (err) {
-            console.error(err);
-            if (typeof window.Toast !== 'undefined') window.Toast.show('Lỗi khi phê duyệt.', 'error');
-        }
-    },
-
-    async handleReject(id) {
-        const note = document.getElementById('stage-reply-note')?.value.trim() || '';
-        if (!note) {
-            document.getElementById('stage-reply-error').style.display = 'flex';
-            return;
-        }
-
-        try {
-            if (typeof Api !== 'undefined' && typeof Api.rejectStageProposal !== 'undefined') {
-                await Api.rejectStageProposal(id, { ghiChu: note });
-            }
-            const p = this.proposals.find(x => x.maDeXuat === id);
-            if (p) p.trangThai = 'TuChoi';
-
-            if (typeof Modal !== 'undefined') Modal.close('stageModal');
-            if (typeof window.Toast !== 'undefined') window.Toast.show('Đã từ chối đề xuất.', 'warning');
-            this.applyFilter();
-        } catch (err) {
-            console.error(err);
-            if (typeof window.Toast !== 'undefined') window.Toast.show('Lỗi khi từ chối.', 'error');
-        }
-    },
-
-    formatDate(value) {
-        if (!value) return '';
-        const d = new Date(value);
-        return Number.isNaN(d.getTime()) ? value : d.toLocaleDateString('vi-VN');
-    },
-
-    escapeHtml(value) {
-        return String(value ?? '')
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
+  function showFallbackNotice() {
+    if (window.Toast && Toast.show) {
+      Toast.show("Chưa có API duyệt chuyển giai đoạn, đang hiển thị dữ liệu mẫu để demo giao diện.", "error");
     }
-};
+  }
 
-window.StageApprovalPage = StageApprovalPage;
+  // ====== GỌI API (fallback mock khi lỗi) ======
+  function fetchProposals() {
+    showLoading(true);
+
+    return Api.get(ENDPOINT_LIST)
+      .then((res) => {
+        proposals = extractList(res);
+        usingFallback = false;
+      })
+      .catch((err) => {
+        console.warn("Chưa có API GET /manager/stage-proposals, dùng mock fallback:", err);
+        proposals = JSON.parse(JSON.stringify(MOCK_PROPOSALS));
+        usingFallback = true;
+        showFallbackNotice();
+      })
+      .finally(() => {
+        showLoading(false);
+        renderStats();
+        renderTable();
+      });
+  }
+
+  function approveProposal(maDeXuat) {
+    if (usingFallback) {
+      const p = proposals.find((x) => x.maDeXuat === maDeXuat);
+      if (p) {
+        p.trangThai = "DaDuyet";
+        p.nguoiDuyet = getCurrentManagerName();
+        p.ngayDuyet = getTodayString();
+      }
+      return Promise.resolve(p);
+    }
+
+    return Api.put(ENDPOINT_APPROVE(maDeXuat)).then(() => {
+      const p = proposals.find((x) => x.maDeXuat === maDeXuat);
+      if (p) {
+        p.trangThai = "DaDuyet";
+        p.nguoiDuyet = getCurrentManagerName();
+        p.ngayDuyet = getTodayString();
+      }
+      return p;
+    });
+  }
+
+  function rejectProposal(maDeXuat, lyDoTuChoi) {
+    if (usingFallback) {
+      const p = proposals.find((x) => x.maDeXuat === maDeXuat);
+      if (p) {
+        p.trangThai = "TuChoi";
+        p.nguoiDuyet = getCurrentManagerName();
+        p.ngayDuyet = getTodayString();
+        p.lyDoTuChoi = lyDoTuChoi;
+      }
+      return Promise.resolve(p);
+    }
+
+    return Api.put(ENDPOINT_REJECT(maDeXuat), { lyDoTuChoi }).then(() => {
+      const p = proposals.find((x) => x.maDeXuat === maDeXuat);
+      if (p) {
+        p.trangThai = "TuChoi";
+        p.nguoiDuyet = getCurrentManagerName();
+        p.ngayDuyet = getTodayString();
+        p.lyDoTuChoi = lyDoTuChoi;
+      }
+      return p;
+    });
+  }
+
+  // ====== RENDER STATS ======
+  function renderStats() {
+    document.getElementById("statStagePending").textContent =
+      proposals.filter((p) => p.trangThai === "ChoDuyet").length;
+    document.getElementById("statStageApproved").textContent =
+      proposals.filter((p) => p.trangThai === "DaDuyet").length;
+    document.getElementById("statStageRejected").textContent =
+      proposals.filter((p) => p.trangThai === "TuChoi").length;
+  }
+
+  // ====== RENDER TABLE ======
+  function renderTable() {
+    const tbody = document.getElementById("stageTableBody");
+    const emptyState = document.getElementById("stageEmptyState");
+    if (!tbody) return;
+
+    const data = getFilteredProposals();
+
+    if (data.length === 0) {
+      tbody.innerHTML = "";
+      if (emptyState) emptyState.style.display = "block";
+      return;
+    }
+
+    if (emptyState) emptyState.style.display = "none";
+
+    tbody.innerHTML = data
+      .map(
+        (p) => `
+        <tr>
+          <td><span class="text-link">${p.maDeXuat}</span></td>
+          <td>${p.maHoSo}</td>
+          <td>${p.hoTenNguoiCaiNghien}</td>
+          <td>${p.giaiDoanHienTai}</td>
+          <td>${p.giaiDoanDeXuat}</td>
+          <td>${p.bacSiDeXuat}</td>
+          <td>${p.ngayDeXuat}</td>
+          <td>${getStatusBadge(p.trangThai)}</td>
+          <td>
+            <div class="table-actions">
+              <button class="btn-icon" title="Xem chi tiết" data-action="view" data-id="${p.maDeXuat}">
+                <i class="fa-solid fa-eye"></i>
+              </button>
+              ${
+                p.trangThai === "ChoDuyet"
+                  ? `
+                <button class="btn-icon" title="Duyệt" data-action="approve" data-id="${p.maDeXuat}">
+                  <i class="fa-solid fa-check"></i>
+                </button>
+                <button class="btn-icon" title="Từ chối" data-action="reject" data-id="${p.maDeXuat}">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              `
+                  : ""
+              }
+            </div>
+          </td>
+        </tr>
+      `
+      )
+      .join("");
+  }
+
+  // ====== MODAL CHI TIẾT ======
+  function openDetailModal(maDeXuat) {
+    const p = proposals.find((x) => x.maDeXuat === maDeXuat);
+    if (!p) return;
+
+    document.getElementById("stageDetailBody").innerHTML = `
+      <div class="module-detail-grid">
+        <div class="module-detail-item">
+          <div class="module-detail-label">Họ tên người cai nghiện</div>
+          <div class="module-detail-value">${p.hoTenNguoiCaiNghien}</div>
+        </div>
+        <div class="module-detail-item">
+          <div class="module-detail-label">Mã hồ sơ</div>
+          <div class="module-detail-value">${p.maHoSo}</div>
+        </div>
+        <div class="module-detail-item">
+          <div class="module-detail-label">Giai đoạn hiện tại</div>
+          <div class="module-detail-value">${p.giaiDoanHienTai}</div>
+        </div>
+        <div class="module-detail-item">
+          <div class="module-detail-label">Giai đoạn đề xuất</div>
+          <div class="module-detail-value">${p.giaiDoanDeXuat}</div>
+        </div>
+        <div class="module-detail-item">
+          <div class="module-detail-label">Bác sĩ đề xuất</div>
+          <div class="module-detail-value">${p.bacSiDeXuat}</div>
+        </div>
+        <div class="module-detail-item">
+          <div class="module-detail-label">Ngày đề xuất</div>
+          <div class="module-detail-value">${p.ngayDeXuat}</div>
+        </div>
+        <div class="module-detail-item module-detail-item-full">
+          <div class="module-detail-label">Lý do chuyển giai đoạn</div>
+          <div class="module-detail-value">${p.lyDoChuyen}</div>
+        </div>
+        <div class="module-detail-item">
+          <div class="module-detail-label">Trạng thái</div>
+          <div class="module-detail-value">${getStatusBadge(p.trangThai)}</div>
+        </div>
+        <div class="module-detail-item">
+          <div class="module-detail-label">Người duyệt</div>
+          <div class="module-detail-value">${p.nguoiDuyet || "-"}</div>
+        </div>
+        <div class="module-detail-item">
+          <div class="module-detail-label">Ngày duyệt</div>
+          <div class="module-detail-value">${p.ngayDuyet || "-"}</div>
+        </div>
+        ${
+          p.trangThai === "TuChoi"
+            ? `
+          <div class="module-detail-item module-detail-item-full">
+            <div class="module-detail-label">Lý do từ chối</div>
+            <div class="module-detail-value">${p.lyDoTuChoi || "-"}</div>
+          </div>
+        `
+            : ""
+        }
+      </div>
+    `;
+
+    document.getElementById("stageDetailFooter").innerHTML =
+      p.trangThai === "ChoDuyet"
+        ? `
+        <button class="btn btn-outline" data-action="reject" data-id="${p.maDeXuat}">Từ chối</button>
+        <button class="btn btn-primary" data-action="approve" data-id="${p.maDeXuat}">Duyệt chuyển giai đoạn</button>
+      `
+        : `<button class="btn btn-outline" id="stageDetailCloseBtn2">Đóng</button>`;
+
+    document.getElementById("stageDetailModal").classList.add("active");
+
+    const closeBtn2 = document.getElementById("stageDetailCloseBtn2");
+    if (closeBtn2) closeBtn2.addEventListener("click", closeDetailModal);
+  }
+
+  function closeDetailModal() {
+    document.getElementById("stageDetailModal").classList.remove("active");
+  }
+
+  function handleApproveClick(maDeXuat) {
+    approveProposal(maDeXuat).then(() => {
+      closeDetailModal();
+      renderStats();
+      renderTable();
+
+      if (window.Toast && Toast.show) {
+        Toast.show("Đã duyệt chuyển giai đoạn điều trị.", "success");
+      }
+    });
+  }
+
+  // ====== MODAL TỪ CHỐI ======
+  function openRejectModal(maDeXuat) {
+    activeProposalId = maDeXuat;
+    clearRejectError();
+    document.getElementById("stageRejectReason").value = "";
+    document.getElementById("stageRejectModal").classList.add("active");
+  }
+
+  function closeRejectModal() {
+    document.getElementById("stageRejectModal").classList.remove("active");
+    activeProposalId = null;
+  }
+
+  function handleRejectSubmit() {
+    clearRejectError();
+    const reason = document.getElementById("stageRejectReason").value.trim();
+
+    if (!reason) {
+      document.getElementById("errStageRejectReason").textContent = "Vui lòng nhập lý do từ chối";
+      return;
+    }
+
+    if (!activeProposalId) return;
+
+    rejectProposal(activeProposalId, reason).then(() => {
+      closeRejectModal();
+      closeDetailModal();
+      renderStats();
+      renderTable();
+
+      if (window.Toast && Toast.show) {
+        Toast.show("Đã từ chối đề xuất chuyển giai đoạn.", "success");
+      }
+    });
+  }
+
+  // ====== EVENTS ======
+  function bindEvents() {
+    document.getElementById("stageSearchInput").addEventListener("input", (e) => {
+      currentSearch = e.target.value;
+      renderTable();
+    });
+
+    document.getElementById("stageStatusFilter").addEventListener("change", (e) => {
+      currentStatusFilter = e.target.value;
+      renderTable();
+    });
+
+    document.getElementById("stageTableBody").addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-action]");
+      if (!btn) return;
+
+      const action = btn.dataset.action;
+      const id = btn.dataset.id;
+
+      if (action === "view") openDetailModal(id);
+      if (action === "approve") handleApproveClick(id);
+      if (action === "reject") openRejectModal(id);
+    });
+
+    document.getElementById("stageDetailFooter").addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-action]");
+      if (!btn) return;
+
+      const action = btn.dataset.action;
+      const id = btn.dataset.id;
+
+      if (action === "approve") handleApproveClick(id);
+      if (action === "reject") openRejectModal(id);
+    });
+
+    document.getElementById("stageDetailCloseBtn").addEventListener("click", closeDetailModal);
+
+    document.getElementById("stageRejectCloseBtn").addEventListener("click", closeRejectModal);
+    document.getElementById("stageRejectCancelBtn").addEventListener("click", closeRejectModal);
+    document.getElementById("stageRejectOkBtn").addEventListener("click", handleRejectSubmit);
+  }
+
+  // ====== PUBLIC API ======
+  function init() {
+    bindEvents();
+    fetchProposals();
+  }
+
+  async function render(containerId) {
+    const success = await ViewLoader.load("views/manager/stage-approval.html", containerId);
+    if (success) this.init();
+  }
+
+  return { render, init, bindEvents };
+})();

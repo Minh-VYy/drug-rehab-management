@@ -1,46 +1,111 @@
 <div class="page-header">
-    <div class="page-title-group">
-        <h2 class="page-title"><i class="fa-solid fa-forward-step"></i> Duyệt chuyển giai đoạn</h2>
-        <p class="page-subtitle">Xem xét và phê duyệt các đề xuất chuyển giai đoạn hoặc hoàn thành điều trị từ Bác sĩ.</p>
-    </div>
+  <div>
+    <h2 class="page-title">Duyệt <span class="text-highlight">chuyển giai đoạn</span> điều trị</h2>
+    <p class="page-subtitle">Xem xét đề xuất chuyển giai đoạn điều trị do bác sĩ gửi lên.</p>
+  </div>
 </div>
 
-<div class="card p-lg">
-    <div style="display:flex; flex-wrap:wrap; gap:16px; margin-bottom:24px; align-items:center; justify-content:space-between;">
-        <div style="display:flex; gap:16px; flex:1; min-width:300px;">
-            <div class="search-box" style="flex:1;">
-                <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                <input type="text" id="stage-search" class="search-input" placeholder="Tìm theo mã học viên, bác sĩ..." oninput="StageApprovalPage.applyFilter()">
-            </div>
-            <select class="form-control" id="stage-status-filter" style="width:200px;" onchange="StageApprovalPage.applyFilter()">
-                <option value="all">Tất cả trạng thái</option>
-                <option value="ChoDuyet" selected>Chờ phê duyệt</option>
-                <option value="DaDuyet">Đã phê duyệt</option>
-                <option value="TuChoi">Đã từ chối</option>
-            </select>
-        </div>
-        <button class="btn btn-primary" onclick="StageApprovalPage.refresh()">
-            <i class="fa-solid fa-arrows-rotate"></i> Làm mới
-        </button>
-    </div>
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-orange"><i class="fa-solid fa-clock"></i></div>
+    <div class="stat-value" id="statStagePending">0</div>
+    <div class="stat-label">Chờ duyệt</div>
+  </div>
 
-    <div class="table-responsive" id="stage-table">
-        <!-- JS render -->
-    </div>
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-green"><i class="fa-solid fa-circle-check"></i></div>
+    <div class="stat-value" id="statStageApproved">0</div>
+    <div class="stat-label">Đã duyệt</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-red"><i class="fa-solid fa-circle-xmark"></i></div>
+    <div class="stat-value" id="statStageRejected">0</div>
+    <div class="stat-label">Từ chối</div>
+  </div>
 </div>
 
-<!-- Modal Approval -->
-<div class="modal-overlay" id="stageModal">
-    <div class="modal-container" style="max-width:600px;">
-        <div class="modal-header">
-            <h3 class="modal-title" id="stageModalTitle">Chi tiết đề xuất</h3>
-            <button class="modal-close" onclick="Modal.close('stageModal')"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="modal-body" id="stageModalBody">
-            <!-- Rendered by JS -->
-        </div>
-        <div class="modal-footer" id="stageModalFooter">
-            <!-- Rendered by JS -->
-        </div>
+<div class="card">
+  <div class="card-header">
+    <div>
+      <span class="card-title">Danh sách đề xuất chuyển giai đoạn</span>
+      <p class="card-subtitle">Đề xuất do bác sĩ điều trị gửi lên</p>
     </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="stageSearchInput" placeholder="Tìm mã đề xuất, họ tên, mã hồ sơ..." />
+    </div>
+
+    <select id="stageStatusFilter" class="filter-select">
+      <option value="all">Tất cả trạng thái</option>
+      <option value="ChoDuyet">Chờ duyệt</option>
+      <option value="DaDuyet">Đã duyệt</option>
+      <option value="TuChoi">Từ chối</option>
+    </select>
+  </div>
+
+  <div class="table-wrapper">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Mã đề xuất</th>
+          <th>Mã hồ sơ</th>
+          <th>Họ tên người cai nghiện</th>
+          <th>Giai đoạn hiện tại</th>
+          <th>Giai đoạn đề xuất</th>
+          <th>Bác sĩ đề xuất</th>
+          <th>Ngày đề xuất</th>
+          <th>Trạng thái</th>
+          <th>Thao tác</th>
+        </tr>
+      </thead>
+      <tbody id="stageTableBody"></tbody>
+    </table>
+  </div>
+
+  <div class="table-loading" id="stageLoadingState" style="display:none;">
+    Đang tải dữ liệu...
+  </div>
+
+  <div class="table-empty" id="stageEmptyState" style="display:none;">
+    Không tìm thấy đề xuất phù hợp.
+  </div>
+</div>
+
+<div class="modal-overlay" id="stageDetailModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h3>Chi tiết đề xuất chuyển giai đoạn</h3>
+      <button class="modal-close" id="stageDetailCloseBtn"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="modal-body" id="stageDetailBody"></div>
+
+    <div class="modal-footer" id="stageDetailFooter"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="stageRejectModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Từ chối đề xuất chuyển giai đoạn</h3>
+      <button class="modal-close" id="stageRejectCloseBtn"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Lý do từ chối <span class="required">*</span></label>
+        <textarea id="stageRejectReason" class="form-control" rows="3" placeholder="Nhập lý do từ chối"></textarea>
+        <span class="form-error" id="errStageRejectReason"></span>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="stageRejectCancelBtn">Hủy</button>
+      <button class="btn btn-danger" id="stageRejectOkBtn">Xác nhận từ chối</button>
+    </div>
+  </div>
 </div>
