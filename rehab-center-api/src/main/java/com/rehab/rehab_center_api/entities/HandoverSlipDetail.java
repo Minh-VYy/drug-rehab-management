@@ -34,11 +34,16 @@ public class HandoverSlipDetail {
     @Column(name = "NgaySinh", nullable = false)
     private LocalDate dateOfBirth;
 
-    @Column(name = "QueQuan", columnDefinition = "NVARCHAR(255)", nullable = false)
-    private String hometown;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "QueQuan_MaHuyen")
+    private District hometownDistrict;
 
-    @Column(name = "NoiO_HienTai", columnDefinition = "NVARCHAR(255)", nullable = false)
-    private String currentAddress;
+    @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name = "streetAddress", column = @Column(name = "NoiO_Duong", columnDefinition = "NVARCHAR(255)")),
+        @AttributeOverride(name = "ward", column = @Column(name = "NoiO_MaXa"))
+    })
+    private Address currentAddress;
 
     @Column(name = "HoTenNguoiThan", columnDefinition = "NVARCHAR(100)", nullable = false)
     private String relativeName;

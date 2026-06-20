@@ -155,7 +155,7 @@ function fillConfirm() {
   if (confirmUser) confirmUser.textContent = document.getElementById('reg_username')?.value || '—';
 }
 
-function submitRegister() {
+async function submitRegister() {
   const agreeCheck = document.getElementById('agreeTerms');
   const a = document.getElementById('registerAlert');
   if (!a) return;
@@ -166,10 +166,34 @@ function submitRegister() {
     return;
   }
   
-  a.className = 'alert alert-success show';
-  a.innerHTML = '<i class="fa-solid fa-circle-check"></i> Đăng ký thành công! Tài khoản đang chờ xét duyệt. Bạn sẽ nhận email thông báo sớm.';
-  
-  document.querySelectorAll('.btn-green, .btn-secondary').forEach(b => {
-    b.disabled = true;
-  });
+  const payload = {
+    fullName: document.getElementById('reg_name')?.value?.trim(),
+    phoneNumber: document.getElementById('reg_phone')?.value?.trim(),
+    email: document.getElementById('reg_email')?.value?.trim(),
+    username: document.getElementById('reg_username')?.value?.trim(),
+    password: document.getElementById('reg_password')?.value,
+    roleName: 'NGUOI_THAN'
+  };
+
+  try {
+    document.querySelectorAll('.btn-green, .btn-secondary').forEach(b => {
+      b.disabled = true;
+    });
+
+    await Api.post('/auth/register', payload);
+
+    a.className = 'alert alert-success show';
+    a.innerHTML = '<i class="fa-solid fa-circle-check"></i> Đăng ký thành công! Tài khoản đang chờ xét duyệt. Sẽ tự động chuyển về trang Đăng nhập...';
+    
+    // Tự động chuyển hướng về trang login sau 2 giây
+    setTimeout(() => {
+        window.location.href = 'login.html';
+    }, 2000);
+  } catch (err) {
+    a.className = 'alert alert-danger show';
+    a.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> ${err.message || 'Đăng ký thất bại, vui lòng thử lại.'}`;
+    document.querySelectorAll('.btn-green, .btn-secondary').forEach(b => {
+      b.disabled = false;
+    });
+  }
 }

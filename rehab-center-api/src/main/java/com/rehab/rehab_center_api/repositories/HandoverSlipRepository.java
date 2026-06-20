@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.List;
 
 @Repository
 public interface HandoverSlipRepository extends JpaRepository<HandoverSlip, String> {
@@ -30,4 +31,9 @@ public interface HandoverSlipRepository extends JpaRepository<HandoverSlip, Stri
             HandoverSlipStatus status,
             Pageable pageable
     );
+
+    @EntityGraph(attributePaths = {"subjects", "policeOfficer"})
+    List<HandoverSlip> findByStatusInOrderBySubmittedAtDesc(List<HandoverSlipStatus> statuses);
+
+    long countByStatus(HandoverSlipStatus status);
 }

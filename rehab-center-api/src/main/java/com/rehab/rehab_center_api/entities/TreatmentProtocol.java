@@ -1,5 +1,6 @@
 package com.rehab.rehab_center_api.entities;
 
+import com.rehab.rehab_center_api.converters.DrugTypeConverter;
 import com.rehab.rehab_center_api.enums.DrugType;
 import com.rehab.rehab_center_api.enums.TreatmentProtocolOverallStatus;
 import jakarta.persistence.*;
@@ -30,7 +31,7 @@ public class TreatmentProtocol {
     @JoinColumn(name = "MaBacSi", nullable = false)
     private Staff doctor;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = DrugTypeConverter.class)
     @Column(name = "LoaiMaTuy", columnDefinition = "NVARCHAR(50)")
     private DrugType drugType;
 

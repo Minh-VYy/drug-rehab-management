@@ -7,6 +7,7 @@ import com.rehab.rehab_center_api.dto.request.UpdateHandoverSlipRequest;
 import com.rehab.rehab_center_api.dto.response.HandoverSlipResponse;
 import com.rehab.rehab_center_api.dto.response.HandoverSlipSummaryResponse;
 import com.rehab.rehab_center_api.dto.response.HandoverSubjectResponse;
+import com.rehab.rehab_center_api.entities.Address;
 import com.rehab.rehab_center_api.entities.PoliceRecordOfficer;
 import com.rehab.rehab_center_api.entities.HandoverSlip;
 import com.rehab.rehab_center_api.entities.HandoverSlipDetail;
@@ -229,8 +230,9 @@ public class HandoverSlipServiceImpl implements HandoverSlipService {
                     .fullName(subjectRequest.getFullName().trim())
                     .identityNumber(subjectRequest.getIdentityNumber().trim())
                     .dateOfBirth(subjectRequest.getDateOfBirth())
-                    .hometown(subjectRequest.getHometown().trim())
-                    .currentAddress(subjectRequest.getCurrentAddress().trim())
+                    .currentAddress(Address.builder()
+                            .streetAddress(subjectRequest.getCurrentAddress().trim())
+                            .build())
                     .relativeName(subjectRequest.getRelativeName().trim())
                     .relativePhone(subjectRequest.getRelativePhone().trim())
                     .relativeRelationship(subjectRequest.getRelativeRelationship().trim())

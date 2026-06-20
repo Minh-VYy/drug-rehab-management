@@ -1,0 +1,269 @@
+<div class="page-header">
+  <div>
+    <h1>Quản lý <span>danh mục thuốc</span></h1>
+    <p>Quản lý danh sách thuốc sử dụng trong điều trị cai nghiện ma túy</p>
+  </div>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-blue">
+      <i class="fa-solid fa-capsules"></i>
+    </div>
+    <div class="stat-value" id="statTotalMeds">0</div>
+    <div class="stat-label">Tổng số thuốc</div>
+    <div class="stat-orb orb-blue"></div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-green">
+      <i class="fa-solid fa-circle-check"></i>
+    </div>
+    <div class="stat-value" id="statActiveMeds">0</div>
+    <div class="stat-label">Đang sử dụng</div>
+    <div class="stat-orb orb-green"></div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-red">
+      <i class="fa-solid fa-circle-pause"></i>
+    </div>
+    <div class="stat-value" id="statInactiveMeds">0</div>
+    <div class="stat-label">Ngừng sử dụng</div>
+    <div class="stat-orb orb-red"></div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-orange">
+      <i class="fa-solid fa-flask"></i>
+    </div>
+    <div class="stat-value" id="statCategories">0</div>
+    <div class="stat-label">Nhóm thuốc</div>
+    <div class="stat-orb orb-orange"></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div>
+      <div class="card-title">
+        <div class="card-title-icon">
+          <i class="fa-solid fa-pills"></i>
+        </div>
+        Danh sách thuốc
+      </div>
+      <p class="card-header-meta">Danh mục thuốc được phê duyệt sử dụng tại trung tâm</p>
+    </div>
+    <button class="btn btn-primary" id="btnAddMedicine">
+      <i class="fa-solid fa-plus"></i> Thêm thuốc mới
+    </button>
+  </div>
+
+  <div class="card-body">
+    <div class="toolbar">
+      <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+        <input type="text" id="medicineSearchInput" placeholder="Tìm tên thuốc, mã thuốc, hoạt chất..." />
+      </div>
+
+      <div class="filter-group">
+        <select id="medicineStatusFilter" class="filter-select">
+          <option value="all">Tất cả trạng thái</option>
+          <option value="active">Đang sử dụng</option>
+          <option value="inactive">Ngừng sử dụng</option>
+        </select>
+
+        <select id="medicineCategoryFilter" class="filter-select">
+          <option value="all">Tất cả nhóm thuốc</option>
+          <option value="detox">Giải độc</option>
+          <option value="psychiatric">Tâm thần</option>
+          <option value="pain">Giảm đau</option>
+          <option value="vitamin">Vitamin & Bổ sung</option>
+          <option value="other">Khác</option>
+        </select>
+
+        <button class="btn btn-outline btn-sm" id="btnExport">
+          <i class="fa-solid fa-download"></i> Xuất Excel
+        </button>
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Mã thuốc</th>
+            <th>Tên thuốc</th>
+            <th>Hoạt chất</th>
+            <th>Nhóm thuốc</th>
+            <th>Đơn vị</th>
+            <th>Liều lượng</th>
+            <th>Đường dùng</th>
+            <th>Trạng thái</th>
+            <th>Thao tác</th>
+          </tr>
+        </thead>
+        <tbody id="medicineTableBody"></tbody>
+      </table>
+    </div>
+
+    <div class="table-empty" id="medicineEmptyState"
+      style="display:none; padding:3rem; text-align:center; color:var(--text-muted);">
+      <i class="fa-solid fa-inbox" style="font-size:3rem; opacity:0.3; display:block; margin-bottom:1rem;"></i>
+      Không tìm thấy thuốc phù hợp.
+    </div>
+  </div>
+</div>
+
+<!-- Modal Chi tiết thuốc -->
+<div class="modal-overlay" id="medicineDetailModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div class="modal-header-info">
+        <div class="modal-icon modal-icon-blue">
+          <i class="fa-solid fa-eye"></i>
+        </div>
+        <div>
+          <div class="modal-title">Chi tiết thuốc</div>
+          <div class="modal-subtitle">Thông tin chi tiết về thuốc</div>
+        </div>
+      </div>
+      <button class="modal-close" id="detailModalCloseBtn">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="modal-body" id="medicineDetailBody"></div>
+
+    <div class="modal-footer">
+      <button class="btn btn-outline" data-action="close-detail">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Thêm/Sửa thuốc -->
+<div class="modal-overlay" id="medicineFormModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div class="modal-header-info">
+        <div class="modal-icon modal-icon-green" id="formModalIcon">
+          <i class="fa-solid fa-plus"></i>
+        </div>
+        <div>
+          <div class="modal-title" id="formModalTitle">Thêm thuốc mới</div>
+          <div class="modal-subtitle">Điền đầy đủ thông tin thuốc</div>
+        </div>
+      </div>
+      <button class="modal-close" id="formModalCloseBtn">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <form id="medicineForm">
+        <input type="hidden" id="formMedicineId" />
+
+        <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:16px;">
+          <div class="form-group">
+            <label class="form-label">Mã thuốc <span style="color:var(--danger)">*</span></label>
+            <input type="text" id="formMedicineCode" class="form-control" placeholder="VD: MED001" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Tên thuốc <span style="color:var(--danger)">*</span></label>
+            <input type="text" id="formMedicineName" class="form-control" placeholder="VD: Methadone" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Hoạt chất <span style="color:var(--danger)">*</span></label>
+            <input type="text" id="formActiveIngredient" class="form-control" placeholder="VD: Methadone HCl"
+              required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Nhóm thuốc <span style="color:var(--danger)">*</span></label>
+            <select id="formCategory" class="form-control" required>
+              <option value="">-- Chọn nhóm thuốc --</option>
+              <option value="detox">Giải độc</option>
+              <option value="psychiatric">Tâm thần</option>
+              <option value="pain">Giảm đau</option>
+              <option value="vitamin">Vitamin & Bổ sung</option>
+              <option value="other">Khác</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Đơn vị <span style="color:var(--danger)">*</span></label>
+            <select id="formUnit" class="form-control" required>
+              <option value="">-- Chọn đơn vị --</option>
+              <option value="Viên">Viên</option>
+              <option value="Ống">Ống</option>
+              <option value="Chai">Chai</option>
+              <option value="Lọ">Lọ</option>
+              <option value="Tuýp">Tuýp</option>
+              <option value="Gói">Gói</option>
+              <option value="ml">ml</option>
+              <option value="mg">mg</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Liều lượng chuẩn</label>
+            <input type="text" id="formDosage" class="form-control" placeholder="VD: 10mg" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Đường dùng <span style="color:var(--danger)">*</span></label>
+            <select id="formRoute" class="form-control" required>
+              <option value="">-- Chọn đường dùng --</option>
+              <option value="Uống">Uống</option>
+              <option value="Tiêm">Tiêm</option>
+              <option value="Bôi">Bôi</option>
+              <option value="Ngậm">Ngậm</option>
+              <option value="Nhỏ">Nhỏ</option>
+              <option value="Xịt">Xịt</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Trạng thái</label>
+            <select id="formStatus" class="form-control">
+              <option value="active">Đang sử dụng</option>
+              <option value="inactive">Ngừng sử dụng</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top:8px;">
+          <label class="form-label">Chỉ định</label>
+          <textarea id="formIndications" class="form-control" rows="3"
+            placeholder="Mô tả chỉ định sử dụng thuốc..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Chống chỉ định</label>
+          <textarea id="formContraindications" class="form-control" rows="2"
+            placeholder="Các trường hợp không nên dùng thuốc..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Tác dụng phụ</label>
+          <textarea id="formSideEffects" class="form-control" rows="2"
+            placeholder="Các tác dụng phụ có thể gặp..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Ghi chú</label>
+          <textarea id="formNotes" class="form-control" rows="2" placeholder="Ghi chú thêm..."></textarea>
+        </div>
+      </form>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-outline" data-action="close-form">Hủy</button>
+      <button class="btn btn-primary" id="btnSaveMedicine">
+        <i class="fa-solid fa-floppy-disk"></i> Lưu thuốc
+      </button>
+    </div>
+  </div>
+</div>

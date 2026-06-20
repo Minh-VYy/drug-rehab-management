@@ -1,118 +1,26 @@
-/* =============================================
-   TRUNG TÂM CAI NGHIỆN MA TÚY ĐÀ NẴNG
-   main.js — Sample data, UI utilities, role switching
-   ============================================= */
 
-/* ---- Sample Data ---- */
-const SampleData = {
-  users: [
-    { id: 'U001', username: 'admin', name: 'Nguyễn Văn An', phone: '0901234567', email: 'admin@rehab.vn', role: 'admin', status: 'active' },
-    { id: 'U002', username: 'bs.mai', name: 'BS. Trần Thị Mai', phone: '0902345678', email: 'mai@rehab.vn', role: 'doctor', status: 'active' },
-    { id: 'U003', username: 'nv.hung', name: 'NV. Lê Văn Hùng', phone: '0903456789', email: 'hung@rehab.vn', role: 'staff', status: 'active' },
-    { id: 'U004', username: 'ql.phuong', name: 'QL. Phạm Thị Phương', phone: '0904567890', email: 'phuong@rehab.vn', role: 'manager', status: 'active' },
-    { id: 'U005', username: 'ld.duc', name: 'GĐ. Hoàng Văn Đức', phone: '0905678901', email: 'duc@rehab.vn', role: 'director', status: 'active' },
-    { id: 'U006', username: 'ca.nam', name: 'CA. Đặng Văn Nam', phone: '0906789012', email: 'nam@policedn.vn', role: 'police', status: 'active' },
-    { id: 'U007', username: 'nt.lan', name: 'Nguyễn Thị Lan', phone: '0907890123', email: 'lan@gmail.com', role: 'family', status: 'active' },
-    { id: 'U008', username: 'nt.hanh', name: 'Lê Thị Hạnh', phone: '0908901234', email: 'hanh@gmail.com', role: 'family', status: 'inactive' },
-  ],
-
-  patients: [
-    { id: 'HV001', name: 'Trần Văn Bình', cccd: '204890123', dob: '1990-03-15', entryDate: '2024-01-10', stage: 'Phục hồi', status: 'Đang điều trị', doctor: 'BS. Trần Thị Mai', source: 'Tự nguyện' },
-    { id: 'HV002', name: 'Lê Quang Cường', cccd: '204890456', dob: '1987-07-22', entryDate: '2024-02-05', stage: 'Cắt cơn', status: 'Đang điều trị', doctor: 'BS. Trần Thị Mai', source: 'Bắt buộc' },
-    { id: 'HV003', name: 'Nguyễn Đức Hải', cccd: '204890789', dob: '1993-11-08', entryDate: '2024-03-20', stage: 'Tiếp nhận', status: 'Đang điều trị', doctor: 'Chưa phân công', source: 'Tự nguyện' },
-    { id: 'HV004', name: 'Phạm Văn Tùng', cccd: '204891012', dob: '1985-05-30', entryDate: '2023-11-12', stage: 'Phục hồi', status: 'Hoàn thành', doctor: 'BS. Trần Thị Mai', source: 'Bắt buộc' },
-    { id: 'HV005', name: 'Hoàng Minh Khoa', cccd: '204891345', dob: '1995-09-17', entryDate: '2024-04-01', stage: 'Cắt cơn', status: 'Đang điều trị', doctor: 'BS. Trần Thị Mai', source: 'Tự nguyện' },
-  ],
-
-  handoverFiles: [
-    { id: 'HB001', patientName: 'Lê Quang Cường', agency: 'CA Q.Hải Châu', submitDate: '2024-02-01', status: 'Đã tiếp nhận' },
-    { id: 'HB002', patientName: 'Võ Văn Dũng', agency: 'CA Q.Thanh Khê', submitDate: '2024-04-10', status: 'Chờ duyệt' },
-    { id: 'HB003', patientName: 'Lý Thành Đạt', agency: 'CA Q.Liên Chiểu', submitDate: '2024-04-12', status: 'Từ chối' },
-    { id: 'HB004', patientName: 'Đỗ Minh Hậu', agency: 'CA H.Hòa Vang', submitDate: '2024-04-15', status: 'Chờ duyệt' },
-  ],
-
-  voluntaryForms: [
-    { id: 'DN001', patientName: 'Trần Văn Bình', submitDate: '2024-01-05', relationship: 'Bố', status: 'Đã tiếp nhận' },
-    { id: 'DN002', patientName: 'Nguyễn Đức Hải', submitDate: '2024-03-15', relationship: 'Anh', status: 'Chờ duyệt' },
-    { id: 'DN003', patientName: 'Bùi Văn Thắng', submitDate: '2024-04-10', relationship: 'Mẹ', status: 'Từ chối' },
-  ],
-
-  visits: [
-    { id: 'TG001', patient: 'Trần Văn Bình', visitor: 'Nguyễn Thị Lan', visitDate: '2024-04-20', shift: 'Sáng', status: 'Đồng ý' },
-    { id: 'TG002', patient: 'Lê Quang Cường', visitor: 'Lê Thị Hạnh', visitDate: '2024-04-22', shift: 'Chiều', status: 'Chờ duyệt' },
-    { id: 'TG003', patient: 'Trần Văn Bình', visitor: 'Nguyễn Thị Lan', visitDate: '2024-03-18', shift: 'Sáng', status: 'Hoàn thành' },
-    { id: 'TG004', patient: 'Hoàng Minh Khoa', visitor: 'Hoàng Thị Hoa', visitDate: '2024-04-25', shift: 'Sáng', status: 'Chờ duyệt' },
-  ],
-
-  medicalRecords: [
-    { id: 'BA001', patientId: 'HV001', patientName: 'Trần Văn Bình', doctor: 'BS. Trần Thị Mai', history: 'Heroin 3 năm', allergy: 'Không', height: 170, weight: 63, created: '2024-01-10' },
-    { id: 'BA002', patientId: 'HV002', patientName: 'Lê Quang Cường', doctor: 'BS. Trần Thị Mai', history: 'Ma túy đá 2 năm', allergy: 'Penicillin', height: 165, weight: 55, created: '2024-02-05' },
-    { id: 'BA003', patientId: 'HV005', patientName: 'Hoàng Minh Khoa', doctor: 'BS. Trần Thị Mai', history: 'Cần sa 1 năm', allergy: 'Không', height: 172, weight: 68, created: '2024-04-01' },
-  ],
-
-  treatmentPlans: [
-    { id: 'PD001', patientName: 'Trần Văn Bình', stage: 'Phục hồi', startDate: '2024-02-01', endDate: '2024-06-30', status: 'Đang áp dụng' },
-    { id: 'PD002', patientName: 'Lê Quang Cường', stage: 'Cắt cơn', startDate: '2024-02-10', endDate: '2024-03-10', status: 'Chờ phê duyệt' },
-    { id: 'PD003', patientName: 'Hoàng Minh Khoa', stage: 'Cắt cơn', startDate: '2024-04-05', endDate: '2024-05-05', status: 'Đã phê duyệt' },
-  ],
-
-  proposals: [
-    { id: 'DX001', patientName: 'Trần Văn Bình', doctor: 'BS. Trần Thị Mai', type: 'Chuyển giai đoạn', fromStage: 'Cắt cơn', toStage: 'Phục hồi', date: '2024-02-01', status: 'Đã duyệt' },
-    { id: 'DX002', patientName: 'Hoàng Minh Khoa', doctor: 'BS. Trần Thị Mai', type: 'Chuyển giai đoạn', fromStage: 'Tiếp nhận', toStage: 'Cắt cơn', date: '2024-04-05', status: 'Chờ duyệt' },
-    { id: 'DX003', patientName: 'Phạm Văn Tùng', doctor: 'BS. Trần Thị Mai', type: 'Hoàn thành', fromStage: 'Phục hồi', toStage: 'Hoàn thành', date: '2024-04-10', status: 'Chờ duyệt' },
-  ],
-
-  notifications: [
-    { id: 'TB001', title: 'Lịch thăm gặp tuần tới', target: 'Người thân', date: '2024-04-14', status: 'Hiển thị' },
-    { id: 'TB002', title: 'Thay đổi lịch sinh hoạt', target: 'Nội bộ', date: '2024-04-12', status: 'Hiển thị' },
-    { id: 'TB003', title: 'Hướng dẫn quy trình mới', target: 'Tất cả', date: '2024-04-10', status: 'Ẩn' },
-  ],
-
-  supportRequests: [
-    { id: 'HT001', requester: 'Nguyễn Thị Lan', title: 'Hỏi về lịch thăm gặp', type: 'Thông tin', date: '2024-04-14', status: 'Chờ phản hồi' },
-    { id: 'HT002', requester: 'Lê Thị Hạnh', title: 'Đề nghị hỗ trợ thuốc', type: 'Y tế', date: '2024-04-13', status: 'Đã phản hồi' },
-  ],
-
-  medicines: [
-    { id: 'TH001', name: 'Methadone', unit: 'ml', qty: 500, note: 'Bảo quản nhiệt độ thường' },
-    { id: 'TH002', name: 'Diazepam', unit: 'viên', qty: 200, note: 'Kiểm soát đặc biệt' },
-    { id: 'TH003', name: 'Vitamin B1', unit: 'viên', qty: 1000, note: '' },
-    { id: 'TH004', name: 'Paracetamol', unit: 'viên', qty: 800, note: '' },
-  ],
-
-  activities: [
-    { id: 'HD001', name: 'Thể dục buổi sáng', type: 'Thể chất', time: '06:00 - 07:00', desc: 'Tập thể dục nhóm ngoài sân' },
-    { id: 'HD002', name: 'Sinh hoạt nhóm', type: 'Tâm lý', time: '09:00 - 10:30', desc: 'Chia sẻ kinh nghiệm, hỗ trợ nhau' },
-    { id: 'HD003', name: 'Học nghề may', type: 'Dạy nghề', time: '14:00 - 16:00', desc: 'Lớp học nghề may mặc' },
-  ],
-
-  logs: [
-    { time: '2024-04-15 08:32', user: 'bs.mai', role: 'Bác sĩ', action: 'Cập nhật bệnh án BA001', ip: '192.168.1.10', status: 'Thành công' },
-    { time: '2024-04-15 08:15', user: 'nv.hung', role: 'Nhân viên', action: 'Duyệt thăm gặp TG001', ip: '192.168.1.11', status: 'Thành công' },
-    { time: '2024-04-15 07:55', user: 'ql.phuong', role: 'Quản lý', action: 'Duyệt phác đồ PD003', ip: '192.168.1.12', status: 'Thành công' },
-    { time: '2024-04-14 16:40', user: 'ca.nam', role: 'Công an', action: 'Gửi hồ sơ HB004', ip: '10.0.0.5', status: 'Thành công' },
-    { time: '2024-04-14 14:22', user: 'nt.lan', role: 'Người thân', action: 'Đăng ký thăm gặp TG004', ip: '27.64.x.x', status: 'Thành công' },
-    { time: '2024-04-14 10:05', user: 'unknown', role: '-', action: 'Đăng nhập thất bại', ip: '103.x.x.x', status: 'Thất bại' },
-  ]
-};
 
 /* ---- Role configuration ---- */
 const RoleConfig = {
-  admin: { label: 'Quản trị hệ thống', icon: 'fa-shield-halved', portal: 'portals/admin.html' },
-  doctor: { label: 'Bác sĩ phụ trách', icon: 'fa-user-doctor', portal: 'portals/doctor.html' },
-  staff: { label: 'Cán bộ trung tâm', icon: 'fa-id-badge', portal: 'portals/staff.html' },
-  manager: { label: 'Cán bộ quản lý', icon: 'fa-chart-pie', portal: 'portals/manager.html' },
-  director: { label: 'Lãnh đạo trung tâm', icon: 'fa-building-user', portal: 'portals/director.html' },
-  police: { label: 'Cán bộ quản lý hồ sơ (CA)', icon: 'fa-badge-check', portal: 'portals/police.html' },
-  family: { label: 'Người thân', icon: 'fa-heart', portal: 'portals/family.html' },
+  admin: { label: 'Quản trị hệ thống', icon: 'fa-shield-halved', portal: 'dashboard.html' },
+  doctor: { label: 'Bác sĩ phụ trách', icon: 'fa-user-doctor', portal: 'dashboard.html' },
+  staff: { label: 'Cán bộ trung tâm', icon: 'fa-id-badge', portal: 'dashboard.html' },
+  manager: { label: 'Cán bộ quản lý', icon: 'fa-chart-pie', portal: 'dashboard.html' },
+  director: { label: 'Lãnh đạo trung tâm', icon: 'fa-building-user', portal: 'dashboard.html' },
+  police: { label: 'Cán bộ quản lý hồ sơ (CA)', icon: 'fa-badge-check', portal: 'dashboard.html' },
+  family: { label: 'Người thân', icon: 'fa-heart', portal: 'dashboard.html' },
 };
 
 /* ---- Fake login / role switch ---- */
-function fakeLogin(role, name) {
-  const cfg = RoleConfig[role];
+function fakeLogin(roleOrUsername, nameOrPassword, requestedRole) {
+  if (typeof Auth !== 'undefined' && (requestedRole || nameOrPassword === '123456')) {
+    return Auth.fakeLogin(roleOrUsername, nameOrPassword, requestedRole);
+  }
+
+  const cfg = RoleConfig[roleOrUsername];
   if (!cfg) return;
-  sessionStorage.setItem('auth_role', role);
-  sessionStorage.setItem('auth_name', name || cfg.label);
+  sessionStorage.setItem('auth_role', roleOrUsername);
+  sessionStorage.setItem('auth_name', nameOrPassword || cfg.label);
   window.location.href = cfg.portal;
 }
 
@@ -123,15 +31,24 @@ function switchRole(role) {
 }
 
 function getCurrentUser() {
+  if (typeof Auth !== 'undefined' && Auth.getCurrentUser()) {
+    return Auth.getCurrentUser();
+  }
   return {
     role: sessionStorage.getItem('auth_role') || 'staff',
     name: sessionStorage.getItem('auth_name') || 'Người dùng',
+    fullName: sessionStorage.getItem('auth_name') || 'Người dùng',
+    username: sessionStorage.getItem('auth_user') || '',
   };
 }
 
 function logout() {
+  if (typeof Auth !== 'undefined') {
+    Auth.logout();
+    return;
+  }
   sessionStorage.clear();
-  window.location.href = '../login.html';
+  window.location.href = 'login.html';
 }
 
 /* ---- Toast notifications ---- */
@@ -396,12 +313,210 @@ document.addEventListener('DOMContentLoaded', () => {
   initSidebarToggle();
   initTabs();
 
-  // Topbar user info
+  if (document.getElementById('app-layout')) {
+    initDashboardApp();
+    return;
+  }
+
+  // Public page user info placeholders
   const user = getCurrentUser();
+  const displayName = typeof Auth !== 'undefined'
+    ? Auth.getDisplayName(user)
+    : (user.name || user.fullName || 'Người dùng');
   const avatarEls = document.querySelectorAll('.topbar-avatar');
   avatarEls.forEach(el => {
-    el.textContent = user.name.split(' ').map(w => w[0]).slice(-2).join('').toUpperCase();
+    el.textContent = displayName.split(' ').map(w => w[0]).slice(-2).join('').toUpperCase();
   });
   const nameEls = document.querySelectorAll('.topbar-username');
-  nameEls.forEach(el => el.textContent = user.name);
+  nameEls.forEach(el => el.textContent = displayName);
 });
+
+function initDashboardApp() {
+  if (typeof Auth === 'undefined' || !Auth.isAuthenticated()) {
+    window.location.href = 'login.html';
+    return;
+  }
+
+  const user = Auth.getCurrentUser();
+  Sidebar.render(user);
+  Topbar.render(user);
+  registerAppRoutes();
+  Router.init();
+
+  if (typeof initParticleCanvas === 'function' && document.getElementById('dashboardCanvas')) {
+    initParticleCanvas('dashboardCanvas', 'body', {
+      color: 'rgba(21, 94, 239,', // Primary blue
+      countFactor: 30,
+      speed: 0.15,
+      maxDistance: 110
+    });
+  }
+}
+
+
+function registerAppRoutes() {
+  Router.addRoute('/', renderRoleDashboard);
+
+  // Common routes
+  Router.addRoute('/dashboard', () => {
+    if (typeof DashboardHomePage !== 'undefined') DashboardHomePage.render('main-content');
+  });
+  Router.addRoute('/profile', () => {
+    if (typeof ProfilePage !== 'undefined') ProfilePage.render('main-content');
+  });
+  Router.addRoute('/notifications', () => {
+    if (typeof NotificationPage !== 'undefined') NotificationPage.render('main-content');
+  });
+  Router.addRoute('/forbidden', () => {
+    if (typeof ForbiddenPage !== 'undefined') ForbiddenPage.render('main-content');
+  });
+
+  // Doctor routes
+  Router.addRoute('/medical-records', () => {
+    if (typeof MedicalRecordPage !== 'undefined') {
+      MedicalRecordPage.render('main-content');
+    }
+  });
+
+  // Manager routes
+  Router.addRoute('/treatment-approval', () => {
+    if (typeof TreatmentApprovalPage !== 'undefined') {
+      TreatmentApprovalPage.render('main-content');
+    }
+  });
+
+  // Admin routes
+  Router.addRoute('/medicines', () => {
+    if (typeof MedicineCategoryPage !== 'undefined') {
+      MedicineCategoryPage.render('main-content');
+    }
+  });
+
+  Router.addRoute('/users', () => {
+    if (typeof UserManagementPage !== 'undefined') {
+      UserManagementPage.render('main-content');
+    }
+  });
+
+  Router.addRoute('/roles', () => {
+    if (typeof RoleManagementPage !== 'undefined') {
+      RoleManagementPage.render('main-content');
+    }
+  });
+
+  Router.addRoute('/system-logs', () => {
+    if (typeof SystemLogPage !== 'undefined') {
+      SystemLogPage.render('main-content');
+    }
+  });
+
+  // Leader routes
+  Router.addRoute('/reports', () => {
+    if (typeof LeaderReportPage !== 'undefined') {
+      LeaderReportPage.render('main-content');
+    }
+  });
+
+  Router.addRoute('/approvals-receive', () => {
+    if (typeof IntakeApprovalPage !== 'undefined') {
+      IntakeApprovalPage.render('main-content');
+    }
+  });
+
+  Router.addRoute('/approvals-complete', () => {
+    if (typeof CompletionApprovalPage !== 'undefined') {
+      CompletionApprovalPage.render('main-content');
+    }
+  });
+
+  // Police routes
+  Router.addRoute('/transfer', () => {
+    if (typeof HandoverCreatePage !== 'undefined') {
+      HandoverCreatePage.render('main-content');
+    }
+  });
+
+  // Staff routes
+  Router.addRoute('/receive', () => {
+    if (typeof IntakeConfirmationPage !== 'undefined') {
+      IntakeConfirmationPage.render('main-content');
+    }
+  });
+
+  Router.addRoute('/patients', () => {
+    if (typeof PatientManagementPage !== 'undefined') {
+      PatientManagementPage.render('main-content');
+    }
+  });
+
+  Router.addRoute('/visits', () => {
+    if (typeof VisitApprovalPage !== 'undefined') {
+      VisitApprovalPage.render('main-content');
+    }
+  });
+
+  Router.addRoute('/activities', () => {
+    if (typeof ActivitySchedulePage !== 'undefined') {
+      ActivitySchedulePage.render('main-content');
+    }
+  });
+
+  Router.addRoute('/attendance', () => {
+    if (typeof AttendancePage !== 'undefined') {
+      AttendancePage.render('main-content');
+    }
+  });
+}
+
+function renderRoleDashboard() {
+  const user = Auth.getCurrentUser();
+
+  if (user.role === ROLES.DOCTOR && typeof DoctorDashboardPage !== 'undefined') {
+    DoctorDashboardPage.render('main-content');
+    return;
+  }
+
+  if (user.role === ROLES.ADMIN && typeof AdminDashboardPage !== 'undefined') {
+    AdminDashboardPage.render('main-content');
+    return;
+  }
+
+  if (user.role === ROLES.FAMILY && typeof FamilyDashboardPage !== 'undefined') {
+    FamilyDashboardPage.render('main-content');
+    return;
+  }
+
+  if (user.role === ROLES.MANAGER && typeof ManagerDashboardPage !== 'undefined') {
+    ManagerDashboardPage.render('main-content');
+    return;
+  }
+
+  if (user.role === ROLES.DIRECTOR && typeof LeaderDashboardPage !== 'undefined') {
+    LeaderDashboardPage.render('main-content');
+    return;
+  }
+
+  if (user.role === ROLES.STAFF && typeof StaffDashboardPage !== 'undefined') {
+    StaffDashboardPage.render('main-content');
+    return;
+  }
+
+  // Fallback
+  const container = document.getElementById('main-content');
+  if (container) {
+    container.innerHTML = `
+      <div class="card" style="margin:1rem;">
+        <div class="card-body" style="text-align:center; padding:3rem;">
+          <h2 style="font-size:2.5rem; margin-bottom:1rem; color:var(--primary-light);">
+            <i class="fa-solid fa-person-digging"></i>
+          </h2>
+          <h3 style="color:var(--text-primary); margin-bottom:8px;">Dashboard đang được nâng cấp</h3>
+          <p style="color:var(--text-muted);">
+            Giao diện cho vai trò <strong>${user.roleLabel || user.role}</strong>
+            đang trong quá trình phát triển.
+          </p>
+        </div>
+      </div>
+    `;
+  }
+}

@@ -1,261 +1,286 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Hệ thống Quản lý Trung tâm Cai nghiện Ma túy TP Đà Nẵng - Nền tảng số hóa toàn diện" />
+  <meta name="description"
+    content="Hệ thống Quản lý Trung tâm Cai nghiện Ma túy TP Đà Nẵng - Nền tảng số hóa toàn diện" />
   <title>RehabCare Đà Nẵng — Hệ thống Quản lý Trung tâm Cai nghiện</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="css/public-base.css" />
 
   <link rel="stylesheet" href="css/public-index.css" />
 </head>
+
 <body>
 
-<!-- ======================== NAVBAR ======================== -->
-<nav class="navbar" id="navbar">
-  <div class="nav-inner">
-    <a href="index.html" class="nav-logo">
-      <img src="assets/images/logo.png" alt="RehabCare Logo" />
-      <div class="nav-logo-text">
-        <strong>TT Cai nghiện MT Đà Nẵng</strong>
-        <small>Cơ sở Quản lý &amp; Điều trị</small>
-      </div>
-    </a>
-    <div class="nav-links">
-      <a href="#features" class="nav-link">Chức năng</a>
-      <a href="#process"  class="nav-link">Quy trình</a>
-      <a href="#contact"  class="nav-link">Liên hệ</a>
-    </div>
-    <div class="nav-cta">
-      <a href="login.html"    class="btn btn-ghost btn-sm"><i class="fa-solid fa-right-to-bracket"></i> Đăng nhập</a>
-      <a href="register.html" class="btn btn-primary btn-sm"><i class="fa-solid fa-user-plus"></i> Đăng ký</a>
-    </div>
-  </div>
-</nav>
-
-<!-- ======================== HERO ======================== -->
-<section class="hero" id="hero">
-  <canvas id="particleCanvas"></canvas>
-  <div class="hero-grid"></div>
-  <div class="hero-orb orb-1"></div>
-  <div class="hero-orb orb-2"></div>
-  <div class="hero-orb orb-3"></div>
-
-  <!-- Floating ambient cards -->
-  <div class="float-card float-card-1">
-    <div class="float-card-icon" style="background: rgba(74,222,128,.2); color:#4ade80;"><i class="fa-solid fa-user-check"></i></div>
-    <div class="float-card-text">
-      <strong>480+ học viên</strong>
-      <span>Đã điều trị thành công</span>
-    </div>
-  </div>
-  <div class="float-card float-card-2">
-    <div class="float-card-icon" style="background: rgba(56,189,248,.2); color:#38bdf8;"><i class="fa-solid fa-shield-halved"></i></div>
-    <div class="float-card-text">
-      <strong>Bảo mật 8 cấp</strong>
-      <span>Phân quyền chặt chẽ</span>
-    </div>
-  </div>
-
-  <div class="hero-content">
-    <!-- Live badge -->
-    <div class="hero-badge">
-      <span class="dot"></span>
-      Hệ thống quản lý chính thức — TP Đà Nẵng
-    </div>
-
-    <!-- Logo in white container (not inverted) -->
-    <div class="hero-logo">
-      <div class="hero-logo-wrap">
-        <img src="assets/images/logo.png" alt="RehabCare Đà Nẵng" />
-      </div>
-    </div>
-
-    <h1>
-      Hệ thống Quản lý<br/>
-      <span>Trung tâm Cai nghiện Ma túy</span><br/>
-      Thành phố Đà Nẵng
-    </h1>
-
-    <p class="hero-sub">
-      Nền tảng số hóa toàn diện — quản lý hồ sơ, theo dõi điều trị, hỗ trợ người thân và cán bộ trung tâm một cách hiệu quả, minh bạch và nhân văn.
-    </p>
-
-    <div class="hero-actions">
-      <a href="login.html"    class="btn btn-white btn-lg"><i class="fa-solid fa-right-to-bracket"></i> Đăng nhập hệ thống</a>
-      <a href="register.html" class="btn btn-glass btn-lg"><i class="fa-solid fa-user-plus"></i> Đăng ký tài khoản</a>
-      <a href="#process"      class="btn btn-glass btn-lg"><i class="fa-solid fa-circle-info"></i> Quy trình tiếp nhận</a>
-    </div>
-
-    <div class="hero-trust">
-      <div class="trust-item"><i class="fa-solid fa-circle-check"></i> Bảo mật theo tiêu chuẩn y tế</div>
-      <div class="trust-item"><i class="fa-solid fa-circle-check"></i> Phân quyền 8 cấp độ</div>
-      <div class="trust-item"><i class="fa-solid fa-circle-check"></i> Kết nối Công an — Trung tâm</div>
-    </div>
-  </div>
-
-  <div class="scroll-hint" onclick="document.getElementById('stats').scrollIntoView({behavior:'smooth'})">
-    <i class="fa-solid fa-chevron-down"></i>
-    <span>Cuộn xuống</span>
-  </div>
-</section>
-
-<!-- ======================== STATS ======================== -->
-<div class="stats-strip" id="stats">
-  <div class="stats-inner">
-    <div class="sstat"><div class="sstat-num" data-count="480">0</div><div class="sstat-label">Học viên đã điều trị</div></div>
-    <div class="sstat"><div class="sstat-num" data-count="95" data-suffix="%">0%</div><div class="sstat-label">Hoàn thành chương trình</div></div>
-    <div class="sstat"><div class="sstat-num">24/7</div><div class="sstat-label">Giám sát liên tục</div></div>
-    <div class="sstat"><div class="sstat-num" data-count="8">0</div><div class="sstat-label">Bác sĩ chuyên khoa</div></div>
-  </div>
-</div>
-
-<!-- ======================== FEATURES ======================== -->
-<section class="section" id="features">
-  <div class="section-inner">
-    <div class="section-header">
-      <span class="section-tag">Chức năng hệ thống</span>
-      <h2 class="section-title">Quản lý toàn diện từ A đến Z</h2>
-      <p class="section-sub">Giải pháp số hóa kết nối tất cả các bên liên quan trong quy trình cai nghiện.</p>
-    </div>
-    <div class="features-grid" id="featuresGrid">
-      <div class="feature-card">
-        <div class="feature-icon fi-blue"><i class="fa-solid fa-folder-open"></i></div>
-        <h3>Quản lý hồ sơ</h3>
-        <p>Lưu trữ và quản lý tập trung toàn bộ hồ sơ người cai nghiện, truy xuất nhanh chóng mọi lúc.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon fi-green"><i class="fa-solid fa-heart-pulse"></i></div>
-        <h3>Theo dõi điều trị</h3>
-        <p>Bác sĩ cập nhật nhật ký điều trị, phác đồ và tiến trình phục hồi theo thời gian thực.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon fi-purple"><i class="fa-solid fa-calendar-check"></i></div>
-        <h3>Đăng ký thăm gặp</h3>
-        <p>Người thân đặt lịch và theo dõi trạng thái thăm gặp trực tuyến, không cần đến tận nơi.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon fi-amber"><i class="fa-solid fa-chart-bar"></i></div>
-        <h3>Thống kê báo cáo</h3>
-        <p>Dashboard KPI trực quan, biểu đồ phân tích xu hướng và báo cáo tổng hợp cho lãnh đạo.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon fi-rose"><i class="fa-solid fa-shield-halved"></i></div>
-        <h3>Bảo mật dữ liệu</h3>
-        <p>Phân quyền nghiêm ngặt theo 8 vai trò, mã hóa thông tin y tế nhạy cảm theo tiêu chuẩn.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon fi-teal"><i class="fa-solid fa-handshake"></i></div>
-        <h3>Bàn giao hồ sơ</h3>
-        <p>Cổng kết nối Công an – Trung tâm, số hóa toàn bộ quy trình bàn giao người nghiện.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ======================== PROCESS ======================== -->
-<section class="section process-section" id="process">
-  <div class="section-inner">
-    <div class="section-header">
-      <span class="section-tag">Quy trình</span>
-      <h2 class="section-title">5 bước tiếp nhận &amp; điều trị</h2>
-      <p class="section-sub">Quy trình chuẩn hóa, minh bạch từ lúc tiếp nhận đến khi hoàn thành cai nghiện.</p>
-    </div>
-    <div class="process-grid">
-      <div class="process-line"></div>
-      <div class="process-step">
-        <div class="step-num step-num-1">1</div>
-        <h4>Gửi hồ sơ</h4>
-        <p>Gia đình hoặc cơ quan CA gửi đơn và hồ sơ bàn giao qua hệ thống</p>
-      </div>
-      <div class="process-step">
-        <div class="step-num step-num-2">2</div>
-        <h4>Xét duyệt</h4>
-        <p>Lãnh đạo trung tâm xem xét và phê duyệt hồ sơ tiếp nhận</p>
-      </div>
-      <div class="process-step">
-        <div class="step-num step-num-3">3</div>
-        <h4>Nhập trại</h4>
-        <p>Nhân viên hoàn tất thủ tục và phân công bác sĩ phụ trách</p>
-      </div>
-      <div class="process-step">
-        <div class="step-num step-num-4">4</div>
-        <h4>Điều trị</h4>
-        <p>Thực hiện phác đồ cá nhân hóa: Cắt cơn → Phục hồi</p>
-      </div>
-      <div class="process-step">
-        <div class="step-num step-num-5">5</div>
-        <h4>Hoàn thành</h4>
-        <p>Bác sĩ đề xuất, lãnh đạo phê duyệt hoàn thành cai nghiện</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ======================== CTA ======================== -->
-<section class="cta-section">
-  <div class="cta-inner">
-    <h2>Sẵn sàng bắt đầu?</h2>
-    <p>Tham gia hệ thống để theo dõi và đồng hành cùng người thân của bạn trên hành trình phục hồi.</p>
-    <div class="cta-actions">
-      <a href="register.html" class="btn btn-white btn-lg"><i class="fa-solid fa-user-plus"></i> Đăng ký tài khoản người thân</a>
-      <a href="login.html"    class="btn btn-glass btn-lg"><i class="fa-solid fa-right-to-bracket"></i> Đăng nhập hệ thống</a>
-    </div>
-  </div>
-</section>
-
-<!-- ======================== FOOTER ======================== -->
-<footer class="footer" id="contact">
-  <div class="footer-inner">
-    <div class="footer-grid">
-      <div>
-        <div class="footer-brand">
-          <img src="assets/images/logo.png" alt="RehabCare" />
-          <div class="footer-brand-text">
-            <strong>RehabCare Đà Nẵng</strong>
-            <span>Trung tâm Cai nghiện Ma túy TP. Đà Nẵng</span>
-          </div>
+  <!-- ======================== NAVBAR ======================== -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <img src="assets/images/logo.png" alt="RehabCare Logo" />
+        <div class="nav-logo-text">
+          <strong>TT Cai nghiện MT Đà Nẵng</strong>
+          <small>Cơ sở Quản lý &amp; Điều trị</small>
         </div>
-        <p class="footer-desc">Đơn vị tiên phong trong số hóa quy trình quản lý và điều trị cai nghiện tại miền Trung Việt Nam.</p>
-        <ul class="footer-contact">
-          <li><i class="fa-solid fa-location-dot"></i> 123 Đường Hòa Xuân, Q. Cẩm Lệ, TP Đà Nẵng</li>
-          <li><i class="fa-solid fa-phone"></i> (0236) 3 xxx xxx</li>
-          <li><i class="fa-solid fa-envelope"></i> contact@rehabcare.danang.gov.vn</li>
-        </ul>
+      </a>
+      <div class="nav-links">
+        <a href="intake-process.html" class="nav-link">Quy trình</a>
+        <a href="user-guide.html" class="nav-link">Hướng dẫn</a>
+        <a href="disease-signs.html" class="nav-link">Dấu hiệu</a>
       </div>
-      <div class="footer-col">
-        <h4>Dành cho</h4>
-        <ul>
-          <li><a href="register.html">Người thân học viên</a></li>
-          <li><a href="login.html">Cán bộ trung tâm</a></li>
-          <li><a href="login.html">Bác sĩ phụ trách</a></li>
-          <li><a href="login.html">Cơ quan Công an</a></li>
-          <li><a href="login.html">Lãnh đạo trung tâm</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h4>Hỗ trợ</h4>
-        <ul>
-          <li><a href="#">Hướng dẫn sử dụng</a></li>
-          <li><a href="#">Câu hỏi thường gặp</a></li>
-          <li><a href="#">Liên hệ hỗ trợ</a></li>
-          <li><a href="#">Chính sách bảo mật</a></li>
-          <li><a href="#">Điều khoản dịch vụ</a></li>
-        </ul>
+      <div class="nav-cta">
+        <a href="login.html" class="btn btn-ghost btn-sm"><i class="fa-solid fa-right-to-bracket"></i> Đăng nhập</a>
+        <a href="register.html" class="btn btn-primary btn-sm"><i class="fa-solid fa-user-plus"></i> Đăng ký</a>
       </div>
     </div>
-    <div class="footer-bottom">
-      <span>© 2024 Trung tâm Cai nghiện Ma túy TP Đà Nẵng. Bảo lưu mọi quyền.</span>
-      <span>Phát triển bởi Nhóm sinh viên CNTT — Đồ án tốt nghiệp</span>
+  </nav>
+
+  <!-- ======================== HERO ======================== -->
+  <section class="hero" id="hero">
+    <canvas id="particleCanvas"></canvas>
+    <div class="hero-grid"></div>
+    <div class="hero-orb orb-1"></div>
+    <div class="hero-orb orb-2"></div>
+    <div class="hero-orb orb-3"></div>
+
+    <!-- Floating ambient cards -->
+    <div class="float-card float-card-1">
+      <div class="float-card-icon" style="background: rgba(74,222,128,.2); color:#4ade80;"><i
+          class="fa-solid fa-user-check"></i></div>
+      <div class="float-card-text">
+        <strong id="heroCompletedPatients">-- học viên</strong>
+        <span>Đã điều trị thành công</span>
+      </div>
     </div>
+    <div class="float-card float-card-2">
+      <div class="float-card-icon" style="background: rgba(56,189,248,.2); color:#38bdf8;"><i
+          class="fa-solid fa-shield-halved"></i></div>
+      <div class="float-card-text">
+        <strong id="heroRoleLevels">Bảo mật -- cấp</strong>
+        <span>Phân quyền chặt chẽ</span>
+      </div>
+    </div>
+
+    <div class="hero-content">
+      <!-- Live badge -->
+      <div class="hero-badge">
+        <span class="dot"></span>
+        Hệ thống quản lý chính thức — TP Đà Nẵng
+      </div>
+
+      <!-- Logo in white container (not inverted) -->
+      <div class="hero-logo">
+        <div class="hero-logo-wrap">
+          <img src="assets/images/logo.png" alt="RehabCare Đà Nẵng" />
+        </div>
+      </div>
+
+      <h1>
+        Hệ thống Quản lý<br />
+        <span>Trung tâm Cai nghiện Ma túy</span><br />
+        Thành phố Đà Nẵng
+      </h1>
+
+      <p class="hero-sub">
+        Nền tảng số hóa toàn diện — quản lý hồ sơ, theo dõi điều trị, hỗ trợ người thân và cán bộ trung tâm một cách
+        hiệu quả, minh bạch và nhân văn.
+      </p>
+
+      <div class="hero-actions">
+        <a href="login.html" class="btn btn-white btn-lg"><i class="fa-solid fa-right-to-bracket"></i> Đăng nhập hệ
+          thống</a>
+        <a href="register.html" class="btn btn-glass btn-lg"><i class="fa-solid fa-user-plus"></i> Đăng ký tài khoản</a>
+        <a href="intake-process.html" class="btn btn-glass btn-lg"><i class="fa-solid fa-circle-info"></i> Quy trình tiếp nhận</a>
+      </div>
+
+      <div class="hero-trust">
+        <div class="trust-item"><i class="fa-solid fa-circle-check"></i> Bảo mật theo tiêu chuẩn y tế</div>
+        <div class="trust-item"><i class="fa-solid fa-circle-check"></i> Phân quyền 8 cấp độ</div>
+        <div class="trust-item"><i class="fa-solid fa-circle-check"></i> Kết nối Công an — Trung tâm</div>
+      </div>
+    </div>
+
+    <div class="scroll-hint" onclick="document.getElementById('stats').scrollIntoView({behavior:'smooth'})">
+      <i class="fa-solid fa-chevron-down"></i>
+      <span>Cuộn xuống</span>
+    </div>
+  </section>
+
+  <!-- ======================== STATS ======================== -->
+  <div class="stats-strip" id="stats">
+    <div class="stats-inner">
+      <div class="sstat">
+        <div class="sstat-num" id="statTotalPatients" data-count="0">--</div>
+        <div class="sstat-label">Học viên đã điều trị</div>
+      </div>
+      <div class="sstat">
+        <div class="sstat-num" id="statCompletionRate" data-count="0" data-suffix="%">--</div>
+        <div class="sstat-label">Hoàn thành chương trình</div>
+      </div>
+      <div class="sstat">
+        <div class="sstat-num" id="statSupportAvailability">--</div>
+        <div class="sstat-label">Giám sát liên tục</div>
+      </div>
+      <div class="sstat">
+        <div class="sstat-num" id="statActiveDoctors" data-count="0">--</div>
+        <div class="sstat-label">Bác sĩ chuyên khoa</div>
+      </div>
+    </div>
+    <div class="stats-status" id="statsApiStatus">Đang tải dữ liệu từ hệ thống...</div>
   </div>
-</footer>
 
-<!-- ======================== SCRIPTS ======================== -->
-<script src="js/public-particles.js"></script>
+  <!-- ======================== FEATURES ======================== -->
+  <section class="section" id="features">
+    <div class="section-inner">
+      <div class="section-header">
+        <span class="section-tag">Chức năng hệ thống</span>
+        <h2 class="section-title">Quản lý toàn diện từ A đến Z</h2>
+        <p class="section-sub">Giải pháp số hóa kết nối tất cả các bên liên quan trong quy trình cai nghiện.</p>
+      </div>
+      <div class="features-grid" id="featuresGrid">
+        <div class="feature-card">
+          <div class="feature-icon fi-blue"><i class="fa-solid fa-folder-open"></i></div>
+          <h3>Quản lý hồ sơ</h3>
+          <p>Lưu trữ và quản lý tập trung toàn bộ hồ sơ người cai nghiện, truy xuất nhanh chóng mọi lúc.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon fi-green"><i class="fa-solid fa-heart-pulse"></i></div>
+          <h3>Theo dõi điều trị</h3>
+          <p>Bác sĩ cập nhật nhật ký điều trị, phác đồ và tiến trình phục hồi theo thời gian thực.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon fi-purple"><i class="fa-solid fa-calendar-check"></i></div>
+          <h3>Đăng ký thăm gặp</h3>
+          <p>Người thân đặt lịch và theo dõi trạng thái thăm gặp trực tuyến, không cần đến tận nơi.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon fi-amber"><i class="fa-solid fa-chart-bar"></i></div>
+          <h3>Thống kê báo cáo</h3>
+          <p>Dashboard KPI trực quan, biểu đồ phân tích xu hướng và báo cáo tổng hợp cho lãnh đạo.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon fi-rose"><i class="fa-solid fa-shield-halved"></i></div>
+          <h3>Bảo mật dữ liệu</h3>
+          <p>Phân quyền nghiêm ngặt theo 8 vai trò, mã hóa thông tin y tế nhạy cảm theo tiêu chuẩn.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon fi-teal"><i class="fa-solid fa-handshake"></i></div>
+          <h3>Bàn giao hồ sơ</h3>
+          <p>Cổng kết nối Công an – Trung tâm, số hóa toàn bộ quy trình bàn giao người nghiện.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-<script src="js/public-index.js"></script>
+  <!-- ======================== PROCESS ======================== -->
+  <section class="section process-section" id="process">
+    <div class="section-inner">
+      <div class="section-header">
+        <span class="section-tag">Quy trình</span>
+        <h2 class="section-title">5 bước tiếp nhận &amp; điều trị</h2>
+        <p class="section-sub">Quy trình chuẩn hóa, minh bạch từ lúc tiếp nhận đến khi hoàn thành cai nghiện.</p>
+      </div>
+      <div class="process-grid">
+        <div class="process-line"></div>
+        <div class="process-step">
+          <div class="step-num step-num-1">1</div>
+          <h4>Gửi hồ sơ</h4>
+          <p>Gia đình hoặc cơ quan CA gửi đơn và hồ sơ bàn giao qua hệ thống</p>
+        </div>
+        <div class="process-step">
+          <div class="step-num step-num-2">2</div>
+          <h4>Xét duyệt</h4>
+          <p>Lãnh đạo trung tâm xem xét và phê duyệt hồ sơ tiếp nhận</p>
+        </div>
+        <div class="process-step">
+          <div class="step-num step-num-3">3</div>
+          <h4>Nhập trại</h4>
+          <p>Nhân viên hoàn tất thủ tục và phân công bác sĩ phụ trách</p>
+        </div>
+        <div class="process-step">
+          <div class="step-num step-num-4">4</div>
+          <h4>Điều trị</h4>
+          <p>Thực hiện phác đồ cá nhân hóa: Cắt cơn → Phục hồi</p>
+        </div>
+        <div class="process-step">
+          <div class="step-num step-num-5">5</div>
+          <h4>Hoàn thành</h4>
+          <p>Bác sĩ đề xuất, lãnh đạo phê duyệt hoàn thành cai nghiện</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================== CTA ======================== -->
+  <section class="cta-section">
+    <div class="cta-inner">
+      <h2>Sẵn sàng bắt đầu?</h2>
+      <p>Tham gia hệ thống để theo dõi và đồng hành cùng người thân của bạn trên hành trình phục hồi.</p>
+      <div class="cta-actions">
+        <a href="register.html" class="btn btn-white btn-lg"><i class="fa-solid fa-user-plus"></i> Đăng ký tài khoản
+          người thân</a>
+        <a href="login.html" class="btn btn-glass btn-lg"><i class="fa-solid fa-right-to-bracket"></i> Đăng nhập hệ
+          thống</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================== FOOTER ======================== -->
+  <footer class="footer" id="contact">
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-brand">
+            <img src="assets/images/logo.png" alt="RehabCare" />
+            <div class="footer-brand-text">
+              <strong>RehabCare Đà Nẵng</strong>
+              <span>Trung tâm Cai nghiện Ma túy TP. Đà Nẵng</span>
+            </div>
+          </div>
+          <p class="footer-desc">Đơn vị tiên phong trong số hóa quy trình quản lý và điều trị cai nghiện tại miền Trung
+            Việt Nam.</p>
+          <ul class="footer-contact">
+            <li><i class="fa-solid fa-location-dot"></i> 123 Đường Hòa Xuân, Q. Cẩm Lệ, TP Đà Nẵng</li>
+            <li><i class="fa-solid fa-phone"></i> (0236) 3 xxx xxx</li>
+            <li><i class="fa-solid fa-envelope"></i> contact@rehabcare.danang.gov.vn</li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Dành cho</h4>
+          <ul>
+            <li><a href="register.html">Người thân học viên</a></li>
+            <li><a href="login.html">Cán bộ trung tâm</a></li>
+            <li><a href="login.html">Bác sĩ phụ trách</a></li>
+            <li><a href="login.html">Cơ quan Công an</a></li>
+            <li><a href="login.html">Lãnh đạo trung tâm</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Hỗ trợ</h4>
+          <ul>
+            <li><a href="user-guide.html">Hướng dẫn sử dụng</a></li>
+            <li><a href="disease-signs.html">Dấu hiệu & Hỗ trợ</a></li>
+            <li><a href="#">Câu hỏi thường gặp</a></li>
+            <li><a href="#">Chính sách bảo mật</a></li>
+            <li><a href="#">Điều khoản dịch vụ</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2024 Trung tâm Cai nghiện Ma túy TP Đà Nẵng. Bảo lưu mọi quyền.</span>
+        <span>Phát triển bởi Nhóm sinh viên CNTT — Đồ án tốt nghiệp</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ======================== SCRIPTS ======================== -->
+  <script src="js/public-particles.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/public-index.js"></script>
 </body>
+
 </html>

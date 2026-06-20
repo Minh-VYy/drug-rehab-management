@@ -1,0 +1,122 @@
+<div class="page-header page-header-row">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px;width:100%;">
+    <div style="display:flex; justify-content:space-between; width:100%;">
+      <div>
+        <h2 class="page-title">Báo cáo <span class="text-highlight">tổng quan trung tâm</span></h2>
+        <p class="page-subtitle">Xem báo cáo số liệu hoạt động và thống kê giai đoạn điều trị.</p>
+      </div>
+      <div class="dash-date-card">
+        <div id="report-date-num" class="dash-date-num"></div>
+        <div id="report-date-label" class="dash-date-label"></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;width:100%;">
+      <select id="reportTimeFilter" class="filter-select">
+        <option value="current_month">Tháng hiện tại</option>
+        <option value="current_quarter">Quý hiện tại</option>
+        <option value="current_year">Năm hiện tại</option>
+      </select>
+      <button class="btn btn-outline" id="btnRefreshReport">
+        <i class="fa-solid fa-rotate-right"></i> Làm mới
+      </button>
+      <button class="btn btn-primary" id="btnExportReport">
+        <i class="fa-solid fa-file-export"></i> Xuất báo cáo
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-blue">
+      <i class="fa-solid fa-user-injured"></i>
+    </div>
+    <div class="stat-value" id="repActivePatients">0</div>
+    <div class="stat-label">Tổng đang điều trị</div>
+    <div class="stat-trend up">Đang điều trị tại cơ sở</div>
+    <div class="stat-orb orb-blue"></div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-orange">
+      <i class="fa-solid fa-clock"></i>
+    </div>
+    <div class="stat-value" id="repPendingIntakes">0</div>
+    <div class="stat-label">Hồ sơ chờ tiếp nhận</div>
+    <div class="stat-trend flat">Hồ sơ chưa duyệt</div>
+    <div class="stat-orb orb-orange"></div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-purple">
+      <i class="fa-solid fa-file-contract"></i>
+    </div>
+    <div class="stat-value" id="repPendingCompletions">0</div>
+    <div class="stat-label">Đề xuất chờ hoàn thành</div>
+    <div class="stat-trend flat">Chưa được duyệt</div>
+    <div class="stat-orb orb-purple"></div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-green">
+      <i class="fa-solid fa-circle-check"></i>
+    </div>
+    <div class="stat-value" id="repCompletedPatients">0</div>
+    <div class="stat-label">Đã hoàn thành</div>
+    <div class="stat-trend up">Đã hoàn thành điều trị</div>
+    <div class="stat-orb orb-green"></div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-blue">
+      <i class="fa-solid fa-percent"></i>
+    </div>
+    <div class="stat-value text-highlight" id="repCompletionRate">0%</div>
+    <div class="stat-label">Tỷ lệ hoàn thành</div>
+    <div class="stat-trend up">Tỷ lệ thành công</div>
+    <div class="stat-orb orb-blue"></div>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;margin-bottom:24px;">
+  <div class="card" style="margin-bottom:0;">
+    <div class="card-header">
+      <div>
+        <span class="card-title"><i class="fa-solid fa-chart-column icon-header"></i> Số người theo giai đoạn</span>
+      </div>
+    </div>
+    <div class="card-body" id="stageChart" style="padding:20px;"></div>
+  </div>
+
+  <div class="card" style="margin-bottom:0;">
+    <div class="card-header">
+      <div>
+        <span class="card-title"><i class="fa-solid fa-lightbulb icon-header text-highlight"></i> Nhận xét nhanh</span>
+      </div>
+    </div>
+    <div class="card-body" style="padding:20px;" id="reportInsightsList"></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div>
+      <span class="card-title"><i class="fa-solid fa-table icon-header"></i> Báo cáo theo tháng</span>
+    </div>
+  </div>
+  <div class="table-wrapper">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Tháng</th>
+          <th>Tiếp nhận mới</th>
+          <th>Đang điều trị</th>
+          <th>Hoàn thành</th>
+          <th>Từ chối/Không đạt</th>
+          <th>Tỷ lệ hoàn thành</th>
+        </tr>
+      </thead>
+      <tbody id="monthlyReportTableBody"></tbody>
+    </table>
+  </div>
+</div>

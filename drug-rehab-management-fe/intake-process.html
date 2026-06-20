@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quy trình tiếp nhận — RehabCare Đà Nẵng</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/public-base.css" />
+  <link rel="stylesheet" href="css/public-index.css" />
+</head>
+<body>
+
+<nav class="navbar" id="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <img src="assets/images/logo.png" alt="RehabCare Logo" />
+      <div class="nav-logo-text">
+        <strong>TT Cai nghiện MT Đà Nẵng</strong>
+        <small>Cơ sở Quản lý &amp; Điều trị</small>
+      </div>
+    </a>
+    <div class="nav-links">
+      <a href="intake-process.html" class="nav-link">Quy trình</a>
+      <a href="user-guide.html" class="nav-link">Hướng dẫn</a>
+      <a href="disease-signs.html" class="nav-link">Dấu hiệu</a>
+    </div>
+    <div class="nav-cta">
+      <a href="login.html" class="btn btn-ghost btn-sm"><i class="fa-solid fa-right-to-bracket"></i> Đăng nhập</a>
+      <a href="register.html" class="btn btn-primary btn-sm"><i class="fa-solid fa-user-plus"></i> Đăng ký</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page-header">
+  <canvas id="particleCanvas" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:1; opacity:0.3;"></canvas>
+  <h1>Quy trình tiếp nhận người cai nghiện</h1>
+  <p>Tìm hiểu các bước thủ tục minh bạch, nhanh chóng từ lúc đăng ký đến khi hoàn thành chương trình điều trị tại Trung tâm.</p>
+</div>
+
+<div class="section-inner">
+  <div class="timeline-container">
+    
+    <div class="timeline-item">
+      <div class="timeline-icon"><i class="fa-solid fa-file-signature"></i></div>
+      <div class="timeline-content">
+        <h3>1. Gửi hồ sơ đăng ký</h3>
+        <p>Gia đình, người thân hoặc Cơ quan Công an thực hiện gửi yêu cầu tiếp nhận người nghiện vào Trung tâm thông qua hệ thống trực tuyến. Hồ sơ cần được điền đầy đủ và đính kèm các tài liệu liên quan.</p>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-icon"><i class="fa-solid fa-clipboard-check"></i></div>
+      <div class="timeline-content">
+        <h3>2. Xét duyệt & Xác minh</h3>
+        <p>Lãnh đạo và cán bộ quản lý hồ sơ tại Trung tâm sẽ xem xét, đối chiếu và phê duyệt yêu cầu. Hệ thống sẽ tự động gửi thông báo (email/SMS) về kết quả duyệt hồ sơ cho người gửi.</p>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-icon"><i class="fa-solid fa-hospital-user"></i></div>
+      <div class="timeline-content">
+        <h3>3. Nhập trại & Phân công</h3>
+        <p>Học viên được đưa đến Trung tâm. Nhân viên tiếp nhận sẽ hoàn tất các thủ tục hành chính, sinh trắc học và phân công Bác sĩ phụ trách quá trình điều trị cho học viên.</p>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-icon"><i class="fa-solid fa-notes-medical"></i></div>
+      <div class="timeline-content">
+        <h3>4. Điều trị & Phục hồi</h3>
+        <p>Thực hiện theo phác đồ điều trị cá nhân hóa gồm 3 giai đoạn: Cắt cơn (Detox) -> Phục hồi thể chất/tâm lý -> Chuẩn bị tái hòa nhập cộng đồng. Gia đình có thể theo dõi tiến độ qua hệ thống.</p>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-icon"><i class="fa-solid fa-house-chimney-user"></i></div>
+      <div class="timeline-content">
+        <h3>5. Hoàn thành chương trình</h3>
+        <p>Sau khi được đánh giá đủ điều kiện, Bác sĩ đề xuất Lãnh đạo cấp giấy chứng nhận hoàn thành. Học viên được bàn giao lại cho gia đình hoặc địa phương để tái hòa nhập.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <h2 class="section-title" style="text-align:center; margin-top: 40px;">Hồ sơ cần chuẩn bị</h2>
+  <div class="requirements-grid">
+    <div class="req-card">
+      <h3><i class="fa-solid fa-id-card"></i> Giấy tờ cá nhân</h3>
+      <ul>
+        <li><i class="fa-solid fa-check"></i> Bản sao CCCD/CMND của người cai nghiện (có công chứng)</li>
+        <li><i class="fa-solid fa-check"></i> Sổ hộ khẩu hoặc Giấy xác nhận nơi cư trú</li>
+        <li><i class="fa-solid fa-check"></i> Thẻ Bảo hiểm Y tế (Nếu có)</li>
+      </ul>
+    </div>
+    <div class="req-card">
+      <h3><i class="fa-solid fa-file-contract"></i> Hồ sơ pháp lý</h3>
+      <ul>
+        <li><i class="fa-solid fa-check"></i> Đơn xin tự nguyện cai nghiện (Đối với diện tự nguyện)</li>
+        <li><i class="fa-solid fa-check"></i> Quyết định của Tòa án (Đối với diện bắt buộc)</li>
+        <li><i class="fa-solid fa-check"></i> Biên bản bàn giao của Công an địa phương</li>
+      </ul>
+    </div>
+    <div class="req-card">
+      <h3><i class="fa-solid fa-users"></i> Thông tin người thân</h3>
+      <ul>
+        <li><i class="fa-solid fa-check"></i> Bản sao CCCD của người bảo lãnh</li>
+        <li><i class="fa-solid fa-check"></i> Đăng ký tài khoản trên hệ thống RehabCare để tiện theo dõi</li>
+        <li><i class="fa-solid fa-check"></i> Thông tin liên hệ khẩn cấp</li>
+      </ul>
+    </div>
+  </div>
+
+  <div style="text-align:center; margin: 60px 0;">
+    <a href="register.html" class="btn btn-primary btn-lg" style="margin-right:15px;"><i class="fa-solid fa-user-plus"></i> Đăng ký tài khoản Người thân</a>
+    <a href="login.html" class="btn btn-glass btn-lg"><i class="fa-solid fa-right-to-bracket"></i> Đăng nhập theo dõi</a>
+  </div>
+
+</div>
+
+<footer class="footer" id="contact">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">
+          <img src="assets/images/logo.png" alt="RehabCare" />
+          <div class="footer-brand-text">
+            <strong>RehabCare Đà Nẵng</strong>
+            <span>Trung tâm Cai nghiện Ma túy TP. Đà Nẵng</span>
+          </div>
+        </div>
+        <p class="footer-desc">Đơn vị tiên phong trong số hóa quy trình quản lý và điều trị cai nghiện tại miền Trung Việt Nam.</p>
+        <ul class="footer-contact">
+          <li><i class="fa-solid fa-location-dot"></i> 123 Đường Hòa Xuân, Q. Cẩm Lệ, TP Đà Nẵng</li>
+          <li><i class="fa-solid fa-phone"></i> (0236) 3 xxx xxx</li>
+          <li><i class="fa-solid fa-envelope"></i> contact@rehabcare.danang.gov.vn</li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Dành cho</h4>
+        <ul>
+          <li><a href="register.html">Người thân học viên</a></li>
+          <li><a href="login.html">Cán bộ trung tâm</a></li>
+          <li><a href="login.html">Bác sĩ phụ trách</a></li>
+          <li><a href="login.html">Cơ quan Công an</a></li>
+          <li><a href="login.html">Lãnh đạo trung tâm</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Hỗ trợ</h4>
+        <ul>
+          <li><a href="user-guide.html">Hướng dẫn sử dụng</a></li>
+          <li><a href="disease-signs.html">Dấu hiệu & Hỗ trợ</a></li>
+          <li><a href="#">Câu hỏi thường gặp</a></li>
+          <li><a href="#">Chính sách bảo mật</a></li>
+          <li><a href="#">Điều khoản dịch vụ</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2024 Trung tâm Cai nghiện Ma túy TP Đà Nẵng. Bảo lưu mọi quyền.</span>
+      <span>Phát triển bởi Nhóm sinh viên CNTT — Đồ án tốt nghiệp</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/public-particles.js"></script>
+<script src="js/config.js"></script>
+<script src="js/public-index.js"></script>
+</body>
+</html>

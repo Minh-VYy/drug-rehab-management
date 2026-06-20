@@ -1,0 +1,207 @@
+<div class="staff-intake-page">
+  <div class="page-header page-header-row staff-intake-header">
+    <div>
+      <h2 class="page-title">Xác nhận <span class="text-highlight">tiếp nhận người cai nghiện</span></h2>
+      <p class="page-subtitle">Hoàn tất tiếp nhận các hồ sơ đã được lãnh đạo phê duyệt vào trung tâm.</p>
+    </div>
+    <div class="dash-date-card staff-intake-date-card">
+      <div id="intake-confirm-date-num" class="dash-date-num"></div>
+      <div id="intake-confirm-date-label" class="dash-date-label"></div>
+    </div>
+  </div>
+
+  <div class="stats-grid staff-intake-stats">
+    <div class="stat-card staff-intake-stat-card">
+      <div class="stat-card-icon stat-icon-orange">
+        <i class="fa-solid fa-hourglass-half"></i>
+      </div>
+      <div class="stat-value" id="statWaiting">0</div>
+      <div class="stat-label">Chờ tiếp nhận</div>
+      <div class="stat-trend">Hồ sơ đã được lãnh đạo duyệt</div>
+    </div>
+
+    <div class="stat-card staff-intake-stat-card">
+      <div class="stat-card-icon stat-icon-green">
+        <i class="fa-solid fa-circle-check"></i>
+      </div>
+      <div class="stat-value" id="statConfirmed">0</div>
+      <div class="stat-label">Đã xác nhận</div>
+      <div class="stat-trend trend-up">Đã hoàn tất tiếp nhận tại trung tâm</div>
+    </div>
+
+    <div class="stat-card staff-intake-stat-card">
+      <div class="stat-card-icon stat-icon-red">
+        <i class="fa-solid fa-file-circle-exclamation"></i>
+      </div>
+      <div class="stat-value" id="statSupplement">0</div>
+      <div class="stat-label">Cần bổ sung</div>
+      <div class="stat-trend trend-down">Hồ sơ cần bổ sung thông tin</div>
+    </div>
+  </div>
+
+  <div class="card staff-intake-list-card">
+    <div class="card-header staff-intake-card-header">
+      <div class="card-header-info">
+        <div class="staff-intake-card-icon">
+          <i class="fa-solid fa-clipboard-check"></i>
+        </div>
+        <div>
+          <span class="card-title">Danh sách hồ sơ chờ tiếp nhận</span>
+          <p class="card-subtitle">Theo dõi và xử lý hồ sơ đã qua phê duyệt của lãnh đạo trung tâm.</p>
+        </div>
+      </div>
+
+      <div class="staff-intake-toolbar">
+        <div class="search-box staff-intake-search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="intakeConfirmSearchInput" placeholder="Tìm mã hồ sơ, họ tên, CCCD..." />
+        </div>
+
+        <select id="intakeConfirmStatusFilter" class="filter-select staff-intake-filter">
+          <option value="all">Tất cả trạng thái</option>
+          <option value="ChoTiepNhan">Chờ tiếp nhận</option>
+          <option value="DaTiepNhan">Đã tiếp nhận</option>
+          <option value="CanBoSung">Cần bổ sung</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="table-loading staff-intake-loading" id="intakeConfirmLoadingState" style="display:none;">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <span>Đang tải dữ liệu...</span>
+    </div>
+
+    <div class="table-wrapper staff-intake-table-wrapper">
+      <table class="table staff-intake-table">
+        <thead>
+          <tr>
+            <th>Mã hồ sơ</th>
+            <th>Người cai nghiện</th>
+            <th>CCCD</th>
+            <th>Ngày duyệt</th>
+            <th>Cán bộ bàn giao</th>
+            <th>Người thân</th>
+            <th>Trạng thái</th>
+            <th>Thao tác</th>
+          </tr>
+        </thead>
+        <tbody id="intakeConfirmTableBody"></tbody>
+      </table>
+    </div>
+
+    <div class="table-empty staff-intake-empty" id="intakeConfirmEmptyState" style="display:none;">
+      <i class="fa-solid fa-folder-open"></i>
+      <span>Không tìm thấy hồ sơ phù hợp.</span>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay staff-intake-modal-overlay" id="intakeConfirmDetailModal">
+  <div class="modal modal-lg staff-intake-detail-modal">
+    <div class="modal-header">
+      <div class="modal-header-info">
+        <div class="modal-icon modal-icon-blue">
+          <i class="fa-solid fa-folder-open"></i>
+        </div>
+        <div>
+          <div class="modal-title">Chi tiết hồ sơ tiếp nhận</div>
+          <div class="modal-subtitle">Kiểm tra thông tin trước khi xác nhận tiếp nhận.</div>
+        </div>
+      </div>
+      <button class="modal-close" id="intakeConfirmDetailCloseBtn" title="Đóng">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="modal-body" id="intakeConfirmDetailBody"></div>
+    <div class="modal-footer" id="intakeConfirmDetailFooter"></div>
+  </div>
+</div>
+
+<div class="modal-overlay staff-intake-modal-overlay" id="confirmIntakeModal">
+  <div class="modal staff-intake-form-modal">
+    <div class="modal-header">
+      <div class="modal-header-info">
+        <div class="modal-icon modal-icon-green">
+          <i class="fa-solid fa-user-check"></i>
+        </div>
+        <div>
+          <div class="modal-title">Xác nhận tiếp nhận</div>
+          <div class="modal-subtitle">Cập nhật thông tin tiếp nhận thực tế tại trung tâm.</div>
+        </div>
+      </div>
+      <button class="modal-close" id="confirmIntakeCloseBtn" title="Đóng">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="staff-intake-form-grid">
+        <div class="form-group">
+          <label>Ngày tiếp nhận <span class="required">*</span></label>
+          <input type="date" id="ngayTiepNhan" class="form-control" />
+          <span class="form-error" id="errNgayTiepNhan"></span>
+        </div>
+
+        <div class="form-group">
+          <label>Phòng/khu tiếp nhận <span class="required">*</span></label>
+          <input type="text" id="khuTiepNhan" class="form-control" placeholder="Ví dụ: Khu A - Phòng 102" />
+          <span class="form-error" id="errKhuTiepNhan"></span>
+        </div>
+
+        <div class="form-group">
+          <label>Cán bộ tiếp nhận</label>
+          <input type="text" id="canBoTiepNhan" class="form-control" placeholder="Họ tên cán bộ tiếp nhận" />
+        </div>
+
+        <div class="form-group full">
+          <label>Ghi chú tiếp nhận</label>
+          <textarea id="ghiChuTiepNhan" class="form-control" rows="3" placeholder="Ghi chú tình trạng sức khỏe, giấy tờ bàn giao hoặc lưu ý khác"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="confirmIntakeCancelBtn">Hủy</button>
+      <button class="btn btn-success" id="confirmIntakeOkBtn">
+        <i class="fa-solid fa-check"></i>
+        Xác nhận tiếp nhận
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay staff-intake-modal-overlay" id="supplementModal">
+  <div class="modal staff-intake-form-modal">
+    <div class="modal-header">
+      <div class="modal-header-info">
+        <div class="modal-icon modal-icon-orange">
+          <i class="fa-solid fa-file-circle-exclamation"></i>
+        </div>
+        <div>
+          <div class="modal-title">Yêu cầu bổ sung thông tin</div>
+          <div class="modal-subtitle">Ghi rõ lý do để đơn vị bàn giao hoàn thiện hồ sơ.</div>
+        </div>
+      </div>
+      <button class="modal-close" id="supplementCloseBtn" title="Đóng">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Lý do cần bổ sung <span class="required">*</span></label>
+        <textarea id="lyDoBoSung" class="form-control" rows="4" placeholder="Nhập lý do cần bổ sung thông tin"></textarea>
+        <span class="form-error" id="errLyDoBoSung"></span>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="supplementCancelBtn">Hủy</button>
+      <button class="btn btn-danger" id="supplementOkBtn">
+        <i class="fa-solid fa-paper-plane"></i>
+        Gửi yêu cầu bổ sung
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,119 @@
+<div class="page-header">
+  <div>
+    <h2 class="page-title">Hoạt động <span class="text-highlight">hệ thống</span></h2>
+    <p class="page-subtitle">Theo dõi nhật ký hoạt động của toàn bộ người dùng trong hệ thống.</p>
+  </div>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-blue"><i class="fa-solid fa-list"></i></div>
+    <div class="stat-value" id="statTotalLog">0</div>
+    <div class="stat-label">Tổng số log</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-green"><i class="fa-solid fa-circle-check"></i></div>
+    <div class="stat-value" id="statSuccessLog">0</div>
+    <div class="stat-label">Thành công</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-orange"><i class="fa-solid fa-triangle-exclamation"></i></div>
+    <div class="stat-value" id="statWarningLog">0</div>
+    <div class="stat-label">Cảnh báo/lỗi</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-purple"><i class="fa-solid fa-calendar-day"></i></div>
+    <div class="stat-value" id="statTodayLog">0</div>
+    <div class="stat-label">Hôm nay</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div>
+      <span class="card-title">Nhật ký hoạt động</span>
+      <p class="card-subtitle">Lịch sử hành động của người dùng trên hệ thống</p>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="logSearchInput" placeholder="Tìm người dùng, hành động, đối tượng, IP..." />
+    </div>
+
+    <select id="logRoleFilter" class="filter-select">
+      <option value="all">Tất cả vai trò</option>
+      <option value="Admin">Admin</option>
+      <option value="LanhDao">Lãnh đạo</option>
+      <option value="BacSi">Bác sĩ</option>
+      <option value="CanBoQuanLy">Cán bộ quản lý</option>
+      <option value="CanBoTrungTam">Cán bộ trung tâm</option>
+      <option value="CongAn">Công an</option>
+      <option value="NguoiThan">Người thân</option>
+    </select>
+
+    <select id="logActionFilter" class="filter-select">
+      <option value="all">Tất cả hành động</option>
+      <option value="DangNhap">Đăng nhập</option>
+      <option value="DangXuat">Đăng xuất</option>
+      <option value="Tao">Tạo mới</option>
+      <option value="CapNhat">Cập nhật</option>
+      <option value="Xoa">Xóa</option>
+      <option value="PheDuyet">Phê duyệt</option>
+      <option value="TuChoi">Từ chối</option>
+    </select>
+
+    <select id="logStatusFilter" class="filter-select">
+      <option value="all">Tất cả trạng thái</option>
+      <option value="ThanhCong">Thành công</option>
+      <option value="CanhBao">Cảnh báo</option>
+      <option value="Loi">Lỗi</option>
+    </select>
+  </div>
+
+  <div class="table-wrapper">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Thời gian</th>
+          <th>Người dùng</th>
+          <th>Vai trò</th>
+          <th>Hành động</th>
+          <th>Đối tượng</th>
+          <th>Địa chỉ IP</th>
+          <th>Trạng thái</th>
+          <th>Thao tác</th>
+        </tr>
+      </thead>
+      <tbody id="logTableBody"></tbody>
+    </table>
+  </div>
+
+  <div class="table-loading" id="logLoadingState" style="display:none;">
+    Đang tải dữ liệu...
+  </div>
+
+  <div class="table-empty" id="logEmptyState" style="display:none;">
+    Không tìm thấy log phù hợp.
+  </div>
+</div>
+
+<!-- Modal chi tiết log -->
+<div class="modal-overlay" id="logDetailModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h3>Chi tiết nhật ký</h3>
+      <button class="modal-close" id="logDetailCloseBtn"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="modal-body" id="logDetailBody"></div>
+
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="logDetailCloseBtn2">Đóng</button>
+    </div>
+  </div>
+</div>

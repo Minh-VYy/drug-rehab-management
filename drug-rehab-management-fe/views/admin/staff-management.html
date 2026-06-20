@@ -1,0 +1,188 @@
+<div class="page-header">
+  <div>
+    <h2 class="page-title">Quản lý <span class="text-highlight">nhân sự trung tâm</span></h2>
+    <p class="page-subtitle">Theo dõi hồ sơ nhân sự, chức vụ và trạng thái làm việc trong trung tâm.</p>
+  </div>
+  <button class="btn btn-primary" id="btnCreateStaff">
+    <i class="fa-solid fa-plus"></i> Tạo hồ sơ nhân sự
+  </button>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon icon-blue"><i class="fa-solid fa-users"></i></div>
+    <div class="stat-value" id="statTotalStaff">0</div>
+    <div class="stat-label">Tổng nhân sự</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon icon-green"><i class="fa-solid fa-circle-check"></i></div>
+    <div class="stat-value" id="statActiveStaff">0</div>
+    <div class="stat-label">Đang làm việc</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon icon-orange"><i class="fa-solid fa-pause"></i></div>
+    <div class="stat-value" id="statOnLeaveStaff">0</div>
+    <div class="stat-label">Tạm nghỉ</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon icon-purple"><i class="fa-solid fa-user-doctor"></i></div>
+    <div class="stat-value" id="statDoctorStaff">0</div>
+    <div class="stat-label">Bác sĩ/Cán bộ phụ trách</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div>
+      <span class="card-title">Danh sách nhân sự</span>
+      <p class="card-subtitle">Toàn bộ hồ sơ nhân sự đang được quản lý tại trung tâm</p>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="staffSearchInput" placeholder="Tìm mã nhân sự, họ tên, email, SĐT..." />
+    </div>
+
+    <select id="staffRoleFilter" class="filter-select">
+      <option value="all">Tất cả chức vụ</option>
+      <option value="BacSi">Bác sĩ</option>
+      <option value="CanBoQuanLy">Cán bộ quản lý</option>
+      <option value="CanBoTrungTam">Cán bộ trung tâm</option>
+      <option value="LanhDao">Lãnh đạo</option>
+      <option value="KeToan">Kế toán</option>
+      <option value="BaoVe">Bảo vệ</option>
+    </select>
+
+    <select id="staffStatusFilter" class="filter-select">
+      <option value="all">Tất cả trạng thái</option>
+      <option value="DangLamViec">Đang làm việc</option>
+      <option value="TamNghi">Tạm nghỉ</option>
+    </select>
+  </div>
+
+  <div class="table-wrapper">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Mã nhân sự</th>
+          <th>Họ tên</th>
+          <th>Tài khoản liên kết</th>
+          <th>Chức vụ</th>
+          <th>Khoa/bộ phận</th>
+          <th>Số điện thoại</th>
+          <th>Trạng thái</th>
+          <th>Thao tác</th>
+        </tr>
+      </thead>
+      <tbody id="staffTableBody"></tbody>
+    </table>
+  </div>
+
+  <div class="table-loading" id="staffLoadingState" style="display:none;">
+    Đang tải dữ liệu...
+  </div>
+
+  <div class="table-empty" id="staffEmptyState" style="display:none;">
+    Không tìm thấy nhân sự phù hợp.
+  </div>
+</div>
+
+<!-- Modal xem chi tiết -->
+<div class="modal-overlay" id="staffDetailModal" style="display:none;">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h3>Chi tiết nhân sự</h3>
+      <button class="btn-icon" id="staffDetailCloseBtn"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body" id="staffDetailBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="staffDetailCloseBtn2">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal tạo/chỉnh sửa -->
+<div class="modal-overlay" id="staffFormModal" style="display:none;">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h3 id="staffFormTitle">Tạo hồ sơ nhân sự</h3>
+      <button class="btn-icon" id="staffFormCloseBtn"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="modal-body">
+      <div class="module-form-grid">
+        <div class="form-group">
+          <label>Mã nhân sự</label>
+          <input type="text" id="formMaNhanSu" class="form-control" readonly />
+        </div>
+
+        <div class="form-group">
+          <label>Họ tên <span class="required">*</span></label>
+          <input type="text" id="formHoTen" class="form-control" placeholder="Họ và tên đầy đủ" />
+          <span class="form-error" id="errHoTen"></span>
+        </div>
+
+        <div class="form-group">
+          <label>Email <span class="required">*</span></label>
+          <input type="email" id="formEmail" class="form-control" placeholder="email@rehabcare.vn" />
+          <span class="form-error" id="errEmail"></span>
+        </div>
+
+        <div class="form-group">
+          <label>Số điện thoại</label>
+          <input type="text" id="formSdt" class="form-control" maxlength="10" placeholder="10 số" />
+          <span class="form-error" id="errSdt"></span>
+        </div>
+
+        <div class="form-group">
+          <label>Chức vụ <span class="required">*</span></label>
+          <select id="formChucVu" class="form-control">
+            <option value="BacSi">Bác sĩ</option>
+            <option value="CanBoQuanLy">Cán bộ quản lý</option>
+            <option value="CanBoTrungTam">Cán bộ trung tâm</option>
+            <option value="LanhDao">Lãnh đạo</option>
+            <option value="KeToan">Kế toán</option>
+            <option value="BaoVe">Bảo vệ</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Khoa/bộ phận</label>
+          <input type="text" id="formBoPhan" class="form-control" placeholder="VD: Khoa điều trị, Phòng hành chính..." />
+        </div>
+
+        <div class="form-group">
+          <label>Tài khoản liên kết</label>
+          <input type="text" id="formTaiKhoanLienKet" class="form-control" placeholder="VD: bspt004" />
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="staffFormCancelBtn">Hủy</button>
+      <button class="btn btn-primary" id="staffFormSaveBtn">Lưu hồ sơ</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal đổi trạng thái -->
+<div class="modal-overlay" id="staffStatusModal" style="display:none;">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="staffStatusTitle">Đổi trạng thái làm việc</h3>
+      <button class="btn-icon" id="staffStatusCloseBtn"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <p id="staffStatusMessage"></p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="staffStatusCancelBtn">Hủy</button>
+      <button class="btn btn-primary" id="staffStatusOkBtn">Xác nhận</button>
+    </div>
+  </div>
+</div>

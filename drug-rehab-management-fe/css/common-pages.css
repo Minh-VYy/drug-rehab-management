@@ -1,0 +1,451 @@
+/* =========================================
+   COMMON PAGES CSS (Profile, Notification, Forbidden, Dashboard Home)
+   ========================================= */
+
+/* --- Utility Classes --- */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.95) !important; /* Nền trắng sáng */
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    border-radius: 20px;
+    color: #1e293b !important; /* Chữ tối màu */
+}
+
+/* Ép tất cả các thẻ text bên trong glass-panel thành màu tối để dễ đọc trên nền sáng */
+.glass-panel h1, 
+.glass-panel h2, 
+.glass-panel h3, 
+.glass-panel label, 
+.glass-panel p,
+.glass-panel .profile-name,
+.glass-panel .profile-section-title,
+.glass-panel .notification-title,
+.glass-panel .notification-desc,
+.glass-panel .notification-time {
+    color: #1e293b !important;
+}
+
+.glass-panel .module-detail-label {
+    color: #64748b !important; /* Xám nhạt cho label phụ */
+}
+.glass-panel .module-detail-value {
+    color: #0f172a !important; /* Đen đậm cho giá trị */
+}
+
+.glass-panel .profile-section-title {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* --- Welcome Dashboard Home --- */
+.common-welcome-container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.welcome-header {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    padding: 2.5rem;
+    margin-bottom: 3rem;
+}
+
+.welcome-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 4px solid #fff;
+    overflow: hidden;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.welcome-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.welcome-text h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    text-shadow: none;
+}
+
+.welcome-text p {
+    font-size: 1.1rem;
+    color: #475569 !important;
+}
+
+.welcome-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.action-card-3d {
+    background: linear-gradient(145deg, #ffffff, #f8fafc);
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+.action-card-3d:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    border-color: #cbd5e1;
+}
+
+.action-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    background: #f1f5f9;
+    box-shadow: inset 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.action-card-3d h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+}
+
+.action-card-3d p {
+    font-size: 0.9rem;
+    color: #64748b;
+    margin: 0;
+}
+
+/* Colors for specific actions */
+.action-primary .action-icon { color: var(--primary); background: #eff6ff; }
+.action-success .action-icon { color: var(--success); background: #f0fdf4; }
+.action-warning .action-icon { color: var(--warning); background: #fefce8; }
+.action-danger .action-icon { color: var(--danger); background: #fef2f2; }
+.action-info .action-icon { color: #0ea5e9; background: #f0f9ff; }
+
+
+/* --- Profile Page --- */
+.profile-grid {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    animation: fadeIn 0.5s ease;
+}
+
+.profile-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.profile-card {
+    text-align: center;
+    padding: 3rem 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.profile-avatar-lg {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 5px solid #fff;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    margin-bottom: 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.profile-avatar-lg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-avatar-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0,0,0,0.6);
+    color: #fff !important; /* Chữ trong overlay avatar vẫn trắng */
+    padding: 0.5rem;
+    font-size: 0.8rem;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.profile-avatar-lg:hover .profile-avatar-overlay {
+    opacity: 1;
+}
+
+.profile-name {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.profile-role {
+    font-size: 1rem;
+    color: #15803d !important;
+    background: #dcfce7 !important;
+    padding: 0.3rem 1rem;
+    border-radius: 20px;
+    border: 1px solid #bbf7d0 !important;
+}
+
+.profile-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.profile-section-title {
+    font-size: 1.3rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.profile-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.profile-content label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* Nền form nhập liệu Sáng */
+.profile-content .form-control {
+    width: 100%;
+    padding: 0.8rem 1.2rem;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    color: #0f172a;
+    font-size: 1.05rem;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.profile-content .form-control:focus {
+    outline: none;
+    background: #ffffff;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+}
+
+.profile-content .form-control::placeholder {
+    color: #94a3b8; 
+}
+
+
+/* --- Notifications Page --- */
+.notification-container {
+    max-width: 900px;
+    margin: 0 auto;
+    animation: fadeIn 0.5s ease;
+}
+
+.notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.notification-filters {
+    display: flex;
+    gap: 1rem;
+}
+
+.notification-filters .btn {
+    border-radius: 20px;
+}
+
+.notification-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.notification-item {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    border-radius: 16px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.notification-item:hover {
+    background: #f8fafc;
+    transform: translateX(5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.notification-item.unread {
+    background: #f0f9ff;
+    border-left: 4px solid var(--primary);
+}
+
+.notification-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.noti-success { background: #dcfce7; color: #16a34a; }
+.noti-warning { background: #fef9c3; color: #ca8a04; }
+.noti-info { background: #e0f2fe; color: #0284c7; }
+.noti-danger { background: #fee2e2; color: #dc2626; }
+
+.notification-content {
+    flex: 1;
+}
+
+.notification-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+}
+
+.notification-desc {
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+}
+
+.notification-time {
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.notification-action {
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+/* Nút Đã đọc tùy chỉnh cho theme sáng */
+.notification-item .btn-mark-read {
+    color: #3b82f6 !important;
+    border: 1px solid #3b82f6 !important;
+    background: transparent;
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 0.3rem 0.8rem;
+    cursor: pointer;
+}
+.notification-item .btn-mark-read:hover {
+    background: #3b82f6 !important;
+    color: #ffffff !important;
+}
+
+.notification-item:hover .notification-action {
+    opacity: 1;
+}
+
+
+/* --- Forbidden 403 Page --- */
+.forbidden-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 70vh;
+    animation: fadeIn 0.5s ease;
+}
+
+.forbidden-card {
+    text-align: center;
+    padding: 4rem;
+    max-width: 600px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+}
+
+.forbidden-icon {
+    font-size: 6rem;
+    color: var(--danger);
+    margin-bottom: 2rem;
+    text-shadow: 0 0 30px rgba(248, 113, 113, 0.2);
+    animation: pulseIcon 2s infinite;
+}
+
+.forbidden-card h1 {
+    font-size: 4rem;
+    font-weight: 900;
+    margin: 0 0 1rem 0;
+    line-height: 1;
+    color: var(--danger);
+}
+
+.forbidden-card h2 {
+    font-size: 1.8rem;
+    color: #1e293b;
+    margin-bottom: 1rem;
+}
+
+.forbidden-card p {
+    font-size: 1.1rem;
+    color: #64748b;
+    margin-bottom: 2.5rem;
+    line-height: 1.6;
+}
+
+@keyframes pulseIcon {
+    0% { transform: scale(1); text-shadow: 0 0 30px rgba(248, 113, 113, 0.2); }
+    50% { transform: scale(1.1); text-shadow: 0 0 50px rgba(248, 113, 113, 0.4); }
+    100% { transform: scale(1); text-shadow: 0 0 30px rgba(248, 113, 113, 0.2); }
+}
+
+/* Responsiveness */
+@media (max-width: 768px) {
+    .profile-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .profile-form-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -26,7 +26,7 @@ public class HandoverSlip {
     private String id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "MaCanBoCongAn", nullable = false)
+    @JoinColumn(name = "MaCanBoCongAn", nullable = false, columnDefinition = "CHAR(10)")
     private PoliceRecordOfficer policeOfficer;
 
     @Column(name = "SoQuyetDinh", columnDefinition = "NVARCHAR(50)", nullable = false)

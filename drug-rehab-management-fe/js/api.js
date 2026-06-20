@@ -1,11 +1,10 @@
-// Mocking API requests for frontend development before Java Spring Boot is ready.
-// Later, these will be replaced by actual fetch() calls to CONFIG.BASE_API_URL
 const Api = {
     async request(endpoint, options = {}) {
         const token = Auth.getToken();
+        const isDemoToken = token && token.startsWith('demo-token-');
         const headers = {
             'Content-Type': 'application/json',
-            ...(token && { 'Authorization': `Bearer ${token}` }),
+            ...(token && !isDemoToken && { 'Authorization': `Bearer ${token}` }),
             ...options.headers
         };
 
@@ -14,23 +13,19 @@ const Api = {
             headers
         };
 
-        // TODO: Uncomment and use this when Java Backend is ready
-        /*
         try {
             const response = await fetch(`${CONFIG.BASE_API_URL}${endpoint}`, config);
+            const payload = await response.json().catch(() => null);
+
             if (!response.ok) {
-                if(response.status === 401) Auth.logout();
-                throw new Error(response.statusText);
+                throw new Error(payload?.message || response.statusText || 'API request failed');
             }
-            return await response.json();
+
+            return payload?.data ?? payload;
         } catch (error) {
             console.error('API Error:', error);
             throw error;
         }
-        */
-        
-        console.log(`[API MOCK] ${options.method || 'GET'} ${endpoint}`);
-        return new Promise(resolve => setTimeout(resolve, 300)); // Simulate network delay
     },
 
     get(endpoint, options = {}) {
@@ -47,5 +42,153 @@ const Api = {
 
     delete(endpoint, options = {}) {
         return this.request(endpoint, { ...options, method: 'DELETE' });
+    },
+
+    getMedicalRecords() {
+        return this.get('/medical-records');
+    },
+
+    getMedicalRecordById(id) {
+        return this.get(`/medical-records/${id}`);
+    },
+
+    updateMedicalRecord(id, data) {
+        return this.put(`/medical-records/${id}`, data);
+    },
+
+    getTreatmentPlans() {
+        return this.get('/treatment-plans');
+    },
+
+    getTreatmentPlanById(id) {
+        return this.get(`/treatment-plans/${id}`);
+    },
+
+    approveTreatmentPlan(id, data) {
+        return this.put(`/treatment-plans/${id}/approve`, data);
+    },
+
+    rejectTreatmentPlan(id, data) {
+        return this.put(`/treatment-plans/${id}/reject`, data);
+    },
+
+    // ==========================================
+    // LEADER APIS
+    // ==========================================
+    getLeaderDashboard() {
+        return this.get('/leader/dashboard');
+    },
+
+    getIntakeApprovals() {
+        return this.get('/leader/intake-approvals');
+    },
+
+    getCompletionApprovals() {
+        return this.get('/leader/completion-approvals');
+    },
+
+    getLeaderReport() {
+        return this.get('/leader/report');
+    },
+
+    // ==========================================
+    // ADMIN APIS
+    // ==========================================
+    getAdminDashboard() {
+        return this.get('/admin/dashboard');
+    },
+
+    // ==========================================
+    // COMMON APIS (Profile & Notification)
+    // ==========================================
+    updateProfile(userId, profileData) {
+        return this.put(`/users/${userId}`, profileData);
+    },
+    
+    changePassword(userId, passwordData) {
+        return this.put(`/users/${userId}/change-password`, passwordData);
+    },
+
+    getNotifications() {
+        return this.get('/notifications');
+    },
+    
+    markNotificationAsRead(id) {
+        return this.put(`/notifications/${id}/read`);
+    },
+    
+    markAllNotificationsAsRead() {
+        return this.put('/notifications/mark-all-read');
+    },
+
+    // ==========================================
+    // STAFF APIS
+    // ==========================================
+    getStaffDashboard() {
+        return this.get('/staff/dashboard');
+    },
+
+    getPendingIntakes() {
+        return this.get('/staff/intake-confirmations');
+    },
+
+    confirmIntake(id, data) {
+        return this.put(`/staff/intake-confirmations/${id}/confirm`, data);
+    },
+
+    requestIntakeSupplement(id, data) {
+        return this.put(`/staff/intake-confirmations/${id}/supplement`, data);
+    },
+
+    getStaffPatients() {
+        return this.get('/staff/patients');
+    },
+
+    updatePatientStatus(id, data) {
+        return this.put(`/staff/patients/${id}/status`, data);
+    },
+
+    getVisitRequests() {
+        return this.get('/staff/visits');
+    },
+
+    approveVisit(id, data) {
+        return this.put(`/staff/visits/${id}/approve`, data);
+    },
+
+    rejectVisit(id, data) {
+        return this.put(`/staff/visits/${id}/reject`, data);
+    },
+
+    getActivities() {
+        return this.get('/staff/activities');
+    },
+
+    createActivity(data) {
+        return this.post('/staff/activities', data);
+    },
+
+    updateActivity(id, data) {
+        return this.put(`/staff/activities/${id}`, data);
+    },
+
+    cancelActivity(id) {
+        return this.put(`/staff/activities/${id}/cancel`);
+    },
+
+    getAttendanceList(activityId) {
+        return this.get(`/staff/activities/${activityId}/attendance`);
+    },
+
+    getAttendances() {
+        return this.get('/staff/attendance');
+    },
+
+    updateAttendance(id, data) {
+        return this.put(`/staff/attendance/${id}`, data);
+    },
+
+    markAttendance(activityId, data) {
+        return this.put(`/staff/activities/${activityId}/attendance`, data);
     }
 };

@@ -2,6 +2,7 @@ package com.rehab.rehab_center_api.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import com.rehab.rehab_center_api.converters.DrugTypeConverter;
 import com.rehab.rehab_center_api.enums.VoluntaryApplicationStatus;
 import com.rehab.rehab_center_api.enums.DrugType;
 import org.hibernate.annotations.ColumnDefault;
@@ -37,8 +38,12 @@ public class VoluntaryAdmissionApplication {
     @Column(name = "NgaySinhNguoiCaiNghien", nullable = false)
     private LocalDate patientDateOfBirth;
 
-    @Column(name = "DiaChiThuongTru", columnDefinition = "NVARCHAR(255)", nullable = false)
-    private String permanentAddress;
+    @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name = "streetAddress", column = @Column(name = "ThuongTru_Duong", columnDefinition = "NVARCHAR(255)")),
+        @AttributeOverride(name = "ward", column = @Column(name = "ThuongTru_MaXa"))
+    })
+    private Address permanentAddress;
 
     @Column(name = "SoCCCDNguoiCaiNghien", length = 12, nullable = false)
     private String patientIdentityNumber;
@@ -46,7 +51,7 @@ public class VoluntaryAdmissionApplication {
     @Column(name = "QuanHeVoiNguoiCaiNghien", columnDefinition = "NVARCHAR(50)", nullable = false)
     private String relationshipToPatient;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = DrugTypeConverter.class)
     @Column(name = "LoaiMaTuySuDung", columnDefinition = "NVARCHAR(100)", nullable = false)
     private DrugType drugTypeUsed;
 

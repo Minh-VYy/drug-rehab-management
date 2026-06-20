@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hướng dẫn sử dụng — RehabCare Đà Nẵng</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/public-base.css" />
+  <link rel="stylesheet" href="css/public-index.css" />
+</head>
+<body>
+
+<nav class="navbar" id="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <img src="assets/images/logo.png" alt="RehabCare Logo" />
+      <div class="nav-logo-text">
+        <strong>TT Cai nghiện MT Đà Nẵng</strong>
+        <small>Cơ sở Quản lý &amp; Điều trị</small>
+      </div>
+    </a>
+    <div class="nav-links">
+      <a href="intake-process.html" class="nav-link">Quy trình</a>
+      <a href="user-guide.html" class="nav-link">Hướng dẫn</a>
+      <a href="disease-signs.html" class="nav-link">Dấu hiệu</a>
+    </div>
+    <div class="nav-cta">
+      <a href="login.html" class="btn btn-ghost btn-sm"><i class="fa-solid fa-right-to-bracket"></i> Đăng nhập</a>
+      <a href="register.html" class="btn btn-primary btn-sm"><i class="fa-solid fa-user-plus"></i> Đăng ký</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page-header">
+  <canvas id="particleCanvas" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:1; opacity:0.3;"></canvas>
+  <h1>Hướng dẫn sử dụng hệ thống</h1>
+  <p>Tài liệu hướng dẫn chi tiết dành cho các nhóm đối tượng sử dụng hệ thống RehabCare Đà Nẵng.</p>
+</div>
+
+<div class="guide-container">
+  <!-- Tabs -->
+  <div class="guide-tabs">
+    <div class="guide-tab active" data-target="nguoithan"><i class="fa-solid fa-users"></i> Người thân</div>
+    <div class="guide-tab" data-target="congan"><i class="fa-solid fa-shield"></i> Công an</div>
+    <div class="guide-tab" data-target="bacsi"><i class="fa-solid fa-user-doctor"></i> Bác sĩ</div>
+    <div class="guide-tab" data-target="quanly"><i class="fa-solid fa-user-tie"></i> Cán bộ quản lý</div>
+    <div class="guide-tab" data-target="lanhdao"><i class="fa-solid fa-building-user"></i> Lãnh đạo</div>
+    <div class="guide-tab" data-target="quantri"><i class="fa-solid fa-server"></i> Quản trị hệ thống</div>
+  </div>
+
+  <!-- Content -->
+  <div class="guide-content-area">
+    <!-- NGUOI THAN -->
+    <div class="guide-panel active" id="nguoithan">
+      <h2><i class="fa-solid fa-users"></i> Dành cho Người thân</h2>
+      <div class="guide-step">
+        <h4>1. Đăng ký tài khoản</h4>
+        <p>Truy cập trang Đăng ký, điền đầy đủ thông tin cá nhân và số CCCD. Tài khoản sẽ được tự động kích hoạt để bạn có thể sử dụng ngay.</p>
+      </div>
+      <div class="guide-step">
+        <h4>2. Gửi đơn yêu cầu tiếp nhận</h4>
+        <p>Sau khi đăng nhập, chọn "Tạo hồ sơ mới" để cung cấp thông tin người cần cai nghiện và upload các tài liệu liên quan. Gửi yêu cầu để Trung tâm xem xét.</p>
+      </div>
+      <div class="guide-step">
+        <h4>3. Theo dõi lịch sử và sức khỏe</h4>
+        <p>Trong Dashboard, bạn có thể xem tiến độ phê duyệt hồ sơ, xem nhật ký sức khỏe hàng tuần do bác sĩ cập nhật, và đăng ký lịch thăm gặp trực tuyến.</p>
+      </div>
+    </div>
+
+    <!-- CONG AN -->
+    <div class="guide-panel" id="congan">
+      <h2><i class="fa-solid fa-shield"></i> Dành cho Cơ quan Công an</h2>
+      <div class="guide-step">
+        <h4>1. Đăng nhập hệ thống</h4>
+        <p>Sử dụng tài khoản nội bộ được cấp bởi Quản trị viên để đăng nhập vào cổng dành riêng cho cán bộ bàn giao.</p>
+      </div>
+      <div class="guide-step">
+        <h4>2. Gửi hồ sơ bàn giao đối tượng</h4>
+        <p>Tạo Phiếu bàn giao điện tử, điền thông tin đối tượng (Tên, CCCD, Tiền án tiền sự, Loại ma túy) và đính kèm Quyết định áp dụng biện pháp cai nghiện bắt buộc.</p>
+      </div>
+      <div class="guide-step">
+        <h4>3. Theo dõi trạng thái tiếp nhận</h4>
+        <p>Theo dõi xem hồ sơ đã được Lãnh đạo trung tâm phê duyệt hay chưa, và thời gian dự kiến tổ chức tiếp nhận/bàn giao người tại cơ sở.</p>
+      </div>
+    </div>
+
+    <!-- BAC SI -->
+    <div class="guide-panel" id="bacsi">
+      <h2><i class="fa-solid fa-user-doctor"></i> Dành cho Bác sĩ phụ trách</h2>
+      <div class="guide-step">
+        <h4>1. Cập nhật bệnh án ban đầu</h4>
+        <p>Khám sức khỏe tổng quát lúc nhập trại, ghi nhận các chỉ số sinh tồn và tình trạng nghiện vào Hồ sơ bệnh án điện tử.</p>
+      </div>
+      <div class="guide-step">
+        <h4>2. Lập phác đồ điều trị</h4>
+        <p>Dựa trên tình trạng học viên, lập phác đồ chia theo các giai đoạn (Detox, Phục hồi, Tái hòa nhập). Gửi phác đồ lên cho Cán bộ quản lý phê duyệt.</p>
+      </div>
+      <div class="guide-step">
+        <h4>3. Đánh giá và đề xuất chuyển giai đoạn</h4>
+        <p>Ghi nhận nhật ký hàng ngày. Khi học viên đạt đủ tiêu chuẩn, bác sĩ tạo Đề xuất chuyển giai đoạn và chờ Lãnh đạo/Quản lý xét duyệt.</p>
+      </div>
+    </div>
+
+    <!-- CAN BO QUAN LY -->
+    <div class="guide-panel" id="quanly">
+      <h2><i class="fa-solid fa-user-tie"></i> Dành cho Cán bộ quản lý</h2>
+      <div class="guide-step">
+        <h4>1. Xem và phê duyệt phác đồ</h4>
+        <p>Nhận thông báo khi có phác đồ mới từ bác sĩ. Kiểm tra tính hợp lý và phê duyệt để đưa vào áp dụng.</p>
+      </div>
+      <div class="guide-step">
+        <h4>2. Xét duyệt đề xuất chuyển giai đoạn</h4>
+        <p>Đánh giá các đề xuất từ bác sĩ dựa trên tiêu chuẩn của Trung tâm. Có thể Đồng ý hoặc Từ chối (kèm lý do).</p>
+      </div>
+      <div class="guide-step">
+        <h4>3. Xem báo cáo phòng ban</h4>
+        <p>Xem số liệu thống kê về học viên đang điều trị, hiệu suất công việc của các bác sĩ và nhân viên trong ca trực.</p>
+      </div>
+    </div>
+
+    <!-- LANH DAO -->
+    <div class="guide-panel" id="lanhdao">
+      <h2><i class="fa-solid fa-building-user"></i> Dành cho Lãnh đạo trung tâm</h2>
+      <div class="guide-step">
+        <h4>1. Phê duyệt tiếp nhận hồ sơ</h4>
+        <p>Duyệt các hồ sơ bàn giao từ Công an hoặc hồ sơ tự nguyện từ Gia đình. Đây là bước quyết định học viên có được tiếp nhận hay không.</p>
+      </div>
+      <div class="guide-step">
+        <h4>2. Ký quyết định hoàn thành</h4>
+        <p>Duyệt danh sách học viên đã vượt qua cả 3 giai đoạn điều trị và cấp chứng nhận hoàn thành cai nghiện trên hệ thống.</p>
+      </div>
+      <div class="guide-step">
+        <h4>3. Theo dõi Dashboard tổng quan</h4>
+        <p>Xem biểu đồ KPI trực quan về tỷ lệ cai nghiện thành công, số ca tái nghiện, tình hình an ninh, và biến động số lượng học viên theo thời gian.</p>
+      </div>
+    </div>
+
+    <!-- QUAN TRI -->
+    <div class="guide-panel" id="quantri">
+      <h2><i class="fa-solid fa-server"></i> Dành cho Quản trị hệ thống</h2>
+      <div class="guide-step">
+        <h4>1. Quản lý tài khoản và phân quyền</h4>
+        <p>Thêm mới, sửa, khóa tài khoản của Cán bộ, Bác sĩ, Lãnh đạo. Cấp phát đúng vai trò (Role) tương ứng.</p>
+      </div>
+      <div class="guide-step">
+        <h4>2. Quản lý Danh mục (Master Data)</h4>
+        <p>Quản lý các danh mục từ điển dùng chung: Loại ma túy, Loại hồ sơ, Giai đoạn điều trị chuẩn...</p>
+      </div>
+      <div class="guide-step">
+        <h4>3. Cấu hình hệ thống & Logs</h4>
+        <p>Kiểm tra nhật ký hoạt động (Audit logs), đảm bảo an toàn thông tin và sao lưu dữ liệu hệ thống định kỳ.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer class="footer" id="contact">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">
+          <img src="assets/images/logo.png" alt="RehabCare" />
+          <div class="footer-brand-text">
+            <strong>RehabCare Đà Nẵng</strong>
+            <span>Trung tâm Cai nghiện Ma túy TP. Đà Nẵng</span>
+          </div>
+        </div>
+        <p class="footer-desc">Đơn vị tiên phong trong số hóa quy trình quản lý và điều trị cai nghiện tại miền Trung Việt Nam.</p>
+        <ul class="footer-contact">
+          <li><i class="fa-solid fa-location-dot"></i> 123 Đường Hòa Xuân, Q. Cẩm Lệ, TP Đà Nẵng</li>
+          <li><i class="fa-solid fa-phone"></i> (0236) 3 xxx xxx</li>
+          <li><i class="fa-solid fa-envelope"></i> contact@rehabcare.danang.gov.vn</li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Dành cho</h4>
+        <ul>
+          <li><a href="register.html">Người thân học viên</a></li>
+          <li><a href="login.html">Cán bộ trung tâm</a></li>
+          <li><a href="login.html">Bác sĩ phụ trách</a></li>
+          <li><a href="login.html">Cơ quan Công an</a></li>
+          <li><a href="login.html">Lãnh đạo trung tâm</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Hỗ trợ</h4>
+        <ul>
+          <li><a href="user-guide.html">Hướng dẫn sử dụng</a></li>
+          <li><a href="disease-signs.html">Dấu hiệu & Hỗ trợ</a></li>
+          <li><a href="#">Câu hỏi thường gặp</a></li>
+          <li><a href="#">Chính sách bảo mật</a></li>
+          <li><a href="#">Điều khoản dịch vụ</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2024 Trung tâm Cai nghiện Ma túy TP Đà Nẵng. Bảo lưu mọi quyền.</span>
+      <span>Phát triển bởi Nhóm sinh viên CNTT — Đồ án tốt nghiệp</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/public-particles.js"></script>
+<script src="js/config.js"></script>
+<script src="js/public-index.js"></script>
+</body>
+</html>

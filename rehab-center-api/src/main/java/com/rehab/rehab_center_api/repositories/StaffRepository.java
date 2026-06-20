@@ -1,6 +1,7 @@
 package com.rehab.rehab_center_api.repositories;
 
 import com.rehab.rehab_center_api.entities.Staff;
+import com.rehab.rehab_center_api.enums.StaffStatus;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -9,4 +10,6 @@ import java.util.Optional;
 public interface StaffRepository extends org.springframework.data.jpa.repository.JpaRepository<Staff, String> {
 
     Optional<Staff> findByUser_Id(Integer userId);
+
+    long countByUser_Role_NameAndStatus(String roleName, StaffStatus status);
 }

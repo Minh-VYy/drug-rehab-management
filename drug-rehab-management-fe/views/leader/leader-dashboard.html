@@ -1,0 +1,138 @@
+<div class="page-header page-header-row">
+  <div>
+    <h1>Xin chào, <span id="leader-user-name">Lãnh đạo</span></h1>
+    <p>Tổng quan hoạt động tiếp nhận, điều trị và hoàn thành cai nghiện.</p>
+  </div>
+  <div class="dash-date-card">
+    <div id="leader-date-num" class="dash-date-num"></div>
+    <div id="leader-date-label" class="dash-date-label"></div>
+  </div>
+</div>
+
+<div class="stats-grid" id="leader-stats-grid">
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-blue">
+      <i class="fa-solid fa-user-injured"></i>
+    </div>
+    <div class="stat-value" id="leader-active-patients">0</div>
+    <div class="stat-label">Đang điều trị</div>
+    <div class="stat-trend up">Người cai nghiện đang ở trung tâm</div>
+    <div class="stat-orb orb-blue"></div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-orange">
+      <i class="fa-solid fa-clock"></i>
+    </div>
+    <div class="stat-value" id="leader-pending-intakes">0</div>
+    <div class="stat-label">Chờ tiếp nhận</div>
+    <div class="stat-trend flat">Hồ sơ chờ lãnh đạo xem xét</div>
+    <div class="stat-orb orb-orange"></div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-purple">
+      <i class="fa-solid fa-clipboard-check"></i>
+    </div>
+    <div class="stat-value" id="leader-pending-completions">0</div>
+    <div class="stat-label">Chờ hoàn thành</div>
+    <div class="stat-trend flat">Đề xuất hoàn thành cai nghiện</div>
+    <div class="stat-orb orb-purple"></div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-green">
+      <i class="fa-solid fa-circle-check"></i>
+    </div>
+    <div class="stat-value" id="leader-completed-patients">0</div>
+    <div class="stat-label">Đã hoàn thành</div>
+    <div class="stat-trend up">Người đã hoàn thành chương trình</div>
+    <div class="stat-orb orb-green"></div>
+  </div>
+</div>
+
+<div class="dashboard-content-grid">
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">
+          <i class="fa-solid fa-list-check card-title-icon"></i>
+          <span>Cần xử lý gần đây</span>
+        </div>
+        <div class="card-header-meta">Danh sách hồ sơ/đề xuất cần lãnh đạo xem xét</div>
+      </div>
+      <button class="btn btn-sm btn-outline" id="btnViewAllLeaderTasks">
+        Xem tất cả <i class="fa-solid fa-arrow-right"></i>
+      </button>
+    </div>
+    <div class="table-wrapper">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Mã hồ sơ/đề xuất</th>
+            <th>Loại xử lý</th>
+            <th>Đối tượng</th>
+            <th>Ngày gửi</th>
+            <th>Trạng thái</th>
+            <th>Thao tác</th>
+          </tr>
+        </thead>
+        <tbody id="leaderRecentTaskList"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">
+          <i class="fa-solid fa-bolt card-title-icon"></i>
+          <span>Thao tác nhanh</span>
+        </div>
+      </div>
+    </div>
+    <div style="padding:18px 22px;">
+      <div class="quick-actions">
+        <a href="#/reports" class="quick-action-btn" data-link>
+          <div class="qa-icon blue"><i class="fa-solid fa-chart-line"></i></div>
+          <div style="flex:1; min-width:0;">
+            <div class="qa-text">Xem báo cáo</div>
+            <div class="qa-sub">Báo cáo tổng quan trung tâm</div>
+          </div>
+          <i class="fa-solid fa-chevron-right text-muted"></i>
+        </a>
+
+        <a href="#/approvals-receive" class="quick-action-btn" data-link>
+          <div class="qa-icon orange"><i class="fa-solid fa-user-check"></i></div>
+          <div style="flex:1; min-width:0;">
+            <div class="qa-text">Duyệt tiếp nhận</div>
+            <div class="qa-sub">Hồ sơ bàn giao chờ duyệt</div>
+          </div>
+          <i class="fa-solid fa-chevron-right text-muted"></i>
+        </a>
+
+        <a href="#/approvals-complete" class="quick-action-btn" data-link>
+          <div class="qa-icon green"><i class="fa-solid fa-circle-check"></i></div>
+          <div style="flex:1; min-width:0;">
+            <div class="qa-text">Duyệt hoàn thành</div>
+            <div class="qa-sub">Đề xuất hoàn thành cai nghiện</div>
+          </div>
+          <i class="fa-solid fa-chevron-right text-muted"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card mt-4">
+  <div class="card-header">
+    <div>
+      <div class="card-title">
+        <i class="fa-solid fa-chart-column card-title-icon"></i>
+        <span>Thống kê theo giai đoạn</span>
+      </div>
+      <div class="card-header-meta">Người cai nghiện đang điều trị theo từng giai đoạn</div>
+    </div>
+  </div>
+  <div id="leaderStageChart" style="padding:18px 22px;"></div>
+</div>

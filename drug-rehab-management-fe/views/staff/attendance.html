@@ -1,0 +1,177 @@
+﻿<div class="staff-attendance-page">
+  <div class="page-header page-header-row staff-attendance-header">
+    <div>
+      <h2 class="page-title">Điểm danh <span class="text-highlight">học viên</span></h2>
+      <p class="page-subtitle">Theo dõi tình trạng tham gia sinh hoạt của học viên theo từng lịch hoạt động.</p>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-card-icon stat-icon-blue">
+        <i class="fa-solid fa-clipboard-check"></i>
+        <div class="stat-orb orb-blue"></div>
+      </div>
+      <div class="stat-value" id="statAttendanceTotal">0</div>
+      <div class="stat-label">Tổng lượt điểm danh</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-icon stat-icon-green">
+        <i class="fa-solid fa-circle-check"></i>
+        <div class="stat-orb orb-green"></div>
+      </div>
+      <div class="stat-value" id="statAttendancePresent">0</div>
+      <div class="stat-label">Có mặt</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-icon stat-icon-orange">
+        <i class="fa-solid fa-file-circle-check"></i>
+        <div class="stat-orb orb-orange"></div>
+      </div>
+      <div class="stat-value" id="statAttendanceExcused">0</div>
+      <div class="stat-label">Vắng có phép</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-icon stat-icon-red">
+        <i class="fa-solid fa-circle-xmark"></i>
+        <div class="stat-orb orb-red"></div>
+      </div>
+      <div class="stat-value" id="statAttendanceUnexcused">0</div>
+      <div class="stat-label">Vắng không phép</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title-icon card-icon-blue">
+        <i class="fa-solid fa-user-check"></i>
+      </div>
+      <div>
+        <span class="card-title">Danh sách điểm danh</span>
+        <p class="card-subtitle">Lượt điểm danh học viên theo từng lịch sinh hoạt.</p>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="toolbar">
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input id="attendanceSearchInput" type="text" placeholder="Tìm mã học viên, họ tên, mã lịch..." />
+        </div>
+        <select id="attendanceScheduleFilter" class="filter-select">
+          <option value="all">Tất cả lịch sinh hoạt</option>
+        </select>
+        <select id="attendanceStatusFilter" class="filter-select">
+          <option value="all">Tất cả trạng thái</option>
+          <option value="CoMat">Có mặt</option>
+          <option value="VangMatCoPhep">Vắng có phép</option>
+          <option value="VangMatKhongPhep">Vắng không phép</option>
+        </select>
+        <input id="attendanceDateFilter" type="date" class="filter-select" />
+      </div>
+
+      <div class="table-responsive">
+        <table class="data-table staff-attendance-table">
+          <thead>
+            <tr>
+              <th>Mã lịch</th>
+              <th>Hoạt động</th>
+              <th>Mã học viên</th>
+              <th>Họ tên</th>
+              <th>Thời gian</th>
+              <th>Trạng thái</th>
+              <th>Ghi chú</th>
+              <th>Thao tác</th>
+            </tr>
+          </thead>
+          <tbody id="attendanceTableBody">
+            <tr>
+              <td colspan="8" class="staff-attendance-state-cell">
+                <div class="staff-attendance-loading">
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                  Đang tải dữ liệu...
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="attendanceDetailModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-header-info">
+        <div class="modal-icon modal-icon-blue">
+          <i class="fa-solid fa-clipboard-check"></i>
+        </div>
+        <h3>Chi tiết điểm danh</h3>
+      </div>
+      <button class="modal-close" id="attendanceDetailCloseBtn">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="modal-body" id="attendanceDetailBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="attendanceDetailCloseBtn2">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="attendanceUpdateModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-header-info">
+        <div class="modal-icon modal-icon-orange">
+          <i class="fa-solid fa-pen-to-square"></i>
+        </div>
+        <h3 id="attendanceUpdateTitle">Cập nhật điểm danh</h3>
+      </div>
+      <button class="modal-close" id="attendanceUpdateCloseBtn">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="attendanceUpdateId" />
+
+      <div
+        style="padding:16px; background:rgba(59,130,246,0.08); border-left:4px solid var(--primary); border-radius:var(--radius-md); margin-bottom:24px;">
+        <div style="font-size:13px; font-weight:700; color:var(--text-primary); margin-bottom:8px;">
+          <i class="fa-solid fa-calendar-check" style="margin-right:8px; color:var(--primary);"></i>
+          Thông tin lịch điểm danh
+        </div>
+        <div style="font-size:14px; color:var(--text-secondary); line-height:1.6;" id="attendanceUpdateSummary"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="attendanceUpdateStatus" class="form-label">
+          <i class="fa-solid fa-circle-check" style="color:var(--primary); margin-right:6px;"></i>
+          Trạng thái <span class="required">*</span>
+        </label>
+        <select id="attendanceUpdateStatus" class="form-control">
+          <option value="CoMat">✓ Có mặt</option>
+          <option value="VangMatCoPhep">⊘ Vắng có phép</option>
+          <option value="VangMatKhongPhep">✗ Vắng không phép</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="attendanceUpdateNote" class="form-label">
+          <i class="fa-solid fa-note-sticky" style="color:var(--orange); margin-right:6px;"></i>
+          Ghi chú <span id="attendanceUpdateNoteRequired" class="required" style="display: none;">*</span>
+        </label>
+        <textarea id="attendanceUpdateNote" class="form-control" rows="4"
+          placeholder="Nhập lý do vắng mặt hoặc ghi chú về tình trạng học viên..."></textarea>
+        <p class="form-error" id="attendanceUpdateNoteError" style="display: none;">
+          <i class="fa-solid fa-triangle-exclamation"></i> Vui lòng nhập lý do vắng mặt.
+        </p>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="attendanceUpdateCancelBtn"><i class="fa-solid fa-xmark"></i> Hủy</button>
+      <button class="btn btn-primary" id="attendanceUpdateSaveBtn"><i class="fa-solid fa-floppy-disk"></i> Lưu thay
+        đổi</button>
+    </div>
+  </div>
+</div>

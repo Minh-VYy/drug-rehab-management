@@ -12,6 +12,18 @@ public final class SecurityConstants {
             "/api/v1/auth/login"
     };
 
+    public static final String[] PUBLIC_VY_DEMO_API_PATHS = {
+            "/api/v1/medical-records",
+            "/api/v1/medical-records/**",
+            "/api/v1/treatment-plans",
+            "/api/v1/treatment-plans/**"
+    };
+
+    public static final String[] PUBLIC_API_PATHS = {
+            "/api/v1/public",
+            "/api/v1/public/**"
+    };
+
     public static final String[] SWAGGER_PATHS = {
             "/api-docs",
             "/api-docs/**",
@@ -29,6 +41,38 @@ public final class SecurityConstants {
     public static boolean isPublicAuthPath(String path) {
         for (String publicPath : PUBLIC_AUTH_PATHS) {
             if (path.equals(publicPath)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isPublicVyDemoApiPath(String path) {
+        for (String publicPath : PUBLIC_VY_DEMO_API_PATHS) {
+            if (publicPath.endsWith("/**")) {
+                String prefix = publicPath.substring(0, publicPath.length() - 3);
+                if (path.startsWith(prefix)) {
+                    return true;
+                }
+                continue;
+            }
+            if (path.equals(publicPath) || path.startsWith(publicPath + "/")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isPublicApiPath(String path) {
+        for (String publicPath : PUBLIC_API_PATHS) {
+            if (publicPath.endsWith("/**")) {
+                String prefix = publicPath.substring(0, publicPath.length() - 3);
+                if (path.startsWith(prefix)) {
+                    return true;
+                }
+                continue;
+            }
+            if (path.equals(publicPath) || path.startsWith(publicPath + "/")) {
                 return true;
             }
         }

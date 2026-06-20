@@ -1,0 +1,246 @@
+<div class="page-header">
+  <div>
+    <h1>Quản lý <span>tài khoản người dùng</span></h1>
+    <p>Quản lý thông tin đăng nhập và phân quyền của toàn hệ thống</p>
+  </div>
+  <button class="btn btn-primary" id="btnCreateUser">
+    <i class="fa-solid fa-plus"></i> Tạo tài khoản mới
+  </button>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-blue">
+      <i class="fa-solid fa-users"></i>
+    </div>
+    <div class="stat-value" id="statTotalUsers">0</div>
+    <div class="stat-label">Tổng tài khoản</div>
+    <div class="stat-orb orb-blue"></div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-green">
+      <i class="fa-solid fa-circle-check"></i>
+    </div>
+    <div class="stat-value" id="statActiveUsers">0</div>
+    <div class="stat-label">Đang hoạt động</div>
+    <div class="stat-orb orb-green"></div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-red">
+      <i class="fa-solid fa-lock"></i>
+    </div>
+    <div class="stat-value" id="statLockedUsers">0</div>
+    <div class="stat-label">Tạm khóa</div>
+    <div class="stat-orb orb-red"></div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-purple">
+      <i class="fa-solid fa-user-shield"></i>
+    </div>
+    <div class="stat-value" id="statAdminUsers">0</div>
+    <div class="stat-label">Quản trị viên</div>
+    <div class="stat-orb orb-purple"></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div>
+      <div class="card-title">
+        <div class="card-title-icon">
+          <i class="fa-solid fa-users"></i>
+        </div>
+        Danh sách tài khoản
+      </div>
+      <p class="card-header-meta">Toàn bộ tài khoản đang được quản lý trong hệ thống</p>
+    </div>
+  </div>
+
+  <div class="card-body">
+    <div class="toolbar">
+      <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+        <input type="text" id="userSearchInput" placeholder="Tìm tên đăng nhập, họ tên, email, SĐT..." />
+      </div>
+
+      <div class="filter-group">
+        <select id="userRoleFilter" class="filter-select">
+          <option value="all">Tất cả vai trò</option>
+          <option value="Admin">Admin</option>
+          <option value="LanhDao">Lãnh đạo</option>
+          <option value="BacSi">Bác sĩ</option>
+          <option value="CanBoQuanLy">Cán bộ quản lý</option>
+          <option value="CanBoTrungTam">Cán bộ trung tâm</option>
+          <option value="CongAn">Công an</option>
+          <option value="NguoiThan">Người thân</option>
+        </select>
+
+        <select id="userStatusFilter" class="filter-select">
+          <option value="all">Tất cả trạng thái</option>
+          <option value="HoatDong">Đang hoạt động</option>
+          <option value="TamKhoa">Tạm khóa</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Tên đăng nhập</th>
+            <th>Họ tên</th>
+            <th>Email</th>
+            <th>Số điện thoại</th>
+            <th>Vai trò</th>
+            <th>Trạng thái</th>
+            <th>Ngày tạo</th>
+            <th>Thao tác</th>
+          </tr>
+        </thead>
+        <tbody id="userTableBody"></tbody>
+      </table>
+    </div>
+
+    <div class="table-loading" id="userLoadingState"
+      style="display:none; padding:3rem; text-align:center; color:var(--text-muted);">
+      <i class="fa-solid fa-circle-notch fa-spin" style="font-size:2rem; margin-bottom:1rem; display:block;"></i>
+      Đang tải dữ liệu...
+    </div>
+
+    <div class="table-empty" id="userEmptyState"
+      style="display:none; padding:3rem; text-align:center; color:var(--text-muted);">
+      <i class="fa-solid fa-inbox" style="font-size:3rem; opacity:0.3; display:block; margin-bottom:1rem;"></i>
+      Không tìm thấy tài khoản phù hợp.
+    </div>
+  </div>
+</div>
+
+<!-- Modal xem chi tiết -->
+<div class="modal-overlay" id="userDetailModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-header-info">
+        <div class="modal-icon modal-icon-blue">
+          <i class="fa-solid fa-user"></i>
+        </div>
+        <div>
+          <div class="modal-title">Chi tiết tài khoản</div>
+          <div class="modal-subtitle">Thông tin đăng nhập và phân quyền</div>
+        </div>
+      </div>
+      <button class="modal-close" id="userDetailCloseBtn">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="modal-body" id="userDetailBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="userDetailCloseBtn2">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal tạo/chỉnh sửa -->
+<div class="modal-overlay" id="userFormModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div class="modal-header-info">
+        <div class="modal-icon modal-icon-green" id="userFormModalIcon">
+          <i class="fa-solid fa-plus"></i>
+        </div>
+        <div>
+          <div class="modal-title" id="userFormTitle">Tạo tài khoản mới</div>
+          <div class="modal-subtitle">Điền đầy đủ thông tin tài khoản</div>
+        </div>
+      </div>
+      <button class="modal-close" id="userFormCloseBtn">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="module-form-grid">
+        <div class="form-group">
+          <label class="form-label">Tên đăng nhập <span style="color:var(--danger)">*</span></label>
+          <input type="text" id="formTenDangNhap" class="form-control" placeholder="VD: bspt004" />
+          <span class="form-error" id="errTenDangNhap"></span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Họ tên <span style="color:var(--danger)">*</span></label>
+          <input type="text" id="formHoTen" class="form-control" placeholder="Họ và tên đầy đủ" />
+          <span class="form-error" id="errHoTen"></span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email <span style="color:var(--danger)">*</span></label>
+          <input type="email" id="formEmail" class="form-control" placeholder="email@rehabcare.vn" />
+          <span class="form-error" id="errEmail"></span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Số điện thoại</label>
+          <input type="text" id="formSdt" class="form-control" maxlength="10" placeholder="10 số" />
+          <span class="form-error" id="errSdt"></span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Vai trò <span style="color:var(--danger)">*</span></label>
+          <select id="formVaiTro" class="form-control">
+            <option value="Admin">Admin</option>
+            <option value="LanhDao">Lãnh đạo</option>
+            <option value="BacSi">Bác sĩ</option>
+            <option value="CanBoQuanLy">Cán bộ quản lý</option>
+            <option value="CanBoTrungTam">Cán bộ trung tâm</option>
+            <option value="CongAn">Công an</option>
+            <option value="NguoiThan">Người thân</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="formPasswordGroup">
+          <label class="form-label">Mật khẩu khởi tạo <span style="color:var(--danger)">*</span></label>
+          <input type="text" id="formMatKhau" class="form-control" placeholder="Mật khẩu tạm thời" />
+          <span class="form-error" id="errMatKhau"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="userFormCancelBtn">Hủy</button>
+      <button class="btn btn-primary" id="userFormSaveBtn">
+        <i class="fa-solid fa-floppy-disk"></i> Lưu tài khoản
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal xác nhận khóa/mở khóa -->
+<div class="modal-overlay" id="userLockModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-header-info">
+        <div class="modal-icon modal-icon-red">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <div>
+          <div class="modal-title" id="userLockTitle">Xác nhận khóa tài khoản</div>
+          <div class="modal-subtitle">Hành động này sẽ ảnh hưởng đến quyền truy cập</div>
+        </div>
+      </div>
+      <button class="modal-close" id="userLockCloseBtn">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p id="userLockMessage" style="color:var(--text-primary); font-size:14px;"></p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="userLockCancelBtn">Hủy</button>
+      <button class="btn btn-danger" id="userLockOkBtn">
+        <i class="fa-solid fa-check"></i> Xác nhận
+      </button>
+    </div>
+  </div>
+</div>

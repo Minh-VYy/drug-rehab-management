@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dấu hiệu & Hỗ trợ — RehabCare Đà Nẵng</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/public-base.css" />
+  <link rel="stylesheet" href="css/public-index.css" />
+</head>
+<body>
+
+<nav class="navbar" id="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <img src="assets/images/logo.png" alt="RehabCare Logo" />
+      <div class="nav-logo-text">
+        <strong>TT Cai nghiện MT Đà Nẵng</strong>
+        <small>Cơ sở Quản lý &amp; Điều trị</small>
+      </div>
+    </a>
+    <div class="nav-links">
+      <a href="intake-process.html" class="nav-link">Quy trình</a>
+      <a href="user-guide.html" class="nav-link">Hướng dẫn</a>
+      <a href="disease-signs.html" class="nav-link">Dấu hiệu</a>
+    </div>
+    <div class="nav-cta">
+      <a href="login.html" class="btn btn-ghost btn-sm"><i class="fa-solid fa-right-to-bracket"></i> Đăng nhập</a>
+      <a href="register.html" class="btn btn-primary btn-sm"><i class="fa-solid fa-user-plus"></i> Đăng ký</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page-header">
+  <canvas id="particleCanvas" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:1; opacity:0.3;"></canvas>
+  <h1>Dấu hiệu nhận biết & Hỗ trợ Y tế</h1>
+  <p>Nhận biết sớm các dấu hiệu nghiện ma túy giúp gia đình có biện pháp can thiệp và hỗ trợ kịp thời, bảo vệ sức khỏe và tương lai của người thân.</p>
+</div>
+
+<div class="signs-grid">
+  <div class="sign-card">
+    <div class="sign-card-icon icon-red"><i class="fa-solid fa-heart-pulse"></i></div>
+    <h3>Dấu hiệu Thể chất</h3>
+    <ul>
+      <li><i class="fa-solid fa-triangle-exclamation"></i> Sụt cân nhanh chóng, suy nhược cơ thể rõ rệt.</li>
+      <li><i class="fa-solid fa-triangle-exclamation"></i> Ánh mắt lờ đờ, đồng tử giãn hoặc co rút bất thường.</li>
+      <li><i class="fa-solid fa-triangle-exclamation"></i> Rối loạn giấc ngủ: thức đêm, ngủ ngày kéo dài.</li>
+      <li><i class="fa-solid fa-triangle-exclamation"></i> Thường xuyên chảy nước mắt, ngáp vặt, đổ mồ hôi.</li>
+    </ul>
+  </div>
+
+  <div class="sign-card">
+    <div class="sign-card-icon icon-orange"><i class="fa-solid fa-brain"></i></div>
+    <h3>Dấu hiệu Tâm lý</h3>
+    <ul>
+      <li><i class="fa-solid fa-triangle-exclamation"></i> Tâm trạng thay đổi thất thường, dễ cáu gắt, nổi nóng vô cớ.</li>
+      <li><i class="fa-solid fa-triangle-exclamation"></i> Có biểu hiện hoang tưởng, lo âu, sợ hãi đám đông.</li>
+      <li><i class="fa-solid fa-triangle-exclamation"></i> Mất tập trung, trí nhớ giảm sút nghiêm trọng.</li>
+      <li><i class="fa-solid fa-triangle-exclamation"></i> Mất hứng thú với các sở thích, đam mê trước đây.</li>
+    </ul>
+  </div>
+
+  <div class="sign-card">
+    <div class="sign-card-icon icon-purple"><i class="fa-solid fa-users-slash"></i></div>
+    <h3>Dấu hiệu Xã hội & Hành vi</h3>
+    <ul>
+      <li><i class="fa-solid fa-triangle-exclamation"></i> Xa lánh gia đình, thường xuyên nhốt mình trong phòng.</li>
+      <li><i class="fa-solid fa-triangle-exclamation"></i> Thay đổi nhóm bạn bè, thường tụ tập nơi khuất tầm nhìn.</li>
+      <li><i class="fa-solid fa-triangle-exclamation"></i> Bỏ học, trốn việc, hiệu suất công việc/học tập sụt giảm.</li>
+      <li><i class="fa-solid fa-triangle-exclamation"></i> Nhu cầu tiêu tiền tăng đột biến, hay nói dối, cầm cố tài sản.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="support-banner">
+  <h2>Khi nào bạn cần liên hệ hỗ trợ?</h2>
+  <p>Đừng chờ đợi cho đến khi tình hình trở nên nghiêm trọng. Việc can thiệp sớm sẽ giúp quá trình cai nghiện đạt hiệu quả cao nhất và giảm thiểu tổn thương.</p>
+  
+  <div style="max-width: 700px; margin: 0 auto 30px;">
+    <div class="accordion-item">
+      <div class="accordion-header">
+        Phát hiện dụng cụ sử dụng ma túy <i class="fa-solid fa-chevron-down"></i>
+      </div>
+      <div class="accordion-body">
+        Nếu bạn tìm thấy bơm kim tiêm, giấy bạc, chai lọ tự chế dạng tẩu hút... trong phòng hoặc đồ dùng cá nhân của người thân, đây là dấu hiệu rõ ràng nhất. Cần bình tĩnh và tìm kiếm sự hỗ trợ tư vấn từ cơ quan y tế.
+      </div>
+    </div>
+    
+    <div class="accordion-item">
+      <div class="accordion-header">
+        Người thân mất kiểm soát hành vi <i class="fa-solid fa-chevron-down"></i>
+      </div>
+      <div class="accordion-body">
+        Khi người thân có biểu hiện "ngáo đá", hoang tưởng, đập phá đồ đạc hoặc có xu hướng bạo lực gây nguy hiểm cho bản thân và người xung quanh. Trong trường hợp này cần gọi ngay cho Cơ quan Công an hoặc Trung tâm y tế khẩn cấp.
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <div class="accordion-header">
+        Người bệnh tự nguyện muốn cai nghiện <i class="fa-solid fa-chevron-down"></i>
+      </div>
+      <div class="accordion-body">
+        Đây là thời điểm "vàng". Hãy động viên, đồng hành và đăng ký ngay hồ sơ tiếp nhận tự nguyện trên hệ thống RehabCare để được hỗ trợ thủ tục nhanh nhất.
+      </div>
+    </div>
+  </div>
+
+  <a href="register.html" class="btn btn-primary btn-lg"><i class="fa-solid fa-user-plus"></i> Đăng ký tài khoản để Gửi yêu cầu</a>
+  <a href="#contact" class="btn btn-ghost btn-lg"><i class="fa-solid fa-phone"></i> Xem thông tin liên hệ khẩn cấp</a>
+</div>
+
+<footer class="footer" id="contact">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">
+          <img src="assets/images/logo.png" alt="RehabCare" />
+          <div class="footer-brand-text">
+            <strong>RehabCare Đà Nẵng</strong>
+            <span>Trung tâm Cai nghiện Ma túy TP. Đà Nẵng</span>
+          </div>
+        </div>
+        <p class="footer-desc">Đơn vị tiên phong trong số hóa quy trình quản lý và điều trị cai nghiện tại miền Trung Việt Nam.</p>
+        <ul class="footer-contact">
+          <li><i class="fa-solid fa-location-dot"></i> 123 Đường Hòa Xuân, Q. Cẩm Lệ, TP Đà Nẵng</li>
+          <li><i class="fa-solid fa-phone"></i> (0236) 3 xxx xxx</li>
+          <li><i class="fa-solid fa-envelope"></i> contact@rehabcare.danang.gov.vn</li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Dành cho</h4>
+        <ul>
+          <li><a href="register.html">Người thân học viên</a></li>
+          <li><a href="login.html">Cán bộ trung tâm</a></li>
+          <li><a href="login.html">Bác sĩ phụ trách</a></li>
+          <li><a href="login.html">Cơ quan Công an</a></li>
+          <li><a href="login.html">Lãnh đạo trung tâm</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Hỗ trợ</h4>
+        <ul>
+          <li><a href="user-guide.html">Hướng dẫn sử dụng</a></li>
+          <li><a href="disease-signs.html">Dấu hiệu & Hỗ trợ</a></li>
+          <li><a href="#">Câu hỏi thường gặp</a></li>
+          <li><a href="#">Chính sách bảo mật</a></li>
+          <li><a href="#">Điều khoản dịch vụ</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2024 Trung tâm Cai nghiện Ma túy TP Đà Nẵng. Bảo lưu mọi quyền.</span>
+      <span>Phát triển bởi Nhóm sinh viên CNTT — Đồ án tốt nghiệp</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/public-particles.js"></script>
+<script src="js/config.js"></script>
+<script src="js/public-index.js"></script>
+</body>
+</html>

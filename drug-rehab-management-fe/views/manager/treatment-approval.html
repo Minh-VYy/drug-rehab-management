@@ -1,0 +1,43 @@
+<div class="page-header page-header-row">
+    <div>
+        <h1>Phê duyệt <span>Phác đồ điều trị</span></h1>
+        <p>Xem xét, phê duyệt hoặc từ chối phác đồ do bác sĩ lập.</p>
+    </div>
+    <div style="background:rgba(99,102,241,0.12); border:1px solid rgba(99,102,241,0.2);
+                color:#818cf8; width:52px; height:52px; border-radius:14px;
+                display:flex; align-items:center; justify-content:center;
+                font-size:22px; flex-shrink:0;">
+        <i class="fa-solid fa-stamp"></i>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header" style="flex-wrap:wrap; gap:1rem;">
+        <div>
+            <div class="card-title">
+                <div class="card-title-icon"><i class="fa-solid fa-table-list"></i></div>
+                Danh sách phác đồ
+            </div>
+            <div class="card-header-meta">Mặc định hiển thị các phác đồ đang chờ duyệt</div>
+        </div>
+        <div class="toolbar" style="margin-bottom:0;">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input id="ta-search" type="search"
+                    placeholder="Tìm mã phác đồ, bệnh án, bác sĩ..."
+                    oninput="TreatmentApprovalPage.applyFilter()">
+            </div>
+            <div class="filter-group">
+                <select id="ta-status-filter" class="filter-select" onchange="TreatmentApprovalPage.applyFilter()">
+                    <option value="ChoPheDuyet" selected>Chờ phê duyệt</option>
+                    <option value="all">Tất cả trạng thái</option>
+                    <option value="DaPheDuyet">Đã phê duyệt</option>
+                    <option value="TuChoi">Từ chối</option>
+                    <option value="DangApDung">Đang áp dụng</option>
+                    <option value="HoanThanh">Hoàn thành</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="card-body" id="ta-table"></div>
+</div>

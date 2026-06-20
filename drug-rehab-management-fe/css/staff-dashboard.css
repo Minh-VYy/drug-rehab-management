@@ -1,0 +1,155 @@
+/* --- Staff Dashboard Premium CSS --- */
+
+/* --- Date Card --- */
+.staff-dashboard-date-card {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: #fff;
+  border-radius: 16px;
+  padding: 1rem 1.5rem;
+  text-align: center;
+  min-width: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.staff-dashboard-date-day {
+  font-size: 2.2rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.staff-dashboard-date-label {
+  font-size: 0.85rem;
+  margin-top: 5px;
+  opacity: 0.9;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* --- Task Item in List --- */
+.staff-dashboard-task-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.2rem;
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 16px;
+  transition: all 0.3s ease;
+  cursor: default;
+}
+
+.staff-dashboard-task-item:hover {
+  background: #ffffff;
+  transform: translateX(5px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.staff-dashboard-task-icon {
+  width: 45px;
+  height: 45px;
+  border-radius: 12px;
+  background: #eff6ff;
+  color: #3b82f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1.2rem;
+}
+
+.staff-dashboard-task-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.staff-dashboard-task-title {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #1e293b;
+  margin-bottom: 2px;
+}
+
+.staff-dashboard-task-subtitle {
+  font-size: 0.9rem;
+  color: #475569;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.staff-dashboard-task-time {
+  font-size: 0.85rem;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+/* --- Quick Actions Items --- */
+.staff-dashboard-quick-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.staff-dashboard-quick-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid rgba(255,255,255,0.4);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.3);
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.staff-dashboard-quick-item:hover {
+  background: #ffffff;
+  border-color: #3b82f6;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(59,130,246,0.1);
+}
+
+.staff-dashboard-quick-icon {
+  width: 45px;
+  height: 45px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1.2rem;
+}
+
+.staff-dashboard-quick-title {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #1e293b;
+  margin-bottom: 2px;
+}
+
+.staff-dashboard-quick-desc {
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.staff-dashboard-quick-arrow {
+  margin-left: auto;
+  color: #94a3b8;
+  transition: all 0.3s;
+}
+
+.staff-dashboard-quick-item:hover .staff-dashboard-quick-arrow {
+  color: #3b82f6;
+  transform: translateX(3px);
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .profile-grid {
+    grid-template-columns: 1fr !important;
+  }
+}

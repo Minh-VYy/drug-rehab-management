@@ -40,6 +40,9 @@ public class MedicalRecord {
     @Column(name = "CanNang", precision = 5, scale = 2)
     private BigDecimal weight;
 
+    @Column(name = "NhomMau", length = 10)
+    private String bloodGroup;
+
     @Column(name = "NgayLap")
     private LocalDateTime createdAt;
 

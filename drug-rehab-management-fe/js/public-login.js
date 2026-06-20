@@ -26,25 +26,14 @@ function togglePw() {
   }
 }
 
-/* ---- Quick demo login ---- */
-const QUICK = {
-  admin: 'Nguyễn Văn An',
-  doctor: 'BS. Trần Thị Mai',
-  staff: 'NV. Lê Văn Hùng',
-  family: 'Nguyễn Thị Lan',
-  police: 'CA. Đặng Văn Nam',
-  manager: 'QL. Phạm Thị Phương',
-  director: 'GĐ. Hoàng Văn Đức'
-};
-
 function quickLogin(role) {
   const users = {
     admin: 'admin',
-    doctor: 'bs.mai',
+    doctor: 'doctor',
     staff: 'nv.hung',
     family: 'nt.lan',
     police: 'ca.nam',
-    manager: 'ql.phuong',
+    manager: 'manager',
     director: 'ld.duc'
   };
   const usernameInput = document.getElementById('username');

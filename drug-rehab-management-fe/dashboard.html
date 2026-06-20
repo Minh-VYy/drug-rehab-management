@@ -7,21 +7,26 @@
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- CSS -->
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard-premium.css?v=2">
+    <link rel="stylesheet" href="css/common-pages.css">
+    <link rel="stylesheet" href="css/clinical-workflows.css?v=2">
+    <link rel="stylesheet" href="css/admin-3d.css?v=1">
+    <link rel="stylesheet" href="css/staff-dashboard.css">
 </head>
 <body class="bg-background">
-    <div id="app-layout" class="layout-wrapper">
+    <div id="app-layout" class="app-layout">
+        <canvas id="dashboardCanvas" style="position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1; pointer-events:none;"></canvas>
         <!-- Sidebar container -->
         <aside id="sidebar-container" class="sidebar"></aside>
 
-        <div class="main-wrapper">
+        <div class="main-content">
             <!-- Topbar container -->
             <header id="topbar-container" class="topbar"></header>
 
             <!-- Main content container -->
-            <main id="main-content" class="content">
+            <main id="main-content" class="page-body">
                 <!-- Content will be loaded dynamically here by router -->
                 <div class="loading-state" style="display: flex; justify-content: center; align-items: center; height: 100%;">
                     <i class="fa-solid fa-circle-notch fa-spin fa-2x text-primary"></i>
@@ -37,7 +42,7 @@
 
     <!-- Scripts Data Mock -->
     <!-- (Trong thực tế sẽ fetch từ API) -->
-    
+
     <!-- Core Scripts -->
     <script src="js/config.js"></script>
     <script src="js/utils.js"></script>
@@ -53,15 +58,47 @@
     <script src="js/components/chart.js"></script>
     <script src="js/components/sidebar.js"></script>
     <script src="js/components/topbar.js"></script>
-    
-    <!-- Pages Views -->
-    <script src="js/pages/doctor-dashboard.js"></script>
-    <script src="js/pages/family-dashboard.js"></script>
-    <script src="js/pages/admin-dashboard.js"></script>
-    <script src="js/pages/common-pages.js"></script> <!-- Các page dùng chung tạm thời -->
+    <script src="js/public-particles.js"></script>
 
-    <!-- Router & App Init -->
+    <!-- Data & Services -->
+    <script src="js/data/mock-users.data.js"></script>
+    <script src="js/data/mock-medical-records.data.js"></script>
+    <script src="js/data/mock-patients.data.js"></script>
+    <script src="js/data/mock-treatment-plans.data.js"></script>
+
+    <script src="js/services/user.service.js"></script>
+    <script src="js/services/medical-record.service.js"></script>
+
+    <!-- Core routing & loaders -->
+    <script src="js/view-loader.js"></script>
     <script src="js/router.js"></script>
     <script src="js/main.js"></script>
+
+    <!-- We will dynamically load page.js scripts or include them here as needed -->
+    <script src="js/pages/common/dashboard-home.page.js"></script>
+    <script src="js/pages/common/profile.page.js"></script>
+    <script src="js/pages/common/notification.page.js"></script>
+    <script src="js/pages/common/forbidden.page.js"></script>
+    <script src="js/pages/doctor/doctor-dashboard.page.js"></script>
+    <script src="js/pages/doctor/medical-record.page.js"></script>
+    <script src="js/pages/admin/admin-dashboard.page.js"></script>
+    <script src="js/pages/admin/medicine-category.page.js"></script>
+    <script src="js/pages/admin/user-management.page.js"></script>
+    <script src="js/pages/admin/role-management.page.js"></script>
+    <script src="js/pages/admin/system-log.page.js"></script>
+    <script src="js/pages/family/family-dashboard.page.js"></script>
+    <script src="js/pages/manager/manager-dashboard.page.js"></script>
+    <script src="js/pages/manager/treatment-approval.page.js"></script>
+    <script src="js/pages/leader/leader-dashboard.page.js"></script>
+    <script src="js/pages/leader/leader-report.page.js"></script>
+    <script src="js/pages/leader/intake-approval.page.js"></script>
+    <script src="js/pages/leader/completion-approval.page.js"></script>
+    <script src="js/pages/police/handover-create.page.js"></script>
+    <script src="js/pages/staff/staff-dashboard.page.js"></script>
+    <script src="js/pages/staff/intake-confirmation.page.js"></script>
+    <script src="js/pages/staff/patient-management.page.js"></script>
+    <script src="js/pages/staff/visit-approval.page.js"></script>
+    <script src="js/pages/staff/activity-schedule.page.js"></script>
+    <script src="js/pages/staff/attendance.page.js"></script>
 </body>
 </html>

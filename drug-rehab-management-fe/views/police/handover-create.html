@@ -1,0 +1,240 @@
+<div class="page-header">
+  <div>
+    <h2 class="page-title">Tao <span class="text-highlight">ho so ban giao</span></h2>
+    <p class="page-subtitle">Lap ho so ban giao nguoi cai nghien den trung tam xu ly.</p>
+  </div>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon icon-blue">
+      <i class="fa-solid fa-file-circle-plus"></i>
+    </div>
+    <div class="stat-value" id="handoverStatusValue">Nhap</div>
+    <div class="stat-label">Trang thai ho so</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon icon-orange">
+      <i class="fa-solid fa-list-check"></i>
+    </div>
+    <div class="stat-value" id="handoverMissingValue">7</div>
+    <div class="stat-label">Truong bat buoc con thieu</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon icon-green">
+      <i class="fa-solid fa-calendar-day"></i>
+    </div>
+    <div class="stat-value" id="handoverCreatedDate">--/--/----</div>
+    <div class="stat-label">Ngay tao ho so</div>
+  </div>
+</div>
+
+<div class="card" id="handoverCreatedCard" style="display:none;">
+  <div class="card-header">
+    <div>
+      <i class="fa-solid fa-circle-check icon-header"></i>
+      <span class="card-title">Ho so vua tao</span>
+      <p class="card-subtitle">Thong tin ho so da gui len he thong</p>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="module-detail-grid" id="handoverCreatedSummary"></div>
+  </div>
+</div>
+
+<form id="handoverCreateForm" novalidate>
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <i class="fa-solid fa-user-injured icon-header"></i>
+        <span class="card-title">Thong tin nguoi cai nghien</span>
+        <p class="card-subtitle">Thong tin dinh danh va noi cu tru hien tai</p>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="module-form-grid">
+        <label>
+          <span class="module-detail-label">Ho ten *</span>
+          <input class="form-control" name="patientName" placeholder="Nguyen Van A">
+          <small class="field-error" data-error-for="patientName"></small>
+        </label>
+        <label>
+          <span class="module-detail-label">CCCD *</span>
+          <input class="form-control" name="citizenId" placeholder="12 chu so" maxlength="12">
+          <small class="field-error" data-error-for="citizenId"></small>
+        </label>
+        <label>
+          <span class="module-detail-label">Ngay sinh *</span>
+          <input class="form-control" name="birthDate" type="date">
+          <small class="field-error" data-error-for="birthDate"></small>
+        </label>
+        <label>
+          <span class="module-detail-label">Gioi tinh</span>
+          <select class="form-control" name="gender">
+            <option value="">Chon gioi tinh</option>
+            <option>Nam</option>
+            <option>Nu</option>
+            <option>Khac</option>
+          </select>
+        </label>
+        <label>
+          <span class="module-detail-label">Que quan</span>
+          <input class="form-control" name="hometown" placeholder="Tinh/Thanh pho">
+        </label>
+        <label>
+          <span class="module-detail-label">Noi o hien tai</span>
+          <input class="form-control" name="currentAddress" placeholder="Dia chi hien tai">
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <i class="fa-solid fa-people-roof icon-header"></i>
+        <span class="card-title">Thong tin nguoi than</span>
+        <p class="card-subtitle">Nguoi lien he hoac nguoi giam ho</p>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="module-form-grid">
+        <label>
+          <span class="module-detail-label">Ho ten nguoi than *</span>
+          <input class="form-control" name="relativeName" placeholder="Nguyen Thi B">
+          <small class="field-error" data-error-for="relativeName"></small>
+        </label>
+        <label>
+          <span class="module-detail-label">So dien thoai *</span>
+          <input class="form-control" name="relativePhone" placeholder="10 chu so" maxlength="10">
+          <small class="field-error" data-error-for="relativePhone"></small>
+        </label>
+        <label>
+          <span class="module-detail-label">Quan he</span>
+          <input class="form-control" name="relationship" placeholder="Cha, me, vo/chong...">
+        </label>
+        <label>
+          <span class="module-detail-label">Dia chi lien he</span>
+          <input class="form-control" name="relativeAddress" placeholder="Dia chi nguoi than">
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <i class="fa-solid fa-triangle-exclamation icon-header"></i>
+        <span class="card-title">Thong tin vi pham</span>
+        <p class="card-subtitle">Thong tin phat hien va don vi lap ho so</p>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="module-form-grid">
+        <label class="full">
+          <span class="module-detail-label">Hanh vi vi pham *</span>
+          <textarea class="form-control" name="violationBehavior" placeholder="Mo ta hanh vi vi pham"></textarea>
+          <small class="field-error" data-error-for="violationBehavior"></small>
+        </label>
+        <label>
+          <span class="module-detail-label">Loai chat su dung</span>
+          <input class="form-control" name="substanceType" placeholder="Heroin, ma tuy da...">
+        </label>
+        <label>
+          <span class="module-detail-label">Ngay phat hien</span>
+          <input class="form-control" name="detectedDate" type="date">
+        </label>
+        <label>
+          <span class="module-detail-label">Dia diem phat hien</span>
+          <input class="form-control" name="detectedLocation" placeholder="Dia diem">
+        </label>
+        <label>
+          <span class="module-detail-label">Don vi lap ho so</span>
+          <input class="form-control" name="policeUnit" placeholder="Cong an phuong/quan">
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <i class="fa-solid fa-folder-open icon-header"></i>
+        <span class="card-title">Ho so va giay to</span>
+        <p class="card-subtitle">Thong tin quyet dinh va tai lieu kem theo</p>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="module-form-grid">
+        <label>
+          <span class="module-detail-label">So quyet dinh *</span>
+          <input class="form-control" name="decisionNumber" placeholder="QD-001/2026">
+          <small class="field-error" data-error-for="decisionNumber"></small>
+        </label>
+        <label>
+          <span class="module-detail-label">Ngay quyet dinh *</span>
+          <input class="form-control" name="decisionDate" type="date">
+          <small class="field-error" data-error-for="decisionDate"></small>
+        </label>
+        <label>
+          <span class="module-detail-label">File quyet dinh</span>
+          <input class="form-control" name="decisionFile" type="file">
+        </label>
+        <label>
+          <span class="module-detail-label">Bien ban vi pham</span>
+          <input class="form-control" name="violationFile" type="file">
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <i class="fa-solid fa-note-sticky icon-header"></i>
+        <span class="card-title">Ghi chu ban giao</span>
+        <p class="card-subtitle">Thong tin bo sung khi ban giao</p>
+      </div>
+    </div>
+    <div class="card-body">
+      <textarea class="form-control" name="handoverNote" placeholder="Nhap ghi chu neu co"></textarea>
+      <div class="toolbar" style="justify-content:flex-end;margin-top:18px;margin-bottom:0;">
+        <button type="button" class="btn btn-outline" id="handoverResetBtn">
+          <i class="fa-solid fa-rotate-left"></i> Lam moi
+        </button>
+        <button type="button" class="btn btn-outline" id="handoverDraftBtn">
+          <i class="fa-solid fa-floppy-disk"></i> Luu nhap
+        </button>
+        <button type="submit" class="btn btn-primary">
+          <i class="fa-solid fa-paper-plane"></i> Gui ho so
+        </button>
+      </div>
+    </div>
+  </div>
+</form>
+
+<div class="modal-overlay" id="handoverConfirmModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div class="modal-header-info">
+        <div class="modal-icon modal-icon-blue">
+          <i class="fa-solid fa-paper-plane"></i>
+        </div>
+        <div>
+          <div class="modal-title">Xac nhan gui ho so</div>
+          <div class="modal-subtitle">Ho so se chuyen sang trang thai ChoDuyet</div>
+        </div>
+      </div>
+      <button class="modal-close" id="handoverConfirmCloseBtn">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="modal-body" id="handoverConfirmBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="handoverCancelSubmitBtn">Huy</button>
+      <button class="btn btn-primary" id="handoverConfirmSubmitBtn">Xac nhan gui</button>
+    </div>
+  </div>
+</div>

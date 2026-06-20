@@ -29,7 +29,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
-        return SecurityConstants.isSwaggerPath(path) || SecurityConstants.isPublicAuthPath(path);
+        return SecurityConstants.isSwaggerPath(path)
+                || SecurityConstants.isPublicAuthPath(path)
+                || SecurityConstants.isPublicApiPath(path)
+                || SecurityConstants.isPublicVyDemoApiPath(path);
     }
 
     @Override

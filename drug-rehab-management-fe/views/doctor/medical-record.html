@@ -1,0 +1,41 @@
+<div class="page-header page-header-row">
+    <div>
+        <h1>Quản lý <span>Hồ sơ bệnh án</span></h1>
+        <p>Tìm kiếm, xem chi tiết và cập nhật dữ liệu bảng HOSOBENHAN.</p>
+    </div>
+    <div style="background:rgba(56,189,248,0.12); border:1px solid rgba(56,189,248,0.2); color:#38bdf8;
+                width:52px; height:52px; border-radius:14px;
+                display:flex; align-items:center; justify-content:center; font-size:22px;
+                box-shadow:0 4px 20px rgba(56,189,248,0.2); flex-shrink:0;">
+        <i class="fa-solid fa-file-medical"></i>
+    </div>
+</div>
+
+<div style="grid-template-columns:1fr; display:grid;">
+    <div class="card">
+        <div class="card-header" style="flex-wrap:wrap; gap:1rem;">
+            <div class="card-title">
+                <div class="card-title-icon"><i class="fa-solid fa-table-list"></i></div>
+                Danh sách hồ sơ
+            </div>
+            <div class="toolbar" style="margin-bottom:0;">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input id="medicalRecordSearch" type="search"
+                        placeholder="Tìm mã bệnh án, mã học viên..."
+                        oninput="MedicalRecordPage.applyFilter()">
+                </div>
+                <div class="filter-group">
+                    <select id="medicalRecordStatusFilter"
+                        class="filter-select"
+                        onchange="MedicalRecordPage.applyFilter()">
+                        <option value="all">Tất cả hồ sơ</option>
+                        <option value="Cần cập nhật">Cần cập nhật</option>
+                        <option value="Đã cập nhật">Đã cập nhật</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="card-body" id="medicalRecordTable"></div>
+    </div>
+</div>

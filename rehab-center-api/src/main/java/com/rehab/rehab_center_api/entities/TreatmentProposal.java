@@ -60,6 +60,7 @@ public class TreatmentProposal {
     private TreatmentProposalStatus status;
 
     @Version
-    @Column(name = "PhienBan")
-    private Long version;
+    @Column(name = "PhienBan", nullable = false, columnDefinition = "BIGINT DEFAULT 0")
+    @Builder.Default
+    private Long version = 0L;
 }

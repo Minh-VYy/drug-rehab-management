@@ -1,0 +1,134 @@
+<div class="page-header">
+  <div>
+    <h2 class="page-title">Quản lý <span class="text-highlight">vai trò</span></h2>
+    <p class="page-subtitle">Thiết lập vai trò và phân quyền truy cập trong hệ thống.</p>
+  </div>
+  <button class="btn btn-primary" id="btnCreateRole">
+    <i class="fa-solid fa-plus"></i> Tạo vai trò mới
+  </button>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-blue"><i class="fa-solid fa-user-tag"></i></div>
+    <div class="stat-value" id="statTotalRole">0</div>
+    <div class="stat-label">Tổng vai trò</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-purple"><i class="fa-solid fa-shield-halved"></i></div>
+    <div class="stat-value" id="statSystemRole">0</div>
+    <div class="stat-label">Vai trò hệ thống</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-green"><i class="fa-solid fa-circle-check"></i></div>
+    <div class="stat-value" id="statActiveRole">0</div>
+    <div class="stat-label">Vai trò đang dùng</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-orange"><i class="fa-solid fa-key"></i></div>
+    <div class="stat-value" id="statTotalPermission">0</div>
+    <div class="stat-label">Tổng quyền</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div>
+      <span class="card-title">Danh sách vai trò</span>
+      <p class="card-subtitle">Vai trò và nhóm quyền tương ứng trong hệ thống</p>
+    </div>
+  </div>
+
+  <div class="table-wrapper">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Mã vai trò</th>
+          <th>Tên vai trò</th>
+          <th>Mô tả</th>
+          <th>Số tài khoản</th>
+          <th>Số quyền</th>
+          <th>Trạng thái</th>
+          <th>Thao tác</th>
+        </tr>
+      </thead>
+      <tbody id="roleTableBody"></tbody>
+    </table>
+  </div>
+
+  <div class="table-loading" id="roleLoadingState" style="display:none;">
+    Đang tải dữ liệu...
+  </div>
+
+  <div class="table-empty" id="roleEmptyState" style="display:none;">
+    Không tìm thấy vai trò phù hợp.
+  </div>
+</div>
+
+<!-- Modal chi tiết quyền -->
+<div class="modal-overlay" id="roleDetailModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h3>Chi tiết quyền theo vai trò</h3>
+      <button class="modal-close" id="roleDetailCloseBtn"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="modal-body" id="roleDetailBody"></div>
+
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="roleDetailCloseBtn2">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal tạo/chỉnh sửa vai trò -->
+<div class="modal-overlay" id="roleFormModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h3 id="roleFormTitle">Tạo vai trò mới</h3>
+      <button class="modal-close" id="roleFormCloseBtn"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="modal-body">
+      <div class="module-form-grid">
+        <div class="form-group">
+          <label>Mã vai trò <span class="required">*</span></label>
+          <input type="text" id="formMaVaiTro" class="form-control" placeholder="VD: NHANVIENMOI" />
+          <span class="form-error" id="errMaVaiTro"></span>
+        </div>
+
+        <div class="form-group">
+          <label>Tên vai trò <span class="required">*</span></label>
+          <input type="text" id="formTenVaiTro" class="form-control" placeholder="Tên hiển thị" />
+          <span class="form-error" id="errTenVaiTro"></span>
+        </div>
+
+        <div class="form-group form-group-full">
+          <label>Mô tả</label>
+          <textarea id="formMoTa" class="form-control" rows="2" placeholder="Mô tả vai trò"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Trạng thái</label>
+          <select id="formTrangThai" class="form-control">
+            <option value="DangDung">Đang dùng</option>
+            <option value="KhongDung">Không dùng</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3 class="form-section-title"><i class="fa-solid fa-key"></i> Nhóm quyền</h3>
+        <div id="permissionGroupContainer" class="permission-group-container"></div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="roleFormCancelBtn">Hủy</button>
+      <button class="btn btn-primary" id="roleFormSaveBtn">Lưu vai trò</button>
+    </div>
+  </div>
+</div>

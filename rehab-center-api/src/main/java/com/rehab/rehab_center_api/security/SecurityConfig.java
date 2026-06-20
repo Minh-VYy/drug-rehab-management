@@ -38,6 +38,8 @@ public class SecurityConfig {
                 .cors(withDefaults())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(SecurityConstants.PUBLIC_AUTH_PATHS).permitAll()
+                        .requestMatchers(SecurityConstants.PUBLIC_API_PATHS).permitAll()
+                        .requestMatchers(SecurityConstants.PUBLIC_VY_DEMO_API_PATHS).permitAll()
                         .requestMatchers(SecurityConstants.SWAGGER_PATHS).permitAll()
                         .anyRequest().authenticated()
                 )

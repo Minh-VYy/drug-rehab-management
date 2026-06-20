@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.List;
 
 @Repository
 public interface TreatmentProposalRepository extends JpaRepository<TreatmentProposal, String> {
@@ -45,4 +46,21 @@ public interface TreatmentProposalRepository extends JpaRepository<TreatmentProp
             TreatmentProposalStatus status,
             String excludeProposalId
     );
+
+    @EntityGraph(attributePaths = {
+            "rehabPatient",
+            "rehabPatient.currentStageDefinition",
+            "doctor",
+            "doctor.user",
+            "manager",
+            "manager.user",
+            "currentStageDefinition",
+            "proposedStageDefinition"
+    })
+    List<TreatmentProposal> findByProposalTypeAndStatusInOrderByProposedAtDesc(
+            ProposalType proposalType,
+            List<TreatmentProposalStatus> statuses
+    );
+
+    long countByProposalTypeAndStatus(ProposalType proposalType, TreatmentProposalStatus status);
 }

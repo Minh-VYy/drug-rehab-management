@@ -1,0 +1,205 @@
+/* Clinical workflow pages: medical records and treatment approval */
+
+.module-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.module-page-title h1 {
+    margin: 0 0 4px;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.module-page-title p {
+    margin: 0;
+    color: var(--muted-text);
+    font-size: 0.92rem;
+}
+
+.module-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+.module-toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+}
+
+.module-search {
+    width: min(320px, 100%);
+}
+
+.module-filter {
+    min-width: 190px;
+}
+
+.module-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+}
+
+.module-actions .btn {
+    white-space: nowrap;
+}
+
+.btn-success {
+    background-color: var(--success);
+    color: #fff;
+}
+
+.btn-success:hover {
+    background-color: #059669;
+}
+
+.text-success { color: var(--success); }
+.text-warning { color: var(--warning); }
+.text-danger { color: var(--danger); }
+.text-primary { color: var(--primary); }
+
+.module-dashboard-list {
+    display: grid;
+    gap: var(--spacing-sm);
+}
+
+.module-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.module-list-item:last-child {
+    border-bottom: 0;
+}
+
+.module-list-title {
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.module-list-meta {
+    color: var(--muted-text);
+    font-size: 0.85rem;
+    margin-top: 2px;
+}
+
+.module-empty-state {
+    padding: var(--spacing-xl);
+    text-align: center;
+    color: var(--muted-text);
+}
+
+.module-empty-state i {
+    display: block;
+    color: var(--primary);
+    font-size: 2rem;
+    margin-bottom: var(--spacing-sm);
+}
+
+.module-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--spacing-md);
+}
+
+.module-detail-item {
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background: var(--background);
+}
+
+.module-detail-item.full {
+    grid-column: 1 / -1;
+}
+
+.module-detail-label {
+    display: block;
+    color: var(--muted-text);
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.module-detail-value {
+    color: var(--text-main);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.module-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--spacing-md);
+}
+
+.module-form-grid .full {
+    grid-column: 1 / -1;
+}
+
+.module-readonly {
+    background-color: var(--background);
+    color: var(--muted-text);
+}
+
+.module-inline-note {
+    color: var(--muted-text);
+    font-size: 0.82rem;
+    margin-top: 4px;
+}
+
+.module-no-access {
+    max-width: 620px;
+    margin: var(--spacing-xl) auto;
+    text-align: center;
+}
+
+.module-no-access .card-body {
+    padding: 2.5rem;
+}
+
+.modal:has(.module-detail-grid),
+.modal:has(.module-form-grid) {
+    max-width: min(760px, calc(100vw - 2rem));
+}
+
+@media (max-width: 768px) {
+    .module-page-header,
+    .module-toolbar,
+    .module-list-item {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .module-toolbar-group,
+    .module-actions {
+        width: 100%;
+    }
+
+    .module-search,
+    .module-filter,
+    .module-toolbar-group .form-control,
+    .module-actions .btn {
+        width: 100%;
+    }
+
+    .module-detail-grid,
+    .module-form-grid {
+        grid-template-columns: 1fr;
+    }
+}

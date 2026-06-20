@@ -1,0 +1,286 @@
+<div class="staff-activity-page">
+    <div class="page-header page-header-row staff-activity-header">
+        <div>
+            <h2 class="page-title">Lập lịch <span class="text-highlight">sinh hoạt</span></h2>
+            <p class="page-subtitle">Quản lý lịch sinh hoạt, học tập, lao động và tư vấn cho học viên.</p>
+        </div>
+        <button class="btn btn-primary" id="activityCreateBtn">
+            <i class="fa-solid fa-plus"></i>
+            Tạo lịch mới
+        </button>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-card-icon stat-icon-blue">
+                <i class="fa-solid fa-calendar-days"></i>
+                <div class="stat-orb orb-blue"></div>
+            </div>
+            <div class="stat-value" id="statActivityTotal">0</div>
+            <div class="stat-label">Tổng lịch</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-icon stat-icon-purple">
+                <i class="fa-solid fa-calendar-day"></i>
+                <div class="stat-orb orb-purple"></div>
+            </div>
+            <div class="stat-value" id="statActivityToday">0</div>
+            <div class="stat-label">Hôm nay</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-icon stat-icon-orange">
+                <i class="fa-solid fa-person-running"></i>
+                <div class="stat-orb orb-orange"></div>
+            </div>
+            <div class="stat-value" id="statActivityOngoing">0</div>
+            <div class="stat-label">Đang diễn ra</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-icon stat-icon-green">
+                <i class="fa-solid fa-circle-check"></i>
+                <div class="stat-orb orb-green"></div>
+            </div>
+            <div class="stat-value" id="statActivityDone">0</div>
+            <div class="stat-label">Đã hoàn thành</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title-icon card-icon-purple">
+                <i class="fa-solid fa-clipboard-list"></i>
+            </div>
+            <div>
+                <span class="card-title">Danh sách lịch sinh hoạt</span>
+                <p class="card-subtitle">Lịch hoạt động giáo dục, lao động, thể thao, tư vấn và giải trí.</p>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="toolbar">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input id="activitySearchInput" type="text" placeholder="Tìm mã lịch, tên hoạt động, địa điểm..." />
+                </div>
+                <select id="activityTypeFilter" class="filter-select">
+                    <option value="all">Tất cả loại hoạt động</option>
+                    <option value="GiaoDuc">Giáo dục</option>
+                    <option value="LaoDong">Lao động</option>
+                    <option value="TheThao">Thể thao</option>
+                    <option value="TuVan">Tư vấn</option>
+                    <option value="GiaiTri">Giải trí</option>
+                </select>
+                <select id="activityStatusFilter" class="filter-select">
+                    <option value="all">Tất cả trạng thái</option>
+                    <option value="SapDienRa">Sắp diễn ra</option>
+                    <option value="DangDienRa">Đang diễn ra</option>
+                    <option value="HoanThanh">Hoàn thành</option>
+                    <option value="Huy">Hủy</option>
+                </select>
+            </div>
+
+            <div class="table-responsive">
+                <table class="data-table staff-activity-table">
+                    <thead>
+                        <tr>
+                            <th>Mã lịch</th>
+                            <th>Hoạt động</th>
+                            <th>Loại hoạt động</th>
+                            <th>Thời gian bắt đầu</th>
+                            <th>Thời gian kết thúc</th>
+                            <th>Địa điểm</th>
+                            <th>Người phụ trách</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="activityTableBody">
+                        <tr>
+                            <td colspan="9" class="staff-activity-state-cell">
+                                <div class="staff-activity-loading">
+                                    <i class="fa-solid fa-spinner fa-spin"></i>
+                                    Đang tải dữ liệu...
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="activityDetailModal">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-header-info">
+                <div class="modal-icon modal-icon-purple">
+                    <i class="fa-solid fa-clipboard-list"></i>
+                </div>
+                <h3>Chi tiết lịch sinh hoạt</h3>
+            </div>
+            <button class="modal-close" id="activityDetailCloseBtn">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="modal-body" id="activityDetailBody"></div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" id="activityDetailCloseBtn2">Đóng</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="activityFormModal">
+    <div class="modal modal-lg">
+        <div class="modal-header">
+            <div class="modal-header-info">
+                <div class="modal-icon modal-icon-purple">
+                    <i class="fa-solid fa-calendar-plus"></i>
+                </div>
+                <h3 id="activityFormTitle">Tạo lịch sinh hoạt</h3>
+            </div>
+            <button class="modal-close" id="activityFormCloseBtn">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="activityFormId" />
+
+            <div class="form-section">
+                <h4 class="form-section-title">
+                    <i class="fa-solid fa-file-lines" style="color:var(--primary);"></i>
+                    Thông tin hoạt động
+                </h4>
+
+                <div class="form-group">
+                    <label for="activityFormName" class="form-label">
+                        <i class="fa-solid fa-heading" style="color:var(--primary); margin-right:6px;"></i>
+                        Tên hoạt động <span class="required">*</span>
+                    </label>
+                    <input type="text" id="activityFormName" class="form-control"
+                        placeholder="Nhập tên hoạt động (ví dụ: Lớp học kỹ năng sống)" />
+                    <p class="form-error" id="activityFormNameError" style="display: none;">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Vui lòng nhập tên hoạt động.
+                    </p>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="activityFormType" class="form-label">
+                            <i class="fa-solid fa-tag" style="color:var(--success); margin-right:6px;"></i>
+                            Loại hoạt động <span class="required">*</span>
+                        </label>
+                        <select id="activityFormType" class="form-control">
+                            <option value="GiaoDuc">📚 Giáo dục</option>
+                            <option value="LaoDong">🛠️ Lao động</option>
+                            <option value="TheThao">⚽ Thể thao</option>
+                            <option value="TuVan">💬 Tư vấn</option>
+                            <option value="GiaiTri">🎭 Giải trí</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="activityFormLocation" class="form-label">
+                            <i class="fa-solid fa-location-dot" style="color:var(--danger); margin-right:6px;"></i>
+                            Địa điểm <span class="required">*</span>
+                        </label>
+                        <input type="text" id="activityFormLocation" class="form-control"
+                            placeholder="Nhập địa điểm (ví dụ: Hội trường A)" />
+                        <p class="form-error" id="activityFormLocationError" style="display: none;">
+                            <i class="fa-solid fa-triangle-exclamation"></i> Vui lòng nhập địa điểm.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h4 class="form-section-title">
+                    <i class="fa-solid fa-clock" style="color:var(--orange);"></i>
+                    Thời gian tổ chức
+                </h4>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="activityFormStart" class="form-label">
+                            <i class="fa-solid fa-play" style="color:var(--success); margin-right:6px;"></i>
+                            Thời gian bắt đầu <span class="required">*</span>
+                        </label>
+                        <input type="datetime-local" id="activityFormStart" class="form-control" />
+                        <p class="form-error" id="activityFormStartError" style="display: none;">
+                            <i class="fa-solid fa-triangle-exclamation"></i> Vui lòng chọn thời gian bắt đầu.
+                        </p>
+                    </div>
+                    <div class="form-group">
+                        <label for="activityFormEnd" class="form-label">
+                            <i class="fa-solid fa-stop" style="color:var(--danger); margin-right:6px;"></i>
+                            Thời gian kết thúc <span class="required">*</span>
+                        </label>
+                        <input type="datetime-local" id="activityFormEnd" class="form-control" />
+                        <p class="form-error" id="activityFormEndError" style="display: none;">
+                            <i class="fa-solid fa-triangle-exclamation"></i> Thời gian kết thúc phải sau thời gian bắt
+                            đầu.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h4 class="form-section-title">
+                    <i class="fa-solid fa-users" style="color:var(--purple);"></i>
+                    Người tham gia
+                </h4>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="activityFormOwner" class="form-label">
+                            <i class="fa-solid fa-user-tie" style="color:var(--primary); margin-right:6px;"></i>
+                            Người phụ trách
+                        </label>
+                        <input type="text" id="activityFormOwner" class="form-control"
+                            placeholder="Nhập tên người phụ trách (ví dụ: CB. Nguyễn Văn Tâm)" />
+                    </div>
+                    <div class="form-group">
+                        <label for="activityFormGroup" class="form-label">
+                            <i class="fa-solid fa-users-rectangle" style="color:var(--purple); margin-right:6px;"></i>
+                            Nhóm/khu tham gia
+                        </label>
+                        <input type="text" id="activityFormGroup" class="form-control"
+                            placeholder="Ví dụ: Khu A, Khu B, Toàn trung tâm" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="activityFormNote" class="form-label">
+                    <i class="fa-solid fa-note-sticky" style="color:var(--orange); margin-right:6px;"></i>
+                    Ghi chú
+                </label>
+                <textarea id="activityFormNote" class="form-control" rows="3"
+                    placeholder="Nhập ghi chú bổ sung về hoạt động (nếu có)..."></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" id="activityFormCancelBtn"><i class="fa-solid fa-xmark"></i> Hủy</button>
+            <button class="btn btn-primary" id="activityFormSaveBtn"><i class="fa-solid fa-floppy-disk"></i> Lưu
+                lịch</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="activityCancelModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Xác nhận hủy lịch</h3>
+            <button class="modal-close" id="activityCancelCloseBtn">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p id="activityCancelMessage" class="staff-activity-cancel-message"></p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" id="activityCancelDismissBtn"><i class="fa-solid fa-xmark"></i>
+                Đóng</button>
+            <button class="btn btn-danger" id="activityCancelConfirmBtn"><i class="fa-solid fa-ban"></i> Xác nhận
+                hủy</button>
+        </div>
+    </div>
+</div>

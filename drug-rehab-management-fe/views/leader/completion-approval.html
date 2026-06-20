@@ -1,0 +1,116 @@
+<div class="page-header page-header-row">
+  <div>
+    <h2 class="page-title">Phê duyệt <span class="text-highlight">hoàn thành cai nghiện</span></h2>
+    <p class="page-subtitle">Xem xét và duyệt đề xuất hoàn thành chương trình điều trị cho học viên.</p>
+  </div>
+  <div class="dash-date-card">
+    <div id="complete-date-num" class="dash-date-num"></div>
+    <div id="complete-date-label" class="dash-date-label"></div>
+  </div>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-orange">
+      <i class="fa-solid fa-clock"></i>
+    </div>
+    <div class="stat-value" id="completeStatPending">0</div>
+    <div class="stat-label">Đề xuất chờ duyệt</div>
+    <div class="stat-trend flat">Cần xem xét</div>
+    <div class="stat-orb orb-orange"></div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-green">
+      <i class="fa-solid fa-circle-check"></i>
+    </div>
+    <div class="stat-value" id="completeStatApproved">0</div>
+    <div class="stat-label">Đã duyệt hoàn thành</div>
+    <div class="stat-trend up">Kết quả tốt</div>
+    <div class="stat-orb orb-green"></div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-red">
+      <i class="fa-solid fa-circle-xmark"></i>
+    </div>
+    <div class="stat-value" id="completeStatRejected">0</div>
+    <div class="stat-label">Đã từ chối</div>
+    <div class="stat-trend down">Chưa đạt điều kiện</div>
+    <div class="stat-orb orb-red"></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div>
+      <i class="fa-solid fa-award icon-header"></i>
+      <span class="card-title">Danh sách đề xuất hoàn thành</span>
+      <p class="card-subtitle">Các đề xuất do cán bộ quản lý hoặc bác sĩ gửi lên</p>
+    </div>
+
+    <div class="toolbar" style="margin-bottom:0;">
+      <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input
+          type="text"
+          id="completeSearchInput"
+          placeholder="Tìm mã đề xuất, mã hồ sơ, họ tên..."
+        />
+      </div>
+
+      <select id="completeStatusFilter" class="filter-select">
+        <option value="all">Tất cả trạng thái</option>
+        <option value="ChoDuyet">Chờ duyệt</option>
+        <option value="DaHoanThanh">Đã duyệt hoàn thành</option>
+        <option value="TuChoi">Từ chối</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="table-wrapper">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Mã đề xuất</th>
+          <th>Mã hồ sơ</th>
+          <th>Người cai nghiện</th>
+          <th>Giai đoạn</th>
+          <th>Cán bộ đề xuất</th>
+          <th>Kết quả đánh giá</th>
+          <th>Ngày gửi</th>
+          <th>Trạng thái</th>
+          <th>Ngày duyệt</th>
+          <th>Thao tác</th>
+        </tr>
+      </thead>
+      <tbody id="completeTableBody"></tbody>
+    </table>
+  </div>
+
+  <div class="table-empty" id="completeEmptyState" style="display:none;">
+    Không tìm thấy đề xuất phù hợp.
+  </div>
+</div>
+
+<div class="modal-overlay" id="completeDetailModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div class="modal-header-info">
+        <div class="modal-icon modal-icon-orange">
+          <i class="fa-solid fa-file-contract"></i>
+        </div>
+        <div>
+          <div class="modal-title">Chi tiết đề xuất hoàn thành</div>
+          <div class="modal-subtitle">Đánh giá quá trình cai nghiện</div>
+        </div>
+      </div>
+      <button class="modal-close" id="completeModalCloseBtn">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="modal-body" id="completeModalBody"></div>
+    <div class="modal-footer" id="completeModalFooter"></div>
+  </div>
+</div>

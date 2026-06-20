@@ -3,6 +3,8 @@ package com.rehab.rehab_center_api.dto.mapper;
 import com.rehab.rehab_center_api.dto.response.HandoverSlipResponse;
 import com.rehab.rehab_center_api.dto.response.HandoverSlipSummaryResponse;
 import com.rehab.rehab_center_api.dto.response.HandoverSubjectResponse;
+import com.rehab.rehab_center_api.entities.Address;
+import com.rehab.rehab_center_api.entities.District;
 import com.rehab.rehab_center_api.entities.HandoverSlip;
 import com.rehab.rehab_center_api.entities.HandoverSlipDetail;
 import org.springframework.stereotype.Component;
@@ -52,8 +54,8 @@ public class HandoverSlipMapper {
                 .fullName(detail.getFullName())
                 .identityNumber(detail.getIdentityNumber())
                 .dateOfBirth(detail.getDateOfBirth())
-                .hometown(detail.getHometown())
-                .currentAddress(detail.getCurrentAddress())
+                .hometown(formatDistrict(detail.getHometownDistrict()))
+                .currentAddress(formatAddress(detail.getCurrentAddress()))
                 .relativeName(detail.getRelativeName())
                 .relativePhone(detail.getRelativePhone())
                 .relativeRelationship(detail.getRelativeRelationship())
@@ -64,5 +66,23 @@ public class HandoverSlipMapper {
 
     public List<HandoverSubjectResponse> toSubjectResponses(List<HandoverSlipDetail> details) {
         return details.stream().map(this::toSubjectResponse).toList();
+    }
+
+    private String formatDistrict(District district) {
+        if (district == null) {
+            return null;
+        }
+        if (district.getProvince() == null) {
+            return district.getName();
+        }
+        return district.getName() + ", " + district.getProvince().getName();
+    }
+
+    private String formatAddress(Address address) {
+        if (address == null) {
+            return null;
+        }
+        String formattedAddress = address.getFormattedAddress();
+        return formattedAddress != null ? formattedAddress : address.getStreetAddress();
     }
 }

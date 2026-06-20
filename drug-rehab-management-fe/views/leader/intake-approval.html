@@ -1,0 +1,116 @@
+<div class="page-header page-header-row">
+  <div>
+    <h2 class="page-title">Phê duyệt <span class="text-highlight">tiếp nhận</span></h2>
+    <p class="page-subtitle">Xem xét và duyệt các hồ sơ người cai nghiện mới được bàn giao từ công an.</p>
+  </div>
+  <div class="dash-date-card">
+    <div id="intake-date-num" class="dash-date-num"></div>
+    <div id="intake-date-label" class="dash-date-label"></div>
+  </div>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-orange">
+      <i class="fa-solid fa-clock"></i>
+    </div>
+    <div class="stat-value" id="statPending">0</div>
+    <div class="stat-label">Hồ sơ chờ duyệt</div>
+    <div class="stat-trend flat">Cần xem xét</div>
+    <div class="stat-orb orb-orange"></div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-green">
+      <i class="fa-solid fa-circle-check"></i>
+    </div>
+    <div class="stat-value" id="statApproved">0</div>
+    <div class="stat-label">Đã tiếp nhận</div>
+    <div class="stat-trend up">Thành công</div>
+    <div class="stat-orb orb-green"></div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-red">
+      <i class="fa-solid fa-circle-xmark"></i>
+    </div>
+    <div class="stat-value" id="statRejected">0</div>
+    <div class="stat-label">Đã từ chối</div>
+    <div class="stat-trend down">Không đạt yêu cầu</div>
+    <div class="stat-orb orb-red"></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div>
+      <i class="fa-solid fa-folder-open icon-header"></i>
+      <span class="card-title">Danh sách hồ sơ bàn giao</span>
+      <p class="card-subtitle">Hồ sơ do cơ quan công an gửi đến chờ xử lý</p>
+    </div>
+
+    <div class="toolbar" style="margin-bottom:0;">
+      <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input
+          type="text"
+          id="intakeSearchInput"
+          placeholder="Tìm mã hồ sơ, họ tên, CCCD..."
+        />
+      </div>
+
+      <select id="intakeStatusFilter" class="filter-select">
+        <option value="all">Tất cả trạng thái</option>
+        <option value="ChoDuyet">Chờ duyệt</option>
+        <option value="DaTiepNhan">Đã tiếp nhận</option>
+        <option value="TuChoi">Từ chối</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="table-wrapper">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Mã hồ sơ</th>
+          <th>Họ tên đối tượng</th>
+          <th>CCCD</th>
+          <th>Ngày sinh</th>
+          <th>Người thân</th>
+          <th>SĐT người thân</th>
+          <th>Hành vi vi phạm</th>
+          <th>Trạng thái</th>
+          <th>Ngày duyệt</th>
+          <th>Thao tác</th>
+        </tr>
+      </thead>
+      <tbody id="intakeTableBody"></tbody>
+    </table>
+  </div>
+
+  <div class="table-empty" id="intakeEmptyState" style="display:none;">
+    Không tìm thấy hồ sơ phù hợp.
+  </div>
+</div>
+
+<div class="modal-overlay" id="intakeDetailModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div class="modal-header-info">
+        <div class="modal-icon modal-icon-orange">
+          <i class="fa-solid fa-folder-open"></i>
+        </div>
+        <div>
+          <div class="modal-title">Chi tiết hồ sơ bàn giao</div>
+          <div class="modal-subtitle">Thông tin tiếp nhận người cai nghiện</div>
+        </div>
+      </div>
+      <button class="modal-close" id="intakeModalCloseBtn">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="modal-body" id="intakeModalBody"></div>
+    <div class="modal-footer" id="intakeModalFooter"></div>
+  </div>
+</div>

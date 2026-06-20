@@ -10,8 +10,8 @@ const Toast = {
         const toast = document.createElement('div');
         toast.className = `toast ${type}`;
         toast.innerHTML = `
-            <i class="fa-solid ${icon}"></i>
-            <span>${message}</span>
+            <i class="fa-solid ${icon} toast-icon"></i>
+            <span class="toast-msg" style="color: #fff; font-weight: 500;">${message}</span>
         `;
 
         container.appendChild(toast);

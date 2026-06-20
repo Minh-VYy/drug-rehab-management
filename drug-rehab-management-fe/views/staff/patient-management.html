@@ -1,0 +1,119 @@
+<div class="staff-patient-page">
+  <div class="page-header page-header-row staff-patient-header">
+    <div>
+      <h2 class="page-title">Quản lý <span class="text-highlight">học viên</span></h2>
+      <p class="page-subtitle">Theo dõi thông tin, giai đoạn điều trị và trạng thái của người cai nghiện trong trung tâm.</p>
+    </div>
+    <span class="badge badge-blue staff-patient-header-badge">
+      <i class="fa-solid fa-list-check"></i>
+      Danh sách đang quản lý
+    </span>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-card-icon stat-icon-blue">
+        <i class="fa-solid fa-users"></i>
+      </div>
+      <div class="stat-value" id="statTotalPatients">0</div>
+      <div class="stat-label">Tổng học viên</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-icon stat-icon-green">
+        <i class="fa-solid fa-notes-medical"></i>
+      </div>
+      <div class="stat-value" id="statTreating">0</div>
+      <div class="stat-label">Đang điều trị</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-icon stat-icon-orange">
+        <i class="fa-solid fa-door-open"></i>
+      </div>
+      <div class="stat-value" id="statWaitingRoom">0</div>
+      <div class="stat-label">Chờ phân phòng</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-icon stat-icon-purple">
+        <i class="fa-solid fa-circle-check"></i>
+      </div>
+      <div class="stat-value" id="statCompleted">0</div>
+      <div class="stat-label">Hoàn thành</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <span class="card-title">
+          <i class="fa-solid fa-users"></i>
+          Danh sách học viên
+        </span>
+        <p class="card-subtitle">Danh sách người cai nghiện đang được trung tâm quản lý.</p>
+      </div>
+      <div class="toolbar">
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input id="patientSearchInput" type="text" placeholder="Tìm mã học viên, họ tên, CCCD..." />
+        </div>
+        <select id="patientStageFilter" class="filter-select">
+          <option value="all">Tất cả giai đoạn</option>
+          <option value="TiepNhan">Tiếp nhận</option>
+          <option value="CatCon">Cắt cơn</option>
+          <option value="PhucHoi">Phục hồi</option>
+          <option value="TaiHoaNhap">Tái hòa nhập</option>
+          <option value="HoanThanh">Hoàn thành</option>
+        </select>
+        <select id="patientStatusFilter" class="filter-select">
+          <option value="all">Tất cả trạng thái</option>
+          <option value="DangDieuTri">Đang điều trị</option>
+          <option value="ChoPhanPhong">Chờ phân phòng</option>
+          <option value="HoanThanh">Hoàn thành</option>
+          <option value="TamDung">Tạm dừng</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="data-table staff-patient-table">
+        <thead>
+          <tr>
+            <th>Mã học viên</th>
+            <th>Họ tên</th>
+            <th>CCCD</th>
+            <th>Ngày vào trại</th>
+            <th>Giai đoạn hiện tại</th>
+            <th>Khu/phòng</th>
+            <th>Bác sĩ phụ trách</th>
+            <th>Trạng thái</th>
+            <th>Thao tác</th>
+          </tr>
+        </thead>
+        <tbody id="patientTableBody">
+          <tr>
+            <td colspan="9" class="staff-patient-state-cell">
+              <div class="staff-patient-loading">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                Đang tải dữ liệu...
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="patientDetailModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h3>Chi tiết học viên</h3>
+      <button class="modal-close" id="patientDetailCloseBtn">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="modal-body" id="patientDetailBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="patientDetailCloseBtn2">Đóng</button>
+    </div>
+  </div>
+</div>

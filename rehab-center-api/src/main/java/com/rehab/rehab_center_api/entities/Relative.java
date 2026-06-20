@@ -31,8 +31,15 @@ public class Relative {
     @Column(name = "NoiCap", columnDefinition = "NVARCHAR(100)", nullable = false)
     private String issuePlace;
 
-    @Column(name = "DiaChi", columnDefinition = "NVARCHAR(255)", nullable = false)
-    private String address;
+    @Column(name = "DiaChi", columnDefinition = "NVARCHAR(255)")
+    private String legacyAddress;
+
+    @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name = "streetAddress", column = @Column(name = "DiaChi_Duong", columnDefinition = "NVARCHAR(255)")),
+        @AttributeOverride(name = "ward", column = @Column(name = "DiaChi_MaXa"))
+    })
+    private Address address;
 
     @Column(name = "NgheNghiep", columnDefinition = "NVARCHAR(100)")
     private String occupation;

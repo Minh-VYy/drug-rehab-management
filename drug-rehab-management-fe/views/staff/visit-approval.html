@@ -1,0 +1,141 @@
+<div class="staff-visit-page">
+    <div class="page-header page-header-row staff-visit-header">
+        <div>
+            <h2 class="page-title">Duyệt <span class="text-highlight">thăm gặp</span></h2>
+            <p class="page-subtitle">Xem xét lịch thăm gặp do người thân đăng ký và xử lý phê duyệt.</p>
+        </div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-card-icon stat-icon-orange">
+                <i class="fa-solid fa-clock"></i>
+                <div class="stat-orb orb-orange"></div>
+            </div>
+            <div class="stat-value" id="statVisitPending">0</div>
+            <div class="stat-label">Chờ duyệt</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-icon stat-icon-green">
+                <i class="fa-solid fa-circle-check"></i>
+                <div class="stat-orb orb-green"></div>
+            </div>
+            <div class="stat-value" id="statVisitApproved">0</div>
+            <div class="stat-label">Đã đồng ý</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-icon stat-icon-red">
+                <i class="fa-solid fa-circle-xmark"></i>
+                <div class="stat-orb orb-red"></div>
+            </div>
+            <div class="stat-value" id="statVisitRejected">0</div>
+            <div class="stat-label">Đã từ chối</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title-icon card-icon-green">
+                <i class="fa-solid fa-calendar-check"></i>
+            </div>
+            <div>
+                <span class="card-title">Danh sách phiếu thăm gặp</span>
+                <p class="card-subtitle">Danh sách phiếu đăng ký thăm gặp đang chờ và đã xử lý.</p>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="toolbar">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input id="visitSearchInput" type="text"
+                        placeholder="Tìm mã phiếu, người thân, người cai nghiện..." />
+                </div>
+                <select id="visitStatusFilter" class="filter-select">
+                    <option value="all">Tất cả trạng thái</option>
+                    <option value="ChoDuyet">Chờ duyệt</option>
+                    <option value="DaDongY">Đã đồng ý</option>
+                    <option value="TuChoi">Từ chối</option>
+                    <option value="Huy">Hủy</option>
+                </select>
+                <select id="visitShiftFilter" class="filter-select">
+                    <option value="all">Tất cả ca thăm</option>
+                    <option value="Sang">Sáng</option>
+                    <option value="Chieu">Chiều</option>
+                </select>
+            </div>
+
+            <div class="table-responsive">
+                <table class="data-table staff-visit-table">
+                    <thead>
+                        <tr>
+                            <th>Mã phiếu</th>
+                            <th>Người thân</th>
+                            <th>Người cai nghiện</th>
+                            <th>Loại thăm gặp</th>
+                            <th>Ngày thăm</th>
+                            <th>Ca thăm</th>
+                            <th>Số người đi cùng</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="visitTableBody">
+                        <tr>
+                            <td colspan="9" class="staff-visit-state-cell">
+                                <div class="staff-visit-loading">
+                                    <i class="fa-solid fa-spinner fa-spin"></i>
+                                    Đang tải dữ liệu...
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="visitDetailModal">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-header-info">
+                <div class="modal-icon modal-icon-green">
+                    <i class="fa-solid fa-calendar-check"></i>
+                </div>
+                <h3>Chi tiết phiếu thăm gặp</h3>
+            </div>
+            <button class="modal-close" id="visitDetailCloseBtn">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="modal-body" id="visitDetailBody"></div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" id="visitDetailCloseBtn2">Đóng</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="visitDecisionModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="visitDecisionTitle">Xác nhận</h3>
+            <button class="modal-close" id="visitDecisionCloseBtn">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p id="visitDecisionMessage" class="staff-visit-decision-message"></p>
+            <div id="visitDecisionReasonGroup" class="form-group staff-visit-reason-group" style="display: none;">
+                <label for="visitDecisionReason">Lý do từ chối <span class="required">*</span></label>
+                <textarea id="visitDecisionReason" rows="3"
+                    placeholder="Nhập lý do từ chối phiếu thăm gặp..."></textarea>
+                <p class="staff-visit-reason-error" id="visitDecisionReasonError" style="display: none;">Vui lòng nhập
+                    lý do từ chối.</p>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" id="visitDecisionCancelBtn">Hủy</button>
+            <button class="btn btn-primary" id="visitDecisionConfirmBtn">Xác nhận</button>
+        </div>
+    </div>
+</div>

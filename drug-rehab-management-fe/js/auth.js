@@ -3,8 +3,42 @@
    Sau này thay bằng REST API /api/auth/login
    ============================================= */
 
+const ROLES = {
+    ADMIN: 'admin',
+    DOCTOR: 'doctor',
+    STAFF: 'staff',
+    MANAGER: 'manager',
+    LEADER: 'director',
+    DIRECTOR: 'director',
+    POLICE: 'police',
+    FAMILY: 'family'
+};
+
+const ROLE_LABELS = {
+    admin: 'Quản trị hệ thống',
+    doctor: 'Bác sĩ phụ trách',
+    staff: 'Nhân viên trung tâm',
+    manager: 'Cán bộ quản lý',
+    director: 'Lãnh đạo trung tâm',
+    police: 'Công an',
+    family: 'Người thân'
+};
+
+const GENERIC_USER_NAMES = [
+    ...Object.values(ROLE_LABELS),
+    'Bác Sĩ Phụ Trách',
+    'Cán Bộ Trung Tâm',
+    'Cán Bộ Quản Lý',
+    'Cán Bộ Quản Lý Hồ Sơ',
+    'Người Lãnh Đạo Trung Tâm',
+    'Quản Trị Hệ Thống',
+    'Người Thân Cai Nghiện'
+];
+
 const DEMO_ACCOUNTS = [
     { username: 'admin', password: '123456', role: 'admin', name: 'Nguyễn Văn An' },
+    { username: 'doctor', password: '123456', role: 'doctor', name: 'BS. Trần Thị Mai' },
+    { username: 'manager', password: '123456', role: 'manager', name: 'QL. Phạm Thị Phương' },
     { username: 'bs.mai', password: '123456', role: 'doctor', name: 'BS. Trần Thị Mai' },
     { username: 'nv.hung', password: '123456', role: 'staff', name: 'NV. Lê Văn Hùng' },
     { username: 'ql.phuong', password: '123456', role: 'manager', name: 'QL. Phạm Thị Phương' },
@@ -14,47 +48,237 @@ const DEMO_ACCOUNTS = [
 ];
 
 const ROLE_PORTALS = {
-    admin: 'portals/admin.html',
-    doctor: 'portals/doctor.html',
-    staff: 'portals/staff.html',
-    manager: 'portals/manager.html',
-    director: 'portals/director.html',
-    police: 'portals/police.html',
-    family: 'portals/family.html',
+    admin: 'dashboard.html',
+    doctor: 'dashboard.html',
+    staff: 'dashboard.html',
+    manager: 'dashboard.html',
+    director: 'dashboard.html',
+    police: 'dashboard.html',
+    family: 'dashboard.html',
 };
 
+const Auth = {
+    login(username, password, role) {
+        const account = DEMO_ACCOUNTS.find(a =>
+            a.username === username &&
+            a.password === password &&
+            (!role || a.role === role)
+        );
+
+        if (!account) return null;
+        this.setSession(account);
+        return account;
+    },
+
+    fakeLogin(username, password, role) {
+        const account = DEMO_ACCOUNTS.find(a =>
+            a.username === username &&
+            a.password === password &&
+            (!role || a.role === role)
+        );
+
+        if (!account) return null;
+        this.setSession(account);
+        return account;
+    },
+
+    setSession(account) {
+        const role = account.role;
+        const displayName = this.resolveDisplayName(account, role);
+        const user = {
+            username: account.username,
+            role,
+            roleLabel: ROLE_LABELS[role] || role,
+            name: displayName,
+            fullName: displayName,
+            token: account.token || `demo-token-${account.username}`
+        };
+
+        sessionStorage.setItem('auth_role', user.role);
+        sessionStorage.setItem('auth_name', user.fullName);
+        sessionStorage.setItem('auth_user', user.username);
+        sessionStorage.setItem('auth_token', user.token);
+        localStorage.setItem('auth_user_data', JSON.stringify(user));
+    },
+
+    getCurrentUser() {
+        const saved = localStorage.getItem('auth_user_data');
+        if (saved) {
+            try {
+                return this.normalizeUser(JSON.parse(saved));
+            } catch {
+                localStorage.removeItem('auth_user_data');
+            }
+        }
+
+        const role = sessionStorage.getItem('auth_role');
+        const name = sessionStorage.getItem('auth_name');
+        const username = sessionStorage.getItem('auth_user');
+        if (!role || !username) return null;
+
+        return this.normalizeUser({
+            username,
+            role,
+            roleLabel: ROLE_LABELS[role] || role,
+            name: name || username,
+            fullName: name || username,
+            token: sessionStorage.getItem('auth_token')
+        });
+    },
+
+    normalizeUser(user) {
+        if (!user) return null;
+        const role = user.role;
+        const displayName = this.resolveDisplayName(user, role);
+        return {
+            ...user,
+            roleLabel: user.roleLabel || ROLE_LABELS[role] || role,
+            name: displayName,
+            fullName: displayName
+        };
+    },
+
+    resolveDisplayName(account, role) {
+        const rawName = account.fullName || account.name || account.displayName || '';
+        const trimmedName = String(rawName).trim();
+        if (trimmedName && !this.isGenericDisplayName(trimmedName, role)) {
+            return trimmedName;
+        }
+        return account.username || 'Người dùng';
+    },
+
+    isGenericDisplayName(name, role) {
+        const normalizedName = this.normalizeText(name);
+        const roleLabel = ROLE_LABELS[role];
+        return GENERIC_USER_NAMES.some(genericName => this.normalizeText(genericName) === normalizedName)
+            || (roleLabel && this.normalizeText(roleLabel) === normalizedName);
+    },
+
+    normalizeText(value) {
+        return String(value || '')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/đ/g, 'd')
+            .replace(/Đ/g, 'D')
+            .toLowerCase()
+            .replace(/\s+/g, ' ')
+            .trim();
+    },
+
+    getDisplayName(user = this.getCurrentUser()) {
+        return this.resolveDisplayName(user || {}, user?.role);
+    },
+
+    getToken() {
+        return this.getCurrentUser()?.token || sessionStorage.getItem('auth_token') || null;
+    },
+
+    isAuthenticated() {
+        return Boolean(this.getCurrentUser());
+    },
+
+    hasRole(role) {
+        const user = this.getCurrentUser();
+        return Boolean(user && user.role === role);
+    },
+
+    requireRole(role) {
+        if (!this.isAuthenticated()) {
+            window.location.href = 'login.html';
+            return false;
+        }
+
+        if (!this.hasRole(role)) {
+            if (typeof Toast !== 'undefined') {
+                Toast.show('Bạn không có quyền truy cập chức năng này', 'danger');
+            }
+            return false;
+        }
+
+        return true;
+    },
+
+    roleLabel(role) {
+        return ROLE_LABELS[role] || role;
+    },
+
+    logout() {
+        sessionStorage.removeItem('auth_role');
+        sessionStorage.removeItem('auth_name');
+        sessionStorage.removeItem('auth_user');
+        sessionStorage.removeItem('auth_token');
+        localStorage.removeItem('auth_user_data');
+        window.location.href = 'login.html';
+    }
+};
+
+window.ROLES = ROLES;
+window.Auth = Auth;
+
 /* ---- Login form handler ---- */
-function handleLogin(e) {
+async function handleLogin(e) {
     if (e) e.preventDefault();
     hideAlert('loginAlert');
 
     const username = document.getElementById('username')?.value.trim();
     const password = document.getElementById('password')?.value;
 
-    if (!username || !password) {
-        showAlert('loginAlert', 'Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu.', 'danger');
+    if (!username) {
+        showAlert('loginAlert', 'Vui lòng nhập tên đăng nhập.', 'danger');
         return;
     }
 
-    const account = DEMO_ACCOUNTS.find(a =>
-        a.username === username && a.password === password
-    );
+    if (!password) {
+        showAlert('loginAlert', 'Vui lòng nhập mật khẩu.', 'danger');
+        return;
+    }
 
-    if (!account) {
-        showAlert('loginAlert', 'Tên đăng nhập hoặc mật khẩu không đúng. Thử: admin / 123456', 'danger');
+    try {
+        const loginBtn = document.getElementById('loginBtn');
+        if (loginBtn) {
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang đăng nhập...';
+        }
+
+        const data = await Api.post('/auth/login', { username, password });
+        
+        // Map backend roles to frontend ROLES
+        const roleMapping = {
+            'quantri_hethong': 'admin',
+            'can_bo_phu_trach': 'doctor',
+            'can_bo_quan_ly': 'manager',
+            'can_bo_trung_tam': 'staff',
+            'nguoi_lanh_dao': 'director',
+            'can_bo_quan_ly_ho_so': 'police',
+            'nguoi_than': 'family'
+        };
+
+        const backendRole = data.role.toLowerCase();
+        const mappedRole = roleMapping[backendRole] || backendRole;
+
+        const account = {
+            username: data.username,
+            role: mappedRole,
+            fullName: data.fullName,
+            token: data.token
+        };
+
+        Auth.setSession(account);
+
+        showAlert('loginAlert', `Đăng nhập thành công! Đang chuyển hướng...`, 'success');
+        setTimeout(() => {
+            window.location.href = ROLE_PORTALS[account.role] || 'dashboard.html';
+        }, 800);
+    } catch (err) {
+        showAlert('loginAlert', err.message || 'Tài khoản hoặc mật khẩu không đúng.', 'danger');
         shakeForm();
-        return;
+    } finally {
+        const loginBtn = document.getElementById('loginBtn');
+        if (loginBtn) {
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Đăng nhập';
+        }
     }
-
-    // Save session
-    sessionStorage.setItem('auth_role', account.role);
-    sessionStorage.setItem('auth_name', account.name);
-    sessionStorage.setItem('auth_user', account.username);
-
-    showAlert('loginAlert', `Đăng nhập thành công! Đang chuyển hướng...`, 'success');
-    setTimeout(() => {
-        window.location.href = ROLE_PORTALS[account.role] || 'portals/family.html';
-    }, 800);
 }
 
 /* ---- Register form handler ---- */
@@ -132,9 +356,33 @@ function shakeForm() {
 
 /* ---- Guard: redirect if not logged in ---- */
 function requireAuth() {
-    if (!sessionStorage.getItem('auth_role')) {
-        window.location.href = '../login.html';
+    if (!Auth.isAuthenticated()) {
+        window.location.href = 'login.html';
     }
+}
+
+function isAuthenticated() {
+    return Auth.isAuthenticated();
+}
+
+function fakeLogin(username, password, role) {
+    return Auth.fakeLogin(username, password, role);
+}
+
+function hasRole(role) {
+    return Auth.hasRole(role);
+}
+
+function requireRole(role) {
+    return Auth.requireRole(role);
+}
+
+function getCurrentUser() {
+    return Auth.getCurrentUser() || { role: 'guest', name: 'Người dùng', fullName: 'Người dùng' };
+}
+
+function logout() {
+    Auth.logout();
 }
 
 /* CSS shake animation (injected) */

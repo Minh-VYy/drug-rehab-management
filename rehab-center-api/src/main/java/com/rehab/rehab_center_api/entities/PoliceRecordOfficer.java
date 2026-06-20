@@ -13,7 +13,7 @@ import lombok.*;
 public class PoliceRecordOfficer {
 
     @Id
-    @Column(name = "MaCanBoCongAn")
+    @Column(name = "MaCanBoCongAn", columnDefinition = "CHAR(10)")
     private String id;
 
     @OneToOne

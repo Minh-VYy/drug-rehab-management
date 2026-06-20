@@ -1,0 +1,289 @@
+<div class="page-header">
+    <div>
+        <h1>Thông tin <span>cá nhân</span></h1>
+        <p>Quản lý thông tin tài khoản và cài đặt bảo mật</p>
+    </div>
+</div>
+
+<div class="stats-grid" style="margin-bottom:24px;">
+    <div class="stat-card">
+        <div class="stat-card-icon stat-icon-blue">
+            <i class="fa-solid fa-user"></i>
+        </div>
+        <div class="stat-value" id="statAccountAge">--</div>
+        <div class="stat-label">Ngày tạo tài khoản</div>
+        <div class="stat-orb orb-blue"></div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-card-icon stat-icon-green">
+            <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <div class="stat-value" id="statLastLogin">--</div>
+        <div class="stat-label">Đăng nhập gần nhất</div>
+        <div class="stat-orb orb-green"></div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-card-icon stat-icon-purple">
+            <i class="fa-solid fa-clock"></i>
+        </div>
+        <div class="stat-value" id="statSessionTime">--</div>
+        <div class="stat-label">Thời gian phiên</div>
+        <div class="stat-orb orb-purple"></div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-card-icon stat-icon-orange">
+            <i class="fa-solid fa-bell"></i>
+        </div>
+        <div class="stat-value" id="statNotifications">0</div>
+        <div class="stat-label">Thông báo chưa đọc</div>
+        <div class="stat-orb orb-orange"></div>
+    </div>
+</div>
+
+<!-- Profile Grid -->
+<div style="display:grid; grid-template-columns:320px 1fr; gap:24px; margin-bottom:24px;">
+
+    <!-- Left: Profile Card -->
+    <div class="card">
+        <div class="card-body" style="text-align:center; padding:32px 24px;">
+            <div style="position:relative; width:120px; height:120px; margin:0 auto 20px;">
+                <div style="width:120px; height:120px; border-radius:50%; background:linear-gradient(135deg, var(--primary-light), var(--accent)); display:flex; align-items:center; justify-content:center; font-size:48px; font-weight:800; color:#fff; box-shadow:0 8px 32px rgba(59,130,246,0.4);"
+                    id="profileAvatarLarge">
+                    --
+                </div>
+                <button class="btn btn-sm btn-primary"
+                    style="position:absolute; bottom:0; right:0; width:36px; height:36px; border-radius:50%; padding:0; box-shadow:0 4px 12px rgba(0,0,0,0.2);"
+                    title="Đổi ảnh đại diện">
+                    <i class="fa-solid fa-camera"></i>
+                </button>
+            </div>
+
+            <h2 style="font-size:20px; font-weight:700; color:var(--text-primary); margin-bottom:6px;"
+                id="profileFullName">--</h2>
+            <div style="display:inline-block; margin-bottom:16px;">
+                <span class="badge badge-blue" id="profileRoleBadge">--</span>
+            </div>
+
+            <div style="background:var(--surface-2); padding:16px; border-radius:var(--radius-md); margin-bottom:20px;">
+                <div style="display:grid; gap:12px; text-align:left;">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <div
+                            style="width:32px; height:32px; background:rgba(59,130,246,0.12); border-radius:8px; display:flex; align-items:center; justify-content:center; color:var(--primary);">
+                            <i class="fa-solid fa-at"></i>
+                        </div>
+                        <div style="flex:1; min-width:0;">
+                            <div style="font-size:11px; color:var(--text-muted); font-weight:600;">Tên đăng nhập</div>
+                            <div style="font-size:13px; font-weight:600; color:var(--text-primary); overflow:hidden; text-overflow:ellipsis;"
+                                id="profileUsername">--</div>
+                        </div>
+                    </div>
+
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <div
+                            style="width:32px; height:32px; background:rgba(16,185,129,0.12); border-radius:8px; display:flex; align-items:center; justify-content:center; color:var(--success);">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
+                        <div style="flex:1; min-width:0;">
+                            <div style="font-size:11px; color:var(--text-muted); font-weight:600;">Trạng thái</div>
+                            <div style="font-size:13px; font-weight:600;">
+                                <span class="badge badge-green">Đang hoạt động</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right: Forms -->
+    <div style="display:flex; flex-direction:column; gap:24px;">
+
+        <!-- Thông tin cá nhân -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <div class="card-title-icon">
+                        <i class="fa-solid fa-user-pen"></i>
+                    </div>
+                    Thông tin cá nhân
+                </div>
+                <button class="btn btn-primary btn-sm" id="btnEditProfile">
+                    <i class="fa-solid fa-pen"></i> Chỉnh sửa
+                </button>
+            </div>
+            <div class="card-body">
+                <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:16px;">
+                    <div style="padding:14px; background:var(--surface-2); border-radius:var(--radius-md);">
+                        <div
+                            style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:6px;">
+                            Họ và tên</div>
+                        <div style="font-size:14px; font-weight:600; color:var(--text-primary);" id="displayFullName">--
+                        </div>
+                    </div>
+
+                    <div style="padding:14px; background:var(--surface-2); border-radius:var(--radius-md);">
+                        <div
+                            style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:6px;">
+                            Email</div>
+                        <div style="font-size:14px; font-weight:600; color:var(--text-primary);" id="displayEmail">--
+                        </div>
+                    </div>
+
+                    <div style="padding:14px; background:var(--surface-2); border-radius:var(--radius-md);">
+                        <div
+                            style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:6px;">
+                            Số điện thoại</div>
+                        <div style="font-size:14px; font-weight:600; color:var(--text-primary);" id="displayPhone">--
+                        </div>
+                    </div>
+
+                    <div style="padding:14px; background:var(--surface-2); border-radius:var(--radius-md);">
+                        <div
+                            style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:6px;">
+                            Vai trò</div>
+                        <div style="font-size:14px; font-weight:600; color:var(--text-primary);" id="displayRole">--
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bảo mật -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <div class="card-title-icon"
+                        style="background:rgba(245,158,11,0.18); color:#D97706; border-color:rgba(245,158,11,0.25);">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    Bảo mật tài khoản
+                </div>
+                <button class="btn btn-warning btn-sm" id="btnChangePassword">
+                    <i class="fa-solid fa-key"></i> Đổi mật khẩu
+                </button>
+            </div>
+            <div class="card-body">
+                <div
+                    style="background:var(--surface-2); padding:20px; border-radius:var(--radius-md); border-left:4px solid var(--warning);">
+                    <div style="display:flex; align-items:center; gap:16px;">
+                        <div
+                            style="width:48px; height:48px; background:rgba(245,158,11,0.15); border-radius:50%; display:flex; align-items:center; justify-content:center; color:var(--warning); font-size:20px;">
+                            <i class="fa-solid fa-lock"></i>
+                        </div>
+                        <div style="flex:1;">
+                            <div style="font-size:14px; font-weight:700; color:var(--text-primary); margin-bottom:4px;">
+                                Mật khẩu cuối cùng đã thay đổi</div>
+                            <div style="font-size:13px; color:var(--text-secondary);" id="displayPasswordChanged">Chưa
+                                có thông tin</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Modal Edit Profile -->
+<div class="modal-overlay" id="modalEditProfile">
+    <div class="modal modal-lg">
+        <div class="modal-header">
+            <div class="modal-header-info">
+                <div class="modal-icon modal-icon-blue">
+                    <i class="fa-solid fa-user-pen"></i>
+                </div>
+                <div>
+                    <div class="modal-title">Chỉnh sửa thông tin cá nhân</div>
+                    <div class="modal-subtitle">Cập nhật thông tin tài khoản của bạn</div>
+                </div>
+            </div>
+            <button class="modal-close" id="btnCloseEditModal">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="modal-body">
+            <form id="formEditProfile">
+                <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:16px;">
+                    <div class="form-group">
+                        <label class="form-label">Họ và tên <span style="color:var(--danger)">*</span></label>
+                        <input type="text" class="form-control" id="formFullName" placeholder="Nhập họ tên đầy đủ"
+                            required />
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Số điện thoại</label>
+                        <input type="text" class="form-control" id="formPhone" placeholder="VD: 0905123456"
+                            maxlength="10" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email <span style="color:var(--danger)">*</span></label>
+                    <input type="email" class="form-control" id="formEmail" placeholder="email@example.com" required />
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-outline" id="btnCancelEdit">Hủy</button>
+            <button class="btn btn-primary" id="btnSaveProfile">
+                <i class="fa-solid fa-floppy-disk"></i> Lưu thay đổi
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Change Password -->
+<div class="modal-overlay" id="modalChangePassword">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-header-info">
+                <div class="modal-icon modal-icon-orange">
+                    <i class="fa-solid fa-key"></i>
+                </div>
+                <div>
+                    <div class="modal-title">Đổi mật khẩu</div>
+                    <div class="modal-subtitle">Tạo mật khẩu mới để bảo vệ tài khoản</div>
+                </div>
+            </div>
+            <button class="modal-close" id="btnClosePasswordModal">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="modal-body">
+            <form id="formChangePassword">
+                <div class="form-group">
+                    <label class="form-label">Mật khẩu hiện tại <span style="color:var(--danger)">*</span></label>
+                    <input type="password" class="form-control" id="formOldPassword"
+                        placeholder="Nhập mật khẩu hiện tại" required />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Mật khẩu mới <span style="color:var(--danger)">*</span></label>
+                    <input type="password" class="form-control" id="formNewPassword" placeholder="Nhập mật khẩu mới"
+                        required />
+                    <small style="color:var(--text-muted); font-size:12px; margin-top:4px; display:block;">Tối thiểu 8
+                        ký tự, bao gồm chữ hoa, chữ thường và số</small>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Xác nhận mật khẩu mới <span style="color:var(--danger)">*</span></label>
+                    <input type="password" class="form-control" id="formConfirmPassword"
+                        placeholder="Nhập lại mật khẩu mới" required />
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-outline" id="btnCancelPassword">Hủy</button>
+            <button class="btn btn-warning" id="btnSavePassword">
+                <i class="fa-solid fa-check"></i> Đổi mật khẩu
+            </button>
+        </div>
+    </div>
+</div>

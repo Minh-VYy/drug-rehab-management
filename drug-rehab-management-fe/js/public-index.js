@@ -1,9 +1,12 @@
 /* ====================== PUBLIC INDEX LOGIC ====================== */
 
 document.addEventListener('DOMContentLoaded', () => {
+  const homeOverviewReady = loadPublicHomeOverview();
+
   /* ---- Initialize Particle Canvas ---- */
   if (typeof initParticleCanvas === 'function') {
-    initParticleCanvas('particleCanvas', '#hero', {
+    const particleTarget = document.querySelector('#hero') ? '#hero' : '.page-header';
+    initParticleCanvas('particleCanvas', particleTarget, {
       countFactor: 14,
       speed: 0.3,
       maxDistance: 90
@@ -34,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ---- Scroll reveal ---- */
-  const revealEls = document.querySelectorAll('.feature-card, .process-step');
+  const revealEls = document.querySelectorAll('.feature-card, .process-step, .sign-card, .req-card, .timeline-item');
   if (revealEls.length > 0) {
     const revealObserver = new IntersectionObserver(entries => {
       entries.forEach((entry) => {
@@ -78,7 +81,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const statsObserver = new IntersectionObserver(entries => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          entry.target.querySelectorAll('[data-count]').forEach(animateCounter);
+          homeOverviewReady.finally(() => {
+            entry.target.querySelectorAll('[data-count]').forEach(animateCounter);
+          });
           statsObserver.unobserve(entry.target);
         }
       });
@@ -97,4 +102,165 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }, { passive: true });
   }
+
+  /* ---- Subpages Logic (Tabs & Accordion) ---- */
+  const tabs = document.querySelectorAll('.guide-tab');
+  const panels = document.querySelectorAll('.guide-panel');
+  if (tabs.length > 0) {
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        panels.forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        const targetId = tab.getAttribute('data-target');
+        const pnl = document.getElementById(targetId);
+        if(pnl) pnl.classList.add('active');
+      });
+    });
+  }
+
+  const accordions = document.querySelectorAll('.accordion-item');
+  if (accordions.length > 0) {
+    accordions.forEach(acc => {
+      const header = acc.querySelector('.accordion-header');
+      if (header) {
+        header.addEventListener('click', () => {
+          accordions.forEach(item => {
+            if (item !== acc) item.classList.remove('active');
+          });
+          acc.classList.toggle('active');
+        });
+      }
+    });
+  }
+
+  /* ---- Active Nav Link logic ---- */
+  const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.nav-link').forEach(link => {
+    const linkHref = link.getAttribute('href');
+    if (linkHref && linkHref === currentPath) {
+      link.classList.add('active');
+      link.style.background = 'var(--bg)';
+      link.style.color = 'var(--text)';
+      link.style.fontWeight = '700';
+    }
+  });
+
+  /* ---- Smooth scroll for anchor links ---- */
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      const targetId = this.getAttribute('href');
+      if (targetId === '#') return;
+      const targetElement = document.querySelector(targetId);
+      if (targetElement) {
+        e.preventDefault();
+        targetElement.scrollIntoView({
+          behavior: 'smooth'
+        });
+      }
+    });
+  });
 });
+
+async function loadPublicHomeOverview() {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 2500);
+
+  try {
+    setPublicHomeStatus('Đang tải dữ liệu từ hệ thống...');
+    const baseUrl = typeof CONFIG !== 'undefined' ? CONFIG.BASE_API_URL : 'http://localhost:8080/api/v1';
+    const response = await fetch(`${baseUrl}/public/home`, {
+      method: 'GET',
+      signal: controller.signal,
+      headers: {
+        'Accept': 'application/json'
+      }
+    });
+
+    const payload = await response.json().catch(() => null);
+    if (!response.ok) {
+      throw new Error(payload?.message || 'Public home API request failed');
+    }
+
+    applyPublicHomeOverview(payload?.data || payload);
+    setPublicHomeStatus('Đã đồng bộ dữ liệu từ hệ thống.', 'success');
+  } catch (error) {
+    resetPublicHomeOverview();
+    setPublicHomeStatus('Chưa kết nối được backend. Kiểm tra API /api/v1/public/home.', 'error');
+    console.warn('Public home overview unavailable:', error);
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
+function applyPublicHomeOverview(data) {
+  if (!data) return;
+
+  setCounterValue('statTotalPatients', data.totalPatients);
+  setCounterValue('statCompletionRate', data.completionRate, '%');
+  setCounterValue('statActiveDoctors', data.activeDoctors);
+
+  const supportAvailability = document.getElementById('statSupportAvailability');
+  if (supportAvailability && data.supportAvailability) {
+    supportAvailability.textContent = data.supportAvailability;
+  }
+
+  const completedPatients = document.getElementById('heroCompletedPatients');
+  if (completedPatients && Number.isFinite(Number(data.completedPatients))) {
+    completedPatients.textContent = `${formatPublicNumber(data.completedPatients)} học viên`;
+  }
+
+  const roleLevels = document.getElementById('heroRoleLevels');
+  if (roleLevels && Number.isFinite(Number(data.roleLevels))) {
+    roleLevels.textContent = `Bảo mật ${data.roleLevels} cấp`;
+  }
+}
+
+function resetPublicHomeOverview() {
+  setCounterValue('statTotalPatients', 0);
+  setCounterValue('statCompletionRate', 0, '%');
+  setCounterValue('statActiveDoctors', 0);
+
+  const supportAvailability = document.getElementById('statSupportAvailability');
+  if (supportAvailability) {
+    supportAvailability.textContent = '--';
+  }
+
+  const completedPatients = document.getElementById('heroCompletedPatients');
+  if (completedPatients) {
+    completedPatients.textContent = '-- học viên';
+  }
+
+  const roleLevels = document.getElementById('heroRoleLevels');
+  if (roleLevels) {
+    roleLevels.textContent = 'Bảo mật -- cấp';
+  }
+}
+
+function setPublicHomeStatus(message, type = '') {
+  const status = document.getElementById('statsApiStatus');
+  if (!status) return;
+
+  status.textContent = message;
+  status.classList.toggle('is-success', type === 'success');
+  status.classList.toggle('is-error', type === 'error');
+}
+
+function setCounterValue(id, value, suffix = '') {
+  const el = document.getElementById(id);
+  const number = Number(value);
+  if (!el || !Number.isFinite(number)) return;
+
+  el.dataset.count = String(Math.max(0, Math.round(number)));
+  if (suffix) {
+    el.dataset.suffix = suffix;
+  }
+  el.textContent = `0${el.dataset.suffix || ''}`;
+}
+
+function formatPublicNumber(value) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return '0';
+  const rounded = Math.max(0, Math.round(number));
+  return rounded > 0 ? `${rounded.toLocaleString('vi-VN')}+` : '0';
+}
