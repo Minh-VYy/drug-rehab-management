@@ -75,12 +75,12 @@ BEGIN
     INSERT INTO NguoiCaiNghien (MaNguoiCaiNghien, MaHoSoBanGiao, MaNguoiThan, HoTen, CCCD, NgayVaoTrai, TrangThai)
     VALUES 
     ('NCN001', 'HSBG003', @MaNT2, N'Nguyễn Văn Bình', '048201001234', '2026-06-10', 'DANG_CAI_NGHIEN'),
-    ('NCN002', NULL, @MaNT2, N'Trần Văn Cường', '048201001235', '2026-06-12', 'DANG_KHAM_SUC_KHOE'),
+    ('NCN002', 'HSBG003', @MaNT2, N'Trần Văn Cường', '048201001235', '2026-06-12', 'DANG_KHAM_SUC_KHOE'),
     ('NCN003', 'HSBG003', @MaNT2, N'Phạm Thị Dung', '048301001236', '2026-05-01', 'DANG_CAI_NGHIEN'),
     ('NCN004', 'HSBG003', @MaNT2, N'Hoàng Văn Đạt', '048201001237', '2026-03-20', 'DANG_CAI_NGHIEN'),
-    ('NCN005', NULL, @MaNT2, N'Vũ Thị Hằng', '048301001238', '2026-01-05', 'DA_HOAN_THANH'),
+    ('NCN005', 'HSBG005', @MaNT2, N'Vũ Thị Hằng', '048301001238', '2026-01-05', 'DA_HOAN_THANH'),
     ('NCN006', 'HSBG005', @MaNT2, N'Đặng Văn Khoa', '048201001239', '2026-06-18', 'DANG_KHAM_SUC_KHOE'),
-    ('NCN007', NULL, @MaNT2, N'Bùi Thị Linh', '048301001240', '2026-04-22', 'TAM_NGUNG_DIEU_TRI');
+    ('NCN007', 'HSBG005', @MaNT2, N'Bùi Thị Linh', '048301001240', '2026-04-22', 'TAM_NGUNG_DIEU_TRI');
 END
 
 -- 4. PhieuThamGap (từ visit-approval.page.js)

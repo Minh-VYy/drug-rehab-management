@@ -54,23 +54,19 @@ const ManagerDashboardPage = {
     },
 
     async getPlans() {
-        if (typeof Api !== 'undefined') {
-            try {
-                const plans = await Api.getTreatmentPlans();
-                if (Array.isArray(plans)) return plans;
-            } catch (error) {
-                console.warn('Lỗi API Manager Dashboard, dùng Mock data fallback:', error);
-                if (typeof window.Toast !== 'undefined') window.Toast.show('Đang dùng dữ liệu mẫu (Mock) do chưa kết nối Backend', 'warning');
-            }
+        if (typeof Api === 'undefined' || typeof Api.getTreatmentPlans === 'undefined') {
+            console.warn('Api helper chưa sẵn sàng');
+            return [];
         }
 
-        // Mock Fallback matching SQL data
-        return [
-            { maPhacdoDT: 'PD-001', maBenhAn: 'BA-001', maBacSi: 'BS001', loaiMaTuy: 'HEROIN', giaiDoan: 'Cắt cơn giải độc', ngayBatDau: '2026-06-01', ngayKetThucDuKien: '2026-06-15', trangThai: 'ChoPheDuyet' },
-            { maPhacdoDT: 'PD-002', maBenhAn: 'BA-002', maBacSi: 'BS001', loaiMaTuy: 'MA_TUY_DA', giaiDoan: 'Cắt cơn giải độc', ngayBatDau: '2026-06-10', ngayKetThucDuKien: '2026-06-30', trangThai: 'ChoPheDuyet' },
-            { maPhacdoDT: 'PD-003', maBenhAn: 'BA-003', maBacSi: 'BS002', loaiMaTuy: 'KETAMINE', giaiDoan: 'Phục hồi hành vi', ngayBatDau: '2026-05-01', ngayKetThucDuKien: '2026-05-30', trangThai: 'DangApDung' },
-            { maPhacdoDT: 'PD-004', maBenhAn: 'BA-004', maBacSi: 'BS002', loaiMaTuy: 'CAN_SA', giaiDoan: 'Lao động trị liệu', ngayBatDau: '2026-03-01', ngayKetThucDuKien: '2026-06-01', trangThai: 'DaPheDuyet' }
-        ];
+        try {
+            const data = await Api.getTreatmentPlans();
+            return Array.isArray(data) ? data : Array.isArray(data?.data) ? data.data : Array.isArray(data?.items) ? data.items : [];
+        } catch (error) {
+            console.error('Lỗi API Manager Dashboard:', error);
+            if (typeof window.Toast !== 'undefined') window.Toast.show('Không thể tải dữ liệu phác đồ', 'error');
+            return [];
+        }
     },
 
     getStats(plans) {

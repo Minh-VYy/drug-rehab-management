@@ -1,6 +1,46 @@
-<div class="module-page-header">
-    <div class="module-page-title">
-        <h1>Stage Approval</h1>
-        <p>Giao diện Stage Approval đang được xây dựng.</p>
+<div class="page-header">
+    <div class="page-title-group">
+        <h2 class="page-title"><i class="fa-solid fa-forward-step"></i> Duyệt chuyển giai đoạn</h2>
+        <p class="page-subtitle">Xem xét và phê duyệt các đề xuất chuyển giai đoạn hoặc hoàn thành điều trị từ Bác sĩ.</p>
+    </div>
+</div>
+
+<div class="card p-lg">
+    <div style="display:flex; flex-wrap:wrap; gap:16px; margin-bottom:24px; align-items:center; justify-content:space-between;">
+        <div style="display:flex; gap:16px; flex:1; min-width:300px;">
+            <div class="search-box" style="flex:1;">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" id="stage-search" class="search-input" placeholder="Tìm theo mã học viên, bác sĩ..." oninput="StageApprovalPage.applyFilter()">
+            </div>
+            <select class="form-control" id="stage-status-filter" style="width:200px;" onchange="StageApprovalPage.applyFilter()">
+                <option value="all">Tất cả trạng thái</option>
+                <option value="ChoDuyet" selected>Chờ phê duyệt</option>
+                <option value="DaDuyet">Đã phê duyệt</option>
+                <option value="TuChoi">Đã từ chối</option>
+            </select>
+        </div>
+        <button class="btn btn-primary" onclick="StageApprovalPage.refresh()">
+            <i class="fa-solid fa-arrows-rotate"></i> Làm mới
+        </button>
+    </div>
+
+    <div class="table-responsive" id="stage-table">
+        <!-- JS render -->
+    </div>
+</div>
+
+<!-- Modal Approval -->
+<div class="modal-overlay" id="stageModal">
+    <div class="modal-container" style="max-width:600px;">
+        <div class="modal-header">
+            <h3 class="modal-title" id="stageModalTitle">Chi tiết đề xuất</h3>
+            <button class="modal-close" onclick="Modal.close('stageModal')"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body" id="stageModalBody">
+            <!-- Rendered by JS -->
+        </div>
+        <div class="modal-footer" id="stageModalFooter">
+            <!-- Rendered by JS -->
+        </div>
     </div>
 </div>

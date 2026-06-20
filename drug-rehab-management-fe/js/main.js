@@ -385,6 +385,24 @@ function registerAppRoutes() {
     }
   });
 
+  Router.addRoute('/assignment', () => {
+    if (typeof AssignmentPage !== 'undefined') {
+      AssignmentPage.render('main-content');
+    }
+  });
+
+  Router.addRoute('/stage-approval', () => {
+    if (typeof StageApprovalPage !== 'undefined') {
+      StageApprovalPage.render('main-content');
+    }
+  });
+
+  Router.addRoute('/manager-reports', () => {
+    if (typeof OverviewReportPage !== 'undefined') {
+      OverviewReportPage.render('main-content');
+    }
+  });
+
   // Admin routes
   Router.addRoute('/medicines', () => {
     if (typeof MedicineCategoryPage !== 'undefined') {

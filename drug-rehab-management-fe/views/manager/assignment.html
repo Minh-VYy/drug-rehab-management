@@ -1,6 +1,73 @@
-<div class="module-page-header">
-    <div class="module-page-title">
-        <h1>Assignment</h1>
-        <p>Giao diện Assignment đang được xây dựng.</p>
+<div class="page-header">
+    <div class="page-title-group">
+        <h2 class="page-title"><i class="fa-solid fa-user-doctor"></i> Phân công phụ trách</h2>
+        <p class="page-subtitle">Phân công bác sĩ theo dõi và điều trị cho các học viên.</p>
+    </div>
+</div>
+
+<div class="card p-lg">
+    <!-- Filter Bar -->
+    <div style="display:flex; flex-wrap:wrap; gap:16px; margin-bottom:24px; align-items:center; justify-content:space-between;">
+        <div style="display:flex; gap:16px; flex:1; min-width:300px;">
+            <div class="search-box" style="flex:1;">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" id="assign-search" class="search-input" placeholder="Tìm theo mã, tên học viên..." oninput="AssignmentPage.applyFilter()">
+            </div>
+            <select class="form-control" id="assign-status-filter" style="width:220px;" onchange="AssignmentPage.applyFilter()">
+                <option value="all">Tất cả trạng thái</option>
+                <option value="unassigned">Chưa phân công</option>
+                <option value="assigned">Đã phân công</option>
+            </select>
+        </div>
+        <button class="btn btn-primary" onclick="AssignmentPage.refresh()">
+            <i class="fa-solid fa-arrows-rotate"></i> Làm mới
+        </button>
+    </div>
+
+    <!-- Table -->
+    <div class="table-responsive" id="assign-table">
+        <!-- Rendered by JS -->
+    </div>
+</div>
+
+<!-- Modal Phân Công -->
+<div class="modal-overlay" id="assignModal">
+    <div class="modal-container" style="max-width:500px;">
+        <div class="modal-header">
+            <h3 class="modal-title" id="assignModalTitle">Phân công bác sĩ</h3>
+            <button class="modal-close" onclick="Modal.close('assignModal')"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">Học viên</label>
+                <input type="text" class="form-control" id="assign-patient-name" disabled>
+                <input type="hidden" id="assign-patient-id">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Bác sĩ phụ trách <span class="required">*</span></label>
+                <select class="form-control" id="assign-doctor">
+                    <!-- Danh sách bác sĩ render bởi JS -->
+                </select>
+                <div class="form-error" id="assign-doctor-error" style="display:none;"><i class="fa-solid fa-circle-exclamation"></i> Vui lòng chọn bác sĩ</div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <div class="form-group">
+                    <label class="form-label">Ngày bắt đầu <span class="required">*</span></label>
+                    <input type="date" class="form-control" id="assign-start-date">
+                    <div class="form-error" id="assign-start-error" style="display:none;"><i class="fa-solid fa-circle-exclamation"></i> Vui lòng chọn ngày bắt đầu</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Ngày kết thúc dự kiến <span class="required">*</span></label>
+                    <input type="date" class="form-control" id="assign-end-date">
+                    <div class="form-error" id="assign-end-error" style="display:none;"><i class="fa-solid fa-circle-exclamation"></i> Ngày kết thúc phải sau ngày bắt đầu</div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="Modal.close('assignModal')">Hủy</button>
+            <button class="btn btn-primary" onclick="AssignmentPage.saveAssignment()">
+                <i class="fa-solid fa-floppy-disk"></i> Lưu phân công
+            </button>
+        </div>
     </div>
 </div>

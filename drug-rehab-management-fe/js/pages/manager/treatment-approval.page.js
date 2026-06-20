@@ -18,23 +18,19 @@ const TreatmentApprovalPage = {
     },
 
     async loadPlans() {
-        if (typeof Api !== 'undefined') {
-            try {
-                const plans = await Api.getTreatmentPlans();
-                if (Array.isArray(plans)) return plans;
-            } catch (error) {
-                console.warn('Lỗi API Treatment Approvals, dùng Mock data fallback:', error);
-                if (typeof window.Toast !== 'undefined') window.Toast.show('Đang dùng dữ liệu mẫu (Mock) do chưa kết nối Backend', 'warning');
-            }
+        if (typeof Api === 'undefined' || typeof Api.getTreatmentPlans === 'undefined') {
+            console.warn('Api helper chưa sẵn sàng');
+            return [];
         }
 
-        // Mock Fallback matching SQL data
-        return [
-            { maPhacdoDT: 'PD-001', maBenhAn: 'BA-001', maBacSi: 'BS001', loaiMaTuy: 'HEROIN', giaiDoan: 'Cắt cơn giải độc', ngayBatDau: '2026-06-01', ngayKetThucDuKien: '2026-06-15', trangThai: 'ChoPheDuyet' },
-            { maPhacdoDT: 'PD-002', maBenhAn: 'BA-002', maBacSi: 'BS001', loaiMaTuy: 'MA_TUY_DA', giaiDoan: 'Cắt cơn giải độc', ngayBatDau: '2026-06-10', ngayKetThucDuKien: '2026-06-30', trangThai: 'ChoPheDuyet' },
-            { maPhacdoDT: 'PD-003', maBenhAn: 'BA-003', maBacSi: 'BS002', loaiMaTuy: 'KETAMINE', giaiDoan: 'Phục hồi hành vi', ngayBatDau: '2026-05-01', ngayKetThucDuKien: '2026-05-30', trangThai: 'DangApDung' },
-            { maPhacdoDT: 'PD-004', maBenhAn: 'BA-004', maBacSi: 'BS002', loaiMaTuy: 'CAN_SA', giaiDoan: 'Lao động trị liệu', ngayBatDau: '2026-03-01', ngayKetThucDuKien: '2026-06-01', trangThai: 'DaPheDuyet' }
-        ];
+        try {
+            const data = await Api.getTreatmentPlans();
+            return Array.isArray(data) ? data : Array.isArray(data?.data) ? data.data : Array.isArray(data?.items) ? data.items : [];
+        } catch (error) {
+            console.error('Lỗi API Treatment Approvals:', error);
+            if (typeof window.Toast !== 'undefined') window.Toast.show('Không thể tải dữ liệu phác đồ', 'error');
+            return [];
+        }
     },
 
     hasManagerAccess() {
@@ -287,9 +283,8 @@ const TreatmentApprovalPage = {
         };
 
         try {
-            const updated = typeof Api !== 'undefined'
-                ? await Api.approveTreatmentPlan(id, payload)
-                : null;
+            if (typeof Api === 'undefined' || typeof Api.approveTreatmentPlan === 'undefined') throw new Error('Api helper chưa sẵn sàng');
+            const updated = await Api.approveTreatmentPlan(id, payload);
             Object.assign(plan, updated || {
                 trangThai: 'DaPheDuyet',
                 maQuanLy: payload.maQuanLy,
@@ -297,13 +292,9 @@ const TreatmentApprovalPage = {
                 ghiChuPheDuyet: note || 'Phác đồ phù hợp, đồng ý áp dụng.'
             });
         } catch (error) {
-            console.warn('Falling back to local treatment approval:', error);
-            Object.assign(plan, {
-                trangThai: 'DaPheDuyet',
-                maQuanLy: payload.maQuanLy,
-                ngayPheDuyet: new Date().toISOString(),
-                ghiChuPheDuyet: note || 'Phác đồ phù hợp, đồng ý áp dụng.'
-            });
+            console.error('Lỗi API khi phê duyệt phác đồ:', error);
+            if (typeof window.Toast !== 'undefined') window.Toast.show('Phê duyệt thất bại. Vui lòng thử lại.', 'error');
+            return;
         }
 
         if (typeof Modal !== 'undefined') Modal.close();
@@ -328,9 +319,8 @@ const TreatmentApprovalPage = {
         };
 
         try {
-            const updated = typeof Api !== 'undefined'
-                ? await Api.rejectTreatmentPlan(id, payload)
-                : null;
+            if (typeof Api === 'undefined' || typeof Api.rejectTreatmentPlan === 'undefined') throw new Error('Api helper chưa sẵn sàng');
+            const updated = await Api.rejectTreatmentPlan(id, payload);
             Object.assign(plan, updated || {
                 trangThai: 'TuChoi',
                 maQuanLy: payload.maQuanLy,
@@ -338,13 +328,9 @@ const TreatmentApprovalPage = {
                 ghiChuPheDuyet: reason
             });
         } catch (error) {
-            console.warn('Falling back to local treatment rejection:', error);
-            Object.assign(plan, {
-                trangThai: 'TuChoi',
-                maQuanLy: payload.maQuanLy,
-                ngayPheDuyet: new Date().toISOString(),
-                ghiChuPheDuyet: reason
-            });
+            console.error('Lỗi API khi từ chối phác đồ:', error);
+            if (typeof window.Toast !== 'undefined') window.Toast.show('Từ chối thất bại. Vui lòng thử lại.', 'error');
+            return;
         }
 
         if (typeof Modal !== 'undefined') Modal.close();

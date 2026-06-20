@@ -190,5 +190,46 @@ const Api = {
 
     markAttendance(activityId, data) {
         return this.put(`/staff/activities/${activityId}/attendance`, data);
+    },
+
+    // --- MANAGER (CÁN BỘ QUẢN LÝ) ---
+    getTreatmentPlans() {
+        return this.get('/manager/treatment-plans');
+    },
+
+    approveTreatmentPlan(id, data) {
+        return this.put(`/manager/treatment-plans/${id}/approve`, data);
+    },
+
+    rejectTreatmentPlan(id, data) {
+        return this.put(`/manager/treatment-plans/${id}/reject`, data);
+    },
+
+    getPatientsForAssignment() {
+        return this.get('/manager/patients');
+    },
+
+    getDoctors() {
+        return this.get('/manager/doctors');
+    },
+
+    assignDoctor(patientId, data) {
+        return this.post(`/manager/patients/${patientId}/assign`, data);
+    },
+
+    getStageProposals() {
+        return this.get('/manager/stage-proposals');
+    },
+
+    approveStageProposal(id, data) {
+        return this.put(`/manager/stage-proposals/${id}/approve`, data);
+    },
+
+    rejectStageProposal(id, data) {
+        return this.put(`/manager/stage-proposals/${id}/reject`, data);
+    },
+
+    getManagerReport() {
+        return this.get('/manager/reports/overview');
     }
 };

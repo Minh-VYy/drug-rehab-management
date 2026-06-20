@@ -37,8 +37,11 @@ const Sidebar = {
             ];
         } else if (role === ROLES.MANAGER) {
             menuItems = [
-                { path: '/',                   icon: 'fa-solid fa-house',  text: 'Dashboard' },
-                { path: '/treatment-approval', icon: 'fa-solid fa-stamp',  text: 'Phê duyệt phác đồ' }
+                { path: '/',                   icon: 'fa-solid fa-house',        text: 'Dashboard' },
+                { path: '/assignment',         icon: 'fa-solid fa-user-doctor',  text: 'Phân công phụ trách' },
+                { path: '/treatment-approval', icon: 'fa-solid fa-stamp',        text: 'Phê duyệt phác đồ' },
+                { path: '/stage-approval',     icon: 'fa-solid fa-forward-step', text: 'Duyệt chuyển giai đoạn' },
+                { path: '/manager-reports',    icon: 'fa-solid fa-chart-line',   text: 'Báo cáo quản lý' }
             ];
         } else if (role === ROLES.LEADER) {
             menuItems = [
