@@ -109,12 +109,16 @@ const Api = {
     // ==========================================
     // COMMON APIS (Profile & Notification)
     // ==========================================
-    updateProfile(userId, profileData) {
-        return this.put(`/users/${userId}`, profileData);
+    getProfile() {
+        return this.get('/users/profile');
+    },
+
+    updateProfile(profileData) {
+        return this.put('/users/profile', profileData);
     },
     
-    changePassword(userId, passwordData) {
-        return this.put(`/users/${userId}/change-password`, passwordData);
+    changePassword(passwordData) {
+        return this.put('/users/profile/change-password', passwordData);
     },
 
     getNotifications() {

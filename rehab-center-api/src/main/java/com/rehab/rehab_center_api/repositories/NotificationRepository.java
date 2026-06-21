@@ -13,8 +13,9 @@ public interface NotificationRepository extends JpaRepository<Notification, Stri
     @Query("""
             SELECT n
             FROM Notification n
-            WHERE n.recipientUser.id = :userId
-               OR n.recipientUser IS NULL
+            LEFT JOIN n.recipientUser recipient
+            WHERE recipient.id = :userId
+               OR recipient IS NULL
             ORDER BY n.createdAt DESC
             """)
     List<Notification> findVisibleForUserOrderByCreatedAtDesc(@Param("userId") Integer userId);

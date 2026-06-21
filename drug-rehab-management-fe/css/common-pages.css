@@ -449,3 +449,41 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* Custom Profile Tabbed UI Styles */
+.profile-nav-btn:hover {
+    background: var(--surface-2) !important;
+    color: var(--text-primary) !important;
+}
+
+.profile-nav-btn.active {
+    background: rgba(59, 130, 246, 0.08) !important;
+    color: var(--primary) !important;
+    border-left: 3px solid var(--primary) !important;
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+}
+
+.profile-avatar-lg:hover .profile-avatar-overlay {
+    opacity: 1 !important;
+}
+
+.profile-avatar-overlay:hover {
+    background: rgba(0, 0, 0, 0.55) !important;
+}
+
+/* Animations for tab transition */
+.profile-tab-content {
+    animation: profileTabFadeIn 0.3s ease-out;
+}
+
+@keyframes profileTabFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

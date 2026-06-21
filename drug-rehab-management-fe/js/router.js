@@ -23,11 +23,15 @@ const Router = {
 
     /** Normalize window.location.hash → path string starting with '/' */
     _currentHash() {
-        // URL may be: #/  or  ##/  or  #/medical-records  etc.
         let hash = window.location.hash || '';
-        // Remove all leading '#' chars
         while (hash.startsWith('#')) hash = hash.slice(1);
-        // Ensure starts with '/'
+        
+        // Strip query parameters for routing (e.g. /profile?tab=password -> /profile)
+        const qIdx = hash.indexOf('?');
+        if (qIdx !== -1) {
+            hash = hash.substring(0, qIdx);
+        }
+        
         if (!hash || hash === '') hash = '/';
         if (!hash.startsWith('/')) hash = '/' + hash;
         return hash;
@@ -43,13 +47,24 @@ const Router = {
     },
 
     handleRoute(path) {
+        let routePath = path;
+        if (!routePath.startsWith('/')) {
+            routePath = '/' + routePath;
+        }
+        
+        // Strip query parameters (e.g. /profile?tab=password -> /profile)
+        const qIdx = routePath.indexOf('?');
+        if (qIdx !== -1) {
+            routePath = routePath.substring(0, qIdx);
+        }
+
         this.currentRoute = path;
         const mainContent = document.getElementById('main-content');
         if (!mainContent) return;
 
-        if (this.routes[path]) {
+        if (this.routes[routePath]) {
             mainContent.innerHTML = '';
-            this.routes[path](mainContent);
+            this.routes[routePath](mainContent);
         } else {
             mainContent.innerHTML = `
                 <div class="card" style="margin:1rem;">
@@ -64,7 +79,7 @@ const Router = {
             `;
         }
 
-        this.updateActiveState(path);
+        this.updateActiveState(routePath);
     },
 
     updateActiveState(path) {

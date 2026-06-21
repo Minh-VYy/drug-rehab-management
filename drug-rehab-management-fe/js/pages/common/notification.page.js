@@ -71,8 +71,18 @@ const NotificationPage = {
             title: item.title || item.tieuDe || "Thông báo",
             desc: item.desc || item.content || item.noiDung || item.noiDungThongBao || "",
             time: item.time || item.ngayTaoText || item.createdAt || item.ngayTao || "Gần đây",
-            isRead: Boolean(item.isRead || item.daDoc || item.status === "DA_DOC" || item.trangThai === "DA_DOC"),
+            isRead: this.normalizeReadState(item),
         }));
+    },
+
+    normalizeReadState(item) {
+        if (typeof item?.isRead === "boolean") return item.isRead;
+        if (typeof item?.read === "boolean") return item.read;
+        if (typeof item?.daDoc === "boolean") return item.daDoc;
+
+        const rawValue = item?.isRead ?? item?.read ?? item?.daDoc ?? item?.status ?? item?.trangThai ?? "";
+        const value = String(rawValue).trim().toUpperCase();
+        return value === "TRUE" || value === "DA_DOC" || value === "READ" || value === "1";
     },
 
     normalizeType(type) {
@@ -263,7 +273,7 @@ const NotificationPage = {
         return this.notifications.filter((item) => {
             const matchesFilter = this.currentFilter === "all"
                 || (this.currentFilter === "unread" && !item.isRead)
-                || (this.currentFilter === "priority" && (item.type === "warning" || item.type === "danger"));
+                || (this.currentFilter === "priority" && this.isPriorityNotification(item));
 
             const haystack = `${item.title} ${item.desc} ${item.id}`.toLowerCase();
             const matchesSearch = !this.searchKeyword || haystack.includes(this.searchKeyword);
@@ -296,6 +306,7 @@ const NotificationPage = {
                 throw new Error("API đánh dấu thông báo đã đọc chưa được khai báo");
             }
             await Api.markNotificationAsRead(id);
+            await this.reloadNotificationsFromApi(id);
 
             if (!options.silent && window.Toast) {
                 Toast.show("Đã đánh dấu thông báo là đã đọc.", "success");
@@ -329,10 +340,7 @@ const NotificationPage = {
             }
             await Api.markAllNotificationsAsRead();
 
-            this.notifications.forEach((item) => {
-                item.isRead = true;
-            });
-            this.renderAll();
+            await this.reloadNotificationsFromApi(this.selectedId);
 
             if (window.Toast) {
                 Toast.show("Đã đánh dấu tất cả thông báo là đã đọc.", "success");
@@ -350,16 +358,41 @@ const NotificationPage = {
         }
     },
 
-    updateBadge() {
-        const unreadCount = this.notifications.filter((item) => !item.isRead).length;
-        const badge = document.getElementById("unreadCountBadge");
-        if (badge) {
-            badge.textContent = unreadCount;
+    async reloadNotificationsFromApi(preferredSelectedId = this.selectedId) {
+        const data = await Api.getNotifications();
+        this.notifications = this.normalizeNotifications(data);
+        this.apiConnected = true;
+        this.loadError = "";
+
+        const preferred = this.notifications.find((item) => item.id === preferredSelectedId);
+        if (preferred) {
+            this.selectedId = preferred.id;
+        } else if (this.notifications.length > 0) {
+            const firstUnread = this.notifications.find((item) => !item.isRead);
+            this.selectedId = (firstUnread || this.notifications[0]).id;
+        } else {
+            this.selectedId = null;
         }
+
+        this.renderAll();
+    },
+
+    updateBadge() {
+        const totalCount = this.notifications.length;
+        const unreadCount = this.notifications.filter((item) => !item.isRead).length;
+        const priorityCount = this.notifications.filter((item) => this.isPriorityNotification(item)).length;
+
+        this.setText("allCountBadge", totalCount);
+        this.setText("unreadCountBadge", unreadCount);
+        this.setText("priorityCountBadge", priorityCount);
 
         if (typeof Topbar !== "undefined" && typeof Topbar.updateNotificationCount === "function") {
             Topbar.updateNotificationCount(unreadCount);
         }
+    },
+
+    isPriorityNotification(item) {
+        return item && (item.type === "warning" || item.type === "danger");
     },
 
     setLoadingState() {

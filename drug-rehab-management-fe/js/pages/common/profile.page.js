@@ -18,10 +18,26 @@ const ProfilePage = {
 
     checkUrlParams() {
         const hash = window.location.hash;
+        const tabInfo = document.getElementById('tab-info');
+        const tabPassword = document.getElementById('tab-password');
+
         if (hash.includes('tab=password')) {
-            const modalPassword = document.getElementById('modalChangePassword');
-            if (modalPassword) {
-                setTimeout(() => modalPassword.classList.add('active'), 100);
+            if (tabInfo) {
+                tabInfo.classList.remove('active');
+                tabInfo.style.display = 'none';
+            }
+            if (tabPassword) {
+                tabPassword.classList.add('active');
+                tabPassword.style.display = 'block';
+            }
+        } else {
+            if (tabInfo) {
+                tabInfo.classList.add('active');
+                tabInfo.style.display = 'block';
+            }
+            if (tabPassword) {
+                tabPassword.classList.remove('active');
+                tabPassword.style.display = 'none';
             }
         }
     },
@@ -44,23 +60,34 @@ const ProfilePage = {
         return name.split(' ').map(w => w[0]).slice(-2).join('').toUpperCase();
     },
 
-    loadProfileData() {
-        const currentUser = typeof Auth !== 'undefined' ? Auth.getCurrentUser() : null;
+    async loadProfileData() {
+        let userData = null;
+        try {
+            if (typeof Api !== 'undefined' && Api.getProfile) {
+                userData = await Api.getProfile();
+            }
+        } catch (error) {
+            console.warn('API getProfile failed, falling back to session user', error);
+        }
 
-        const userData = currentUser || {
-            username: 'demo_user',
-            fullName: 'Nguyễn Văn An',
-            hoTen: 'Nguyễn Văn An',
-            role: 'admin',
-            email: 'nguyenvanan@rehabcare.vn',
-            sdt: '0905123456'
-        };
+        if (!userData) {
+            const currentUser = typeof Auth !== 'undefined' ? Auth.getCurrentUser() : null;
+            userData = currentUser || {
+                username: 'demo_user',
+                fullName: 'Nguyễn Văn An',
+                hoTen: 'Nguyễn Văn An',
+                role: 'admin',
+                email: 'nguyenvanan@rehabcare.vn',
+                sdt: '0905123456'
+            };
+        }
 
-        // Avatar & Name
-        const initials = this.getInitials(userData.fullName || userData.hoTen);
-        const avatarEl = document.getElementById('profileAvatarLarge');
-        if (avatarEl) avatarEl.textContent = initials;
+        this.currentUserData = userData;
 
+        // Render Avatar
+        this.renderAvatar();
+
+        // Render Sidebar Names
         const nameEl = document.getElementById('profileFullName');
         if (nameEl) nameEl.textContent = userData.fullName || userData.hoTen || userData.username;
 
@@ -70,191 +97,204 @@ const ProfilePage = {
         const usernameEl = document.getElementById('profileUsername');
         if (usernameEl) usernameEl.textContent = userData.username;
 
-        // Display info
-        document.getElementById('displayFullName').textContent = userData.fullName || userData.hoTen || '--';
-        document.getElementById('displayEmail').textContent = userData.email || '--';
-        document.getElementById('displayPhone').textContent = userData.sdt || '--';
-        document.getElementById('displayRole').textContent = this.getRoleName(userData.role);
-        document.getElementById('displayPasswordChanged').textContent = userData.lastPasswordChange || 'Chưa thay đổi';
+        // Populate Form Values
+        const formFullName = document.getElementById('formFullName');
+        if (formFullName) formFullName.value = userData.fullName || userData.hoTen || '';
 
-        // Form values
-        document.getElementById('formFullName').value = userData.fullName || userData.hoTen || '';
-        document.getElementById('formEmail').value = userData.email || '';
-        document.getElementById('formPhone').value = userData.sdt || '';
+        const formEmail = document.getElementById('formEmail');
+        if (formEmail) formEmail.value = userData.email || '';
+
+        const formPhone = document.getElementById('formPhone');
+        if (formPhone) formPhone.value = userData.phoneNumber || userData.sdt || '';
+
+        const formUsername = document.getElementById('formUsername');
+        if (formUsername) formUsername.value = userData.username || '';
+
+        const formRole = document.getElementById('formRole');
+        if (formRole) formRole.value = this.getRoleName(userData.role);
     },
 
+    renderAvatar() {
+        const userData = this.currentUserData;
+        if (!userData) return;
 
+        const username = userData.username || 'user';
+        const savedAvatar = localStorage.getItem('avatar_' + username);
+
+        const initials = this.getInitials(userData.fullName || userData.hoTen || userData.username);
+        const avatarLarge = document.getElementById('profileAvatarLarge');
+        const avatarImage = document.getElementById('profileAvatarImage');
+
+        if (savedAvatar) {
+            if (avatarImage) {
+                avatarImage.src = savedAvatar;
+                avatarImage.style.display = 'block';
+            }
+            if (avatarLarge) {
+                avatarLarge.style.display = 'none';
+            }
+        } else {
+            if (avatarLarge) {
+                avatarLarge.textContent = initials;
+                avatarLarge.style.display = 'flex';
+            }
+            if (avatarImage) {
+                avatarImage.style.display = 'none';
+            }
+        }
+    },
 
     bindEvents() {
-        // Edit Profile Modal
-        const btnEdit = document.getElementById('btnEditProfile');
-        const modalEdit = document.getElementById('modalEditProfile');
-        const btnCloseEdit = document.getElementById('btnCloseEditModal');
-        const btnCancelEdit = document.getElementById('btnCancelEdit');
-        const btnSave = document.getElementById('btnSaveProfile');
+        const self = this;
 
-        if (btnEdit && modalEdit) {
-            btnEdit.addEventListener('click', () => {
-                modalEdit.classList.add('active');
+        // --- Avatar Selection Logic ---
+        const avatarWrapper = document.getElementById('profileAvatarWrapper');
+        const avatarInput = document.getElementById('avatarInput');
+
+        if (avatarWrapper && avatarInput) {
+            avatarWrapper.addEventListener('click', () => {
+                avatarInput.click();
             });
-        }
 
-        if (btnCloseEdit) {
-            btnCloseEdit.addEventListener('click', () => {
-                modalEdit.classList.remove('active');
-            });
-        }
+            avatarInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
 
-        if (btnCancelEdit) {
-            btnCancelEdit.addEventListener('click', () => {
-                modalEdit.classList.remove('active');
-            });
-        }
-
-        if (modalEdit) {
-            modalEdit.addEventListener('click', (e) => {
-                if (e.target === modalEdit) {
-                    modalEdit.classList.remove('active');
+                if (!file.type.startsWith('image/')) {
+                    if (window.Toast) Toast.show('Vui lòng chọn tệp hình ảnh hợp lệ', 'error');
+                    return;
                 }
+
+                if (file.size > 2 * 1024 * 1024) {
+                    if (window.Toast) Toast.show('Kích thước ảnh không được vượt quá 2MB', 'error');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const base64Image = event.target.result;
+                    const username = self.currentUserData?.username || sessionStorage.getItem('auth_user') || 'user';
+                    
+                    localStorage.setItem('avatar_' + username, base64Image);
+                    
+                    self.renderAvatar();
+
+                    // Update Topbar avatar immediately
+                    const topbarAvatarEl = document.querySelector('.topbar-avatar');
+                    if (topbarAvatarEl) {
+                        topbarAvatarEl.innerHTML = `<img src="${base64Image}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+                    }
+
+                    if (window.Toast) Toast.show('Cập nhật ảnh đại diện thành công', 'success');
+                };
+                reader.readAsDataURL(file);
             });
         }
 
-        if (btnSave) {
-            btnSave.addEventListener('click', async () => {
+        // --- Save Profile Information ---
+        const btnSaveProfile = document.getElementById('btnSaveProfile');
+        if (btnSaveProfile) {
+            btnSaveProfile.addEventListener('click', async (e) => {
+                e.preventDefault();
                 const fullName = document.getElementById('formFullName').value.trim();
                 const email = document.getElementById('formEmail').value.trim();
                 const phone = document.getElementById('formPhone').value.trim();
 
                 if (!fullName || !email) {
-                    if (window.Toast) Toast.show('Vui lòng điền đầy đủ thông tin bắt buộc', 'error');
+                    if (window.Toast) Toast.show('Vui lòng điền đầy đủ các thông tin bắt buộc (*)', 'error');
                     return;
                 }
 
-                const currentUser = typeof Auth !== 'undefined' ? Auth.getCurrentUser() : null;
-                const userId = currentUser ? (currentUser.id || currentUser.username) : '1';
-                
                 try {
-                    btnSave.disabled = true;
-                    btnSave.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang lưu...';
-                    
+                    btnSaveProfile.disabled = true;
+                    btnSaveProfile.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang lưu...';
+
                     if (typeof Api !== 'undefined' && Api.updateProfile) {
-                        await Api.updateProfile(userId, { fullName, email, sdt: phone });
+                        await Api.updateProfile({ fullName, email, phoneNumber: phone });
                     } else {
                         throw new Error('API updateProfile not defined');
                     }
 
-                    if (window.Toast) Toast.show('Cập nhật hồ sơ thành công', 'success');
-                } catch (error) {
-                    console.warn('API updateProfile failed, using mock', error);
-                    // Mock success
-                    if (window.Toast) Toast.show('Cập nhật hồ sơ thành công (Mock Data)', 'success');
-                } finally {
-                    btnSave.disabled = false;
-                    btnSave.innerHTML = '<i class="fa-solid fa-save"></i> Lưu thay đổi';
-                    
-                    // Update display
-                    document.getElementById('displayFullName').textContent = fullName;
-                    document.getElementById('profileFullName').textContent = fullName;
-                    document.getElementById('displayEmail').textContent = email;
-                    document.getElementById('displayPhone').textContent = phone || '--';
-
-                    const initials = this.getInitials(fullName);
-                    document.getElementById('profileAvatarLarge').textContent = initials;
-                    
-                    if (currentUser && typeof Auth !== 'undefined') {
+                    // Update local user details
+                    const currentUser = typeof Auth !== 'undefined' ? Auth.getCurrentUser() : null;
+                    if (currentUser) {
                         currentUser.fullName = fullName;
-                        currentUser.hoTen = fullName;
+                        currentUser.name = fullName;
                         currentUser.email = email;
                         currentUser.sdt = phone;
-                        sessionStorage.setItem('auth_user', JSON.stringify(currentUser));
+                        currentUser.phoneNumber = phone;
+                        localStorage.setItem('auth_user_data', JSON.stringify(currentUser));
+                        sessionStorage.setItem('auth_name', fullName);
                     }
 
-                    modalEdit.classList.remove('active');
+                    if (self.currentUserData) {
+                        self.currentUserData.fullName = fullName;
+                        self.currentUserData.email = email;
+                        self.currentUserData.phoneNumber = phone;
+                    }
+                    
+                    document.getElementById('profileFullName').textContent = fullName;
+                    self.renderAvatar();
+
+                    const topbarNameEl = document.querySelector('.topbar-user-info .user-name');
+                    if (topbarNameEl) {
+                        topbarNameEl.textContent = fullName;
+                    }
+
+                    if (window.Toast) Toast.show('Cập nhật hồ sơ thành công', 'success');
+                } catch (error) {
+                    console.error('API updateProfile failed:', error);
+                    if (window.Toast) Toast.show(error.message || 'Cập nhật hồ sơ thất bại', 'error');
+                } finally {
+                    btnSaveProfile.disabled = false;
+                    btnSaveProfile.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Lưu thay đổi';
                 }
             });
         }
 
-        // Change Password Modal
-        const btnChangePass = document.getElementById('btnChangePassword');
-        const modalPassword = document.getElementById('modalChangePassword');
-        const btnClosePassword = document.getElementById('btnClosePasswordModal');
-        const btnCancelPassword = document.getElementById('btnCancelPassword');
+        // --- Save Password Change ---
         const btnSavePassword = document.getElementById('btnSavePassword');
-
-        if (btnChangePass && modalPassword) {
-            btnChangePass.addEventListener('click', () => {
-                document.getElementById('formChangePassword').reset();
-                modalPassword.classList.add('active');
-            });
-        }
-
-        if (btnClosePassword) {
-            btnClosePassword.addEventListener('click', () => {
-                modalPassword.classList.remove('active');
-            });
-        }
-
-        if (btnCancelPassword) {
-            btnCancelPassword.addEventListener('click', () => {
-                modalPassword.classList.remove('active');
-            });
-        }
-
-        if (modalPassword) {
-            modalPassword.addEventListener('click', (e) => {
-                if (e.target === modalPassword) {
-                    modalPassword.classList.remove('active');
-                }
-            });
-        }
-
         if (btnSavePassword) {
-            btnSavePassword.addEventListener('click', async () => {
-                const oldPass = document.getElementById('formOldPassword').value;
-                const newPass = document.getElementById('formNewPassword').value;
-                const confirmPass = document.getElementById('formConfirmPassword').value;
+            btnSavePassword.addEventListener('click', async (e) => {
+                e.preventDefault();
+                const oldPassword = document.getElementById('formOldPassword').value;
+                const newPassword = document.getElementById('formNewPassword').value;
+                const confirmPassword = document.getElementById('formConfirmPassword').value;
 
-                if (!oldPass || !newPass || !confirmPass) {
-                    if (window.Toast) Toast.show('Vui lòng điền đầy đủ thông tin', 'error');
+                if (!oldPassword || !newPassword || !confirmPassword) {
+                    if (window.Toast) Toast.show('Vui lòng nhập đầy đủ các trường mật khẩu', 'error');
                     return;
                 }
 
-                if (newPass.length < 8) {
-                    if (window.Toast) Toast.show('Mật khẩu mới phải có ít nhất 8 ký tự', 'error');
+                if (newPassword.length < 8) {
+                    if (window.Toast) Toast.show('Mật khẩu mới phải dài tối thiểu 8 ký tự', 'error');
                     return;
                 }
 
-                if (newPass !== confirmPass) {
+                if (newPassword !== confirmPassword) {
                     if (window.Toast) Toast.show('Mật khẩu xác nhận không khớp', 'error');
                     return;
                 }
 
-                const currentUser = typeof Auth !== 'undefined' ? Auth.getCurrentUser() : null;
-                const userId = currentUser ? (currentUser.id || currentUser.username) : '1';
-
                 try {
                     btnSavePassword.disabled = true;
-                    btnSavePassword.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang lưu...';
-                    
+                    btnSavePassword.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang cập nhật...';
+
                     if (typeof Api !== 'undefined' && Api.changePassword) {
-                        await Api.changePassword(userId, { oldPassword: oldPass, newPassword: newPass });
+                        await Api.changePassword({ oldPassword, newPassword });
                     } else {
                         throw new Error('API changePassword not defined');
                     }
-                    if (window.Toast) Toast.show('Đã thay đổi mật khẩu thành công', 'success');
+
+                    document.getElementById('formChangePassword').reset();
+
+                    if (window.Toast) Toast.show('Thay đổi mật khẩu thành công', 'success');
                 } catch (error) {
-                    console.warn('API changePassword failed, using mock', error);
-                    if (window.Toast) Toast.show('Đổi mật khẩu thành công (Mock Data)', 'success');
+                    console.error('API changePassword failed:', error);
+                    if (window.Toast) Toast.show(error.message || 'Mật khẩu cũ không chính xác hoặc lỗi hệ thống', 'error');
                 } finally {
                     btnSavePassword.disabled = false;
-                    btnSavePassword.innerHTML = '<i class="fa-solid fa-save"></i> Đổi mật khẩu';
-                    
-                    // Update display
-                    const now = new Date().toLocaleDateString('vi-VN');
-                    document.getElementById('displayPasswordChanged').textContent = now;
-
-                    modalPassword.classList.remove('active');
-                    document.getElementById('formChangePassword').reset();
+                    btnSavePassword.innerHTML = '<i class="fa-solid fa-check"></i> Thay đổi mật khẩu';
                 }
             });
         }

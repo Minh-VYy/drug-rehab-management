@@ -22,11 +22,15 @@
       </div>
 
       <div class="notification-segments" role="tablist" aria-label="Bộ lọc thông báo">
-        <button class="notification-filter active" data-filter="all" type="button">Tất cả</button>
+        <button class="notification-filter active" data-filter="all" type="button">
+          Tất cả <span id="allCountBadge">0</span>
+        </button>
         <button class="notification-filter" data-filter="unread" type="button">
           Chưa đọc <span id="unreadCountBadge">0</span>
         </button>
-        <button class="notification-filter" data-filter="priority" type="button">Cần chú ý</button>
+        <button class="notification-filter" data-filter="priority" type="button">
+          Cần chú ý <span id="priorityCountBadge">0</span>
+        </button>
       </div>
 
       <div class="notification-list" id="notificationList"></div>
