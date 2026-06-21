@@ -129,6 +129,23 @@ const Api = {
         return this.put('/notifications/mark-all-read');
     },
 
+    // DOCTOR - DIARY
+    getTreatmentDiaries() {
+        return this.get('/doctor/treatment-diary');
+    },
+
+    getPatientsForDiary() {
+        return this.get('/doctor/treatment-diary/patients');
+    },
+
+    createTreatmentDiary(data) {
+        return this.post('/doctor/treatment-diary', data);
+    },
+
+    updateTreatmentDiary(id, data) {
+        return this.put(`/doctor/treatment-diary/${id}`, data);
+    },
+
     // ==========================================
     // STAFF APIS
     // ==========================================

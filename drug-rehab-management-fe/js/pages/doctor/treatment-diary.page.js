@@ -11,87 +11,8 @@ const TreatmentDiaryPage = {
   formMode: "create",
   diaryCounter: 0,
 
-  MOCK_DIARIES: [
-    {
-      maNhatKy: "NKD001",
-      maBenhAn: "BA-SEED002",
-      maBacSi: "BSPT001",
-      maChiTietPhacDo: "CTPD-S002-01",
-      hoTenHocVien: "Nguyễn Văn Bình",
-      ngayGhi: "2026-06-20",
-      tinhTrangSucKhoe: "Ổn định, ăn uống tốt, không có dấu hiệu bất thường.",
-      trieuChung: "Còn mất ngủ nhẹ về đêm.",
-      nhietDo: "36.8",
-      huyetAp: "118/76",
-      nhipTim: "74",
-      thuocSuDung: "Methadone",
-      lieuLuong: "25mg/ngày",
-      mucDoNghien: "TrungBinh",
-      chanDoan: "Đang trong giai đoạn phục hồi ổn định.",
-      huongXuLy: "Tiếp tục duy trì liều hiện tại, theo dõi giấc ngủ.",
-    },
-    {
-      maNhatKy: "NKD002",
-      maBenhAn: "BA-RL005",
-      maBacSi: "BSPT003",
-      maChiTietPhacDo: "CTPD-RL005-02",
-      hoTenHocVien: "Phạm Thị Em",
-      ngayGhi: "2026-06-20",
-      tinhTrangSucKhoe: "Tốt, sinh hiệu ổn định.",
-      trieuChung: "Không ghi nhận triệu chứng bất thường.",
-      nhietDo: "36.6",
-      huyetAp: "115/72",
-      nhipTim: "70",
-      thuocSuDung: "",
-      lieuLuong: "",
-      mucDoNghien: "Nhe",
-      chanDoan: "Sẵn sàng chuẩn bị hoàn thành chương trình.",
-      huongXuLy: "Hẹn tái khám đánh giá hoàn thành sau 1 tuần.",
-    },
-    {
-      maNhatKy: "NKD003",
-      maBenhAn: "BA-RL006",
-      maBacSi: "BSPT003",
-      maChiTietPhacDo: "CTPD-RL006-01",
-      hoTenHocVien: "Hoàng Văn Phúc",
-      ngayGhi: "2026-06-19",
-      tinhTrangSucKhoe: "Còn mệt mỏi, ăn uống kém.",
-      trieuChung: "Buồn nôn nhẹ, đau cơ.",
-      nhietDo: "37.4",
-      huyetAp: "126/84",
-      nhipTim: "92",
-      thuocSuDung: "Clonidine",
-      lieuLuong: "0.1mg x 2 lần/ngày",
-      mucDoNghien: "Nang",
-      chanDoan: "Còn triệu chứng cắt cơn, cần theo dõi sát.",
-      huongXuLy: "Tăng cường theo dõi sinh hiệu, hẹn tái khám sau 2 ngày.",
-    },
-    {
-      maNhatKy: "NKD004",
-      maBenhAn: "BA-SEED003",
-      maBacSi: "BSPT001",
-      maChiTietPhacDo: "CTPD-S003-02",
-      hoTenHocVien: "Lê Văn Dũng",
-      ngayGhi: "2026-06-18",
-      tinhTrangSucKhoe: "Ổn định, tinh thần tốt.",
-      trieuChung: "Không có triệu chứng đáng kể.",
-      nhietDo: "36.7",
-      huyetAp: "120/78",
-      nhipTim: "76",
-      thuocSuDung: "",
-      lieuLuong: "",
-      mucDoNghien: "Nhe",
-      chanDoan: "Đáp ứng tốt với liệu trình tái hòa nhập.",
-      huongXuLy: "Tiếp tục theo dõi định kỳ hằng tuần.",
-    },
-  ],
-
-  MOCK_PATIENT_OPTIONS: [
-    { maBenhAn: "BA-SEED002", hoTenHocVien: "Nguyễn Văn Bình", maChiTietPhacDo: "CTPD-S002-01" },
-    { maBenhAn: "BA-RL005", hoTenHocVien: "Phạm Thị Em", maChiTietPhacDo: "CTPD-RL005-02" },
-    { maBenhAn: "BA-RL006", hoTenHocVien: "Hoàng Văn Phúc", maChiTietPhacDo: "CTPD-RL006-01" },
-    { maBenhAn: "BA-SEED003", hoTenHocVien: "Lê Văn Dũng", maChiTietPhacDo: "CTPD-S003-02" },
-  ],
+  MOCK_DIARIES: [],
+  MOCK_PATIENT_OPTIONS: [],
 
   escapeHtml(value) {
     if (value === null || value === undefined) return "";
@@ -196,19 +117,27 @@ const TreatmentDiaryPage = {
     if (tbody && show) tbody.innerHTML = "";
   },
 
-  loadData() {
+  async loadData() {
     this.showLoading(true);
-
-    return Promise.resolve(this.MOCK_DIARIES)
-      .then((res) => {
-        this.diaries = this.extractList(res).map((item) => this.normalizeDiary(item));
-        this.diaryCounter = this.diaries.length;
-      })
-      .finally(() => {
-        this.showLoading(false);
-        this.renderStats();
-        this.renderTable();
-      });
+    try {
+      if (typeof Api !== 'undefined' && Api.getTreatmentDiaries) {
+        const [diariesRes, patientsRes] = await Promise.all([
+            Api.getTreatmentDiaries(),
+            Api.getPatientsForDiary()
+        ]);
+        this.MOCK_DIARIES = this.extractList(diariesRes);
+        this.MOCK_PATIENT_OPTIONS = this.extractList(patientsRes);
+      }
+      this.diaries = this.MOCK_DIARIES.map((item) => this.normalizeDiary(item));
+      this.diaryCounter = this.diaries.length;
+    } catch (error) {
+      console.error("Failed to load treatment diaries", error);
+      this.showToast("Lỗi khi tải dữ liệu nhật ký điều trị", "error");
+    } finally {
+      this.showLoading(false);
+      this.renderStats();
+      this.renderTable();
+    }
   },
 
   renderStats() {
@@ -485,38 +414,33 @@ const TreatmentDiaryPage = {
     };
   },
 
-  handleSaveForm() {
+  async handleSaveForm() {
     if (!this.validateForm()) return;
 
     const payload = this.buildPayload();
     const saveBtn = document.getElementById("diaryFormSaveBtn");
     if (saveBtn) saveBtn.disabled = true;
 
-    window.setTimeout(() => {
-      if (this.formMode === "create") {
-        this.diaryCounter += 1;
-        this.diaries.unshift(
-          this.normalizeDiary({
-            maNhatKy: `NKD${String(this.diaryCounter).padStart(3, "0")}`,
-            ...payload,
-          })
-        );
-      } else {
-        const idx = this.diaries.findIndex((diary) => diary.maNhatKy === this.activeDiaryId);
-        if (idx !== -1) {
-          this.diaries[idx] = this.normalizeDiary({
-            ...this.diaries[idx],
-            ...payload,
-          });
+    try {
+      if (typeof Api !== 'undefined' && Api.createTreatmentDiary) {
+        if (this.formMode === "create") {
+          await Api.createTreatmentDiary(payload);
+        } else {
+          await Api.updateTreatmentDiary(this.activeDiaryId, payload);
         }
+      } else {
+        throw new Error("API not ready");
       }
 
       this.closeModal("diaryFormModal");
-      this.renderStats();
-      this.renderTable();
-      if (saveBtn) saveBtn.disabled = false;
       this.showToast(this.formMode === "create" ? "Đã ghi nhật ký điều trị mới." : "Đã cập nhật nhật ký điều trị.", "success");
-    }, 180);
+      await this.loadData();
+    } catch (error) {
+      console.error("Failed to save diary", error);
+      this.showToast("Lỗi khi lưu nhật ký điều trị", "error");
+    } finally {
+      if (saveBtn) saveBtn.disabled = false;
+    }
   },
 
   openModal(id) {

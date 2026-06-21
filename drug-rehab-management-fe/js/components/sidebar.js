@@ -94,18 +94,7 @@ const Sidebar = {
             <nav class="sidebar-nav" id="sidebar-nav">
                 ${menuHtml}
             </nav>
-            <div class="sidebar-footer">
-                <div class="sidebar-user-block">
-                    <div class="sidebar-avatar">${initial}</div>
-                    <div style="flex:1; min-width:0;">
-                        <div class="sidebar-user-name">${displayName}</div>
-                        <div class="sidebar-user-role">${displayRole}</div>
-                    </div>
-                </div>
-                <button class="btn-logout" onclick="Auth.logout()">
-                    <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
-                </button>
-            </div>
+
         `;
     }
 };

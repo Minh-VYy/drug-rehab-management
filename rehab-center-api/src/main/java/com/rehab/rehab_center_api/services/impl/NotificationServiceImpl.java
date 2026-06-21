@@ -27,7 +27,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     @Transactional(readOnly = true)
     public List<NotificationDto> getNotificationsForUser(Integer userId) {
-        List<Notification> notifications = notificationRepository.findByRecipientUser_IdOrderByCreatedAtDesc(userId);
+        List<Notification> notifications = notificationRepository.findVisibleForUserOrderByCreatedAtDesc(userId);
         return notifications.stream().map(this::mapToDto).collect(Collectors.toList());
     }
 
@@ -36,7 +36,7 @@ public class NotificationServiceImpl implements NotificationService {
     public void markAsRead(String id, Integer userId) {
         Notification notification = notificationRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.VALIDATION_ERROR, "Không tìm thấy thông báo"));
-        if (!notification.getRecipientUser().getId().equals(userId)) {
+        if (notification.getRecipientUser() != null && !notification.getRecipientUser().getId().equals(userId)) {
             throw new AppException(ErrorCode.ACCESS_DENIED, "Không có quyền sửa thông báo này");
         }
         notification.setStatus(NotificationStatus.DA_DOC);
@@ -46,7 +46,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     @Transactional
     public void markAllAsRead(Integer userId) {
-        List<Notification> notifications = notificationRepository.findByRecipientUser_IdOrderByCreatedAtDesc(userId);
+        List<Notification> notifications = notificationRepository.findVisibleForUserOrderByCreatedAtDesc(userId);
         for (Notification n : notifications) {
             if (n.getStatus() == NotificationStatus.CHUA_DOC) {
                 n.setStatus(NotificationStatus.DA_DOC);

@@ -12,8 +12,18 @@ const ProfilePage = {
         }
 
         this.loadProfileData();
-        this.loadStats();
         this.bindEvents();
+        this.checkUrlParams();
+    },
+
+    checkUrlParams() {
+        const hash = window.location.hash;
+        if (hash.includes('tab=password')) {
+            const modalPassword = document.getElementById('modalChangePassword');
+            if (modalPassword) {
+                setTimeout(() => modalPassword.classList.add('active'), 100);
+            }
+        }
     },
 
     getRoleName(roleCode) {
@@ -73,13 +83,7 @@ const ProfilePage = {
         document.getElementById('formPhone').value = userData.sdt || '';
     },
 
-    loadStats() {
-        // Mock stats
-        document.getElementById('statAccountAge').textContent = '6 tháng';
-        document.getElementById('statLastLogin').textContent = 'Hôm nay';
-        document.getElementById('statSessionTime').textContent = '2h 15m';
-        document.getElementById('statNotifications').textContent = '3';
-    },
+
 
     bindEvents() {
         // Edit Profile Modal

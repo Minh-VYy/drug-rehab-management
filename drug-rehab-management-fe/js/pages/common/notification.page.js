@@ -4,6 +4,7 @@ const NotificationPage = {
     currentFilter: "all",
     searchKeyword: "",
     apiConnected: false,
+    loadError: "",
 
     async render(containerId) {
         const success = await ViewLoader.load("views/common/notification.html", containerId);
@@ -21,6 +22,7 @@ const NotificationPage = {
         this.selectedId = null;
         this.currentFilter = "all";
         this.searchKeyword = "";
+        this.loadError = "";
 
         this.bindEvents();
         this.loadData();
@@ -37,17 +39,25 @@ const NotificationPage = {
             const data = await Api.getNotifications();
             this.notifications = this.normalizeNotifications(data);
             this.apiConnected = true;
+            this.loadError = "";
             this.setApiState("connected", "Đã kết nối API thông báo");
         } catch (error) {
-            console.warn("Không tải được thông báo từ API, dùng dữ liệu mẫu.", error);
-            this.notifications = this.getMockNotifications();
+            console.warn("Không tải được thông báo từ API.", error);
+            this.notifications = [];
+            this.selectedId = null;
             this.apiConnected = false;
-            this.setApiState("fallback", "Đang dùng dữ liệu mẫu");
+            this.loadError = "Không tải được thông báo từ API. Vui lòng kiểm tra đăng nhập hoặc backend.";
+            this.setApiState("fallback", "Không tải được API thông báo");
+            if (window.Toast) {
+                Toast.show(this.loadError, "error");
+            }
         }
 
         if (this.notifications.length > 0) {
             const firstUnread = this.notifications.find((item) => !item.isRead);
             this.selectedId = (firstUnread || this.notifications[0]).id;
+        } else {
+            this.selectedId = null;
         }
 
         this.renderAll();
@@ -81,43 +91,6 @@ const NotificationPage = {
             TAT_CA: "info",
         };
         return map[value] || "info";
-    },
-
-    getMockNotifications() {
-        return [
-            {
-                id: "TB00000001",
-                type: "warning",
-                title: "Bảo trì hệ thống nội bộ",
-                desc: "Hệ thống sẽ tạm ngưng hoạt động từ 23:00 tối nay đến 02:00 sáng mai để nâng cấp. Vui lòng hoàn tất các thao tác đang làm trước thời điểm bảo trì.",
-                time: "2 giờ trước",
-                isRead: false,
-            },
-            {
-                id: "TB00000002",
-                type: "success",
-                title: "Hồ sơ của bạn đã được duyệt",
-                desc: "Yêu cầu duyệt phác đồ điều trị cho học viên NCN-SEED001 đã được thông qua. Bạn có thể tiếp tục cập nhật nhật ký điều trị theo giai đoạn đang áp dụng.",
-                time: "Hôm qua",
-                isRead: false,
-            },
-            {
-                id: "TB00000003",
-                type: "info",
-                title: "Lịch kiểm tra sức khỏe quý II",
-                desc: "Tất cả học viên sẽ được khám sức khỏe định kỳ từ ngày 25/06. Cán bộ phụ trách cần kiểm tra lại danh sách học viên trước ngày thực hiện.",
-                time: "4 ngày trước",
-                isRead: true,
-            },
-            {
-                id: "TB00000004",
-                type: "danger",
-                title: "Cảnh báo đăng nhập bất thường",
-                desc: "Hệ thống ghi nhận một phiên đăng nhập từ thiết bị lạ. Nếu không phải bạn thực hiện, hãy đổi mật khẩu và báo quản trị hệ thống.",
-                time: "12/06/2026 08:20",
-                isRead: true,
-            },
-        ];
     },
 
     bindEvents() {
@@ -171,21 +144,9 @@ const NotificationPage = {
     },
 
     renderAll() {
-        this.renderStats();
         this.renderList();
         this.renderDetail();
         this.updateBadge();
-    },
-
-    renderStats() {
-        const total = this.notifications.length;
-        const unread = this.notifications.filter((item) => !item.isRead).length;
-        const priority = this.notifications.filter((item) => item.type === "warning" || item.type === "danger").length;
-
-        this.setText("notificationTotalStat", total);
-        this.setText("notificationUnreadStat", unread);
-        this.setText("notificationReadStat", total - unread);
-        this.setText("notificationPriorityStat", priority);
     },
 
     renderList() {
@@ -198,11 +159,29 @@ const NotificationPage = {
         if (filtered.length === 0) {
             listEl.innerHTML = "";
             emptyEl.hidden = false;
+            this.renderEmptyState();
             return;
         }
 
         emptyEl.hidden = true;
         listEl.innerHTML = filtered.map((item) => this.renderNotificationItem(item)).join("");
+    },
+
+    renderEmptyState() {
+        if (this.loadError) {
+            this.setText("notificationEmptyTitle", "Không tải được thông báo");
+            this.setText("notificationEmptyText", this.loadError);
+            return;
+        }
+
+        if (this.notifications.length === 0) {
+            this.setText("notificationEmptyTitle", "Chưa có thông báo");
+            this.setText("notificationEmptyText", "Cơ sở dữ liệu chưa có thông báo dành cho tài khoản hiện tại.");
+            return;
+        }
+
+        this.setText("notificationEmptyTitle", "Không có thông báo phù hợp");
+        this.setText("notificationEmptyText", "Thử đổi bộ lọc hoặc từ khóa tìm kiếm.");
     },
 
     renderNotificationItem(item) {
@@ -216,11 +195,14 @@ const NotificationPage = {
                     <i class="fa-solid ${tone.icon}"></i>
                 </span>
                 <span class="notification-item-main">
-                    <span class="notification-item-title">${this.escapeHtml(item.title)}</span>
+                    <span class="notification-item-head">
+                        <span class="notification-item-title">${this.escapeHtml(item.title)}</span>
+                        <span class="notification-item-time">${this.escapeHtml(item.time)}</span>
+                    </span>
                     <span class="notification-item-desc">${this.escapeHtml(item.desc)}</span>
                     <span class="notification-item-foot">
-                        <i class="fa-regular fa-clock"></i>
-                        ${this.escapeHtml(item.time)}
+                        <span>${tone.label}</span>
+                        <span>${item.isRead ? "Đã đọc" : "Chưa đọc"}</span>
                     </span>
                 </span>
                 ${item.isRead ? "" : `
@@ -304,19 +286,23 @@ const NotificationPage = {
     async markAsRead(id, options = {}) {
         const item = this.notifications.find((notification) => notification.id === id);
         if (!item || item.isRead) return;
+        const previousReadState = item.isRead;
 
         try {
-            if (this.apiConnected && typeof Api !== "undefined" && typeof Api.markNotificationAsRead === "function") {
-                await Api.markNotificationAsRead(id);
-            }
-
             item.isRead = true;
             this.renderAll();
+
+            if (typeof Api === "undefined" || typeof Api.markNotificationAsRead !== "function") {
+                throw new Error("API đánh dấu thông báo đã đọc chưa được khai báo");
+            }
+            await Api.markNotificationAsRead(id);
 
             if (!options.silent && window.Toast) {
                 Toast.show("Đã đánh dấu thông báo là đã đọc.", "success");
             }
         } catch (error) {
+            item.isRead = previousReadState;
+            this.renderAll();
             console.warn("Không đánh dấu được thông báo qua API.", error);
             if (window.Toast) {
                 Toast.show("Chưa thể cập nhật trạng thái thông báo qua API.", "error");
@@ -338,9 +324,10 @@ const NotificationPage = {
                 button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang cập nhật';
             }
 
-            if (this.apiConnected && typeof Api !== "undefined" && typeof Api.markAllNotificationsAsRead === "function") {
-                await Api.markAllNotificationsAsRead();
+            if (typeof Api === "undefined" || typeof Api.markAllNotificationsAsRead !== "function") {
+                throw new Error("API đánh dấu tất cả thông báo đã đọc chưa được khai báo");
             }
+            await Api.markAllNotificationsAsRead();
 
             this.notifications.forEach((item) => {
                 item.isRead = true;

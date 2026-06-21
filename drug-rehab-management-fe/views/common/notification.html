@@ -1,103 +1,63 @@
-<div class="notification-page">
-  <div class="page-header notification-hero">
-    <div>
-      <div class="notification-eyebrow">
-        <i class="fa-solid fa-bell"></i>
-        Trung tâm thông báo
-      </div>
-      <h2 class="page-title">Hộp thư <span class="text-highlight">thông báo</span></h2>
-      <p class="page-subtitle">Theo dõi thông báo hệ thống, lịch xử lý và các cập nhật liên quan đến hồ sơ của bạn.</p>
-    </div>
-    <div class="notification-api-state" id="notificationApiState">
-      <span class="notification-state-dot"></span>
-      Đang kiểm tra kết nối API
-    </div>
-  </div>
-
-  <div class="stats-grid notification-stats-grid">
-    <div class="stat-card notification-stat-card">
-      <div class="stat-icon icon-blue"><i class="fa-solid fa-inbox"></i></div>
-      <div class="stat-value" id="notificationTotalStat">0</div>
-      <div class="stat-label">Tổng thông báo</div>
-      <div class="stat-trend">Tất cả thông báo nhận được</div>
-    </div>
-    <div class="stat-card notification-stat-card">
-      <div class="stat-icon icon-orange"><i class="fa-solid fa-envelope"></i></div>
-      <div class="stat-value" id="notificationUnreadStat">0</div>
-      <div class="stat-label">Chưa đọc</div>
-      <div class="stat-trend">Cần xem nội dung</div>
-    </div>
-    <div class="stat-card notification-stat-card">
-      <div class="stat-icon icon-green"><i class="fa-solid fa-check-double"></i></div>
-      <div class="stat-value" id="notificationReadStat">0</div>
-      <div class="stat-label">Đã đọc</div>
-      <div class="stat-trend">Đã xử lý hoặc đã xem</div>
-    </div>
-    <div class="stat-card notification-stat-card">
-      <div class="stat-icon icon-purple"><i class="fa-solid fa-bolt"></i></div>
-      <div class="stat-value" id="notificationPriorityStat">0</div>
-      <div class="stat-label">Cần chú ý</div>
-      <div class="stat-trend">Thông báo cảnh báo/nội bộ</div>
-    </div>
-  </div>
-
-  <div class="notification-layout">
-    <section class="content-card notification-inbox-card">
-      <div class="card-header notification-card-header">
-        <div>
-          <i class="fa-solid fa-list-check icon-header"></i>
-          <span class="card-title">Danh sách thông báo</span>
-          <p class="card-subtitle">Nhấn vào một thông báo để xem nội dung chi tiết.</p>
+<div class="notification-page notification-mail-page">
+  <div class="notification-mail-shell">
+    <aside class="notification-mail-list-pane">
+      <div class="notification-mail-toolbar">
+        <div class="notification-mail-title">
+          <span class="notification-mail-title-icon"><i class="fa-solid fa-inbox"></i></span>
+          <span>Thông báo</span>
         </div>
-        <button class="btn btn-secondary notification-mark-all-btn" id="btnMarkAllRead">
-          <i class="fa-solid fa-check-double"></i>
-          Đánh dấu đã đọc
-        </button>
+
+        <div class="notification-mail-actions">
+          <button class="btn-icon notification-refresh-btn" id="btnMarkAllRead" title="Đánh dấu tất cả đã đọc" type="button">
+            <i class="fa-solid fa-check-double"></i>
+          </button>
+        </div>
       </div>
 
-      <div class="notification-toolbar">
+      <div class="notification-mail-search-row">
         <div class="search-box notification-search">
           <i class="fa-solid fa-magnifying-glass"></i>
-          <input id="notificationSearchInput" type="text" placeholder="Tìm tiêu đề, nội dung thông báo..." />
+          <input id="notificationSearchInput" type="text" placeholder="Tìm thông báo..." />
         </div>
-        <div class="notification-segments" role="tablist" aria-label="Bộ lọc thông báo">
-          <button class="notification-filter active" data-filter="all">Tất cả</button>
-          <button class="notification-filter" data-filter="unread">
-            Chưa đọc <span id="unreadCountBadge">0</span>
-          </button>
-          <button class="notification-filter" data-filter="priority">Cần chú ý</button>
-        </div>
+      </div>
+
+      <div class="notification-segments" role="tablist" aria-label="Bộ lọc thông báo">
+        <button class="notification-filter active" data-filter="all" type="button">Tất cả</button>
+        <button class="notification-filter" data-filter="unread" type="button">
+          Chưa đọc <span id="unreadCountBadge">0</span>
+        </button>
+        <button class="notification-filter" data-filter="priority" type="button">Cần chú ý</button>
       </div>
 
       <div class="notification-list" id="notificationList"></div>
 
       <div class="notification-empty" id="notificationEmpty" hidden>
         <div class="notification-empty-icon"><i class="fa-regular fa-bell-slash"></i></div>
-        <h3>Không có thông báo phù hợp</h3>
-        <p>Hãy thử đổi bộ lọc hoặc từ khóa tìm kiếm.</p>
+        <h3 id="notificationEmptyTitle">Không có thông báo phù hợp</h3>
+        <p id="notificationEmptyText">Thử đổi bộ lọc hoặc từ khóa tìm kiếm.</p>
       </div>
-    </section>
+    </aside>
 
-    <aside class="content-card notification-detail-card" id="notificationDetailCard">
+    <section class="notification-mail-reader" id="notificationDetailCard">
       <div class="notification-detail-empty" id="notificationDetailEmpty">
         <div class="notification-detail-empty-icon"><i class="fa-solid fa-envelope-open-text"></i></div>
         <h3>Chọn một thông báo</h3>
-        <p>Nội dung chi tiết sẽ hiển thị tại đây để bạn xử lý nhanh hơn.</p>
+        <p>Nội dung đầy đủ của thông báo sẽ hiển thị tại đây.</p>
       </div>
 
-      <div class="notification-detail" id="notificationDetail" hidden>
-        <div class="notification-detail-top">
+      <article class="notification-detail" id="notificationDetail" hidden>
+        <header class="notification-detail-top">
           <div class="notification-detail-icon" id="notificationDetailIcon">
             <i class="fa-solid fa-info"></i>
           </div>
-          <div>
-            <span class="badge" id="notificationDetailStatus">Chưa đọc</span>
+          <div class="notification-detail-heading">
+            <div class="notification-detail-status-row">
+              <span class="badge" id="notificationDetailStatus">Chưa đọc</span>
+              <span id="notificationDetailTime">Vừa xong</span>
+            </div>
             <h3 id="notificationDetailTitle">Tiêu đề thông báo</h3>
-            <p id="notificationDetailTime">Vừa xong</p>
           </div>
-        </div>
-
-        <div class="notification-detail-body" id="notificationDetailBody"></div>
+        </header>
 
         <div class="notification-detail-meta">
           <div>
@@ -110,13 +70,15 @@
           </div>
         </div>
 
+        <div class="notification-detail-body" id="notificationDetailBody"></div>
+
         <div class="notification-detail-actions">
-          <button class="btn btn-primary" id="btnDetailMarkRead">
+          <button class="btn btn-primary" id="btnDetailMarkRead" type="button">
             <i class="fa-solid fa-check"></i>
             Đánh dấu đã đọc
           </button>
         </div>
-      </div>
-    </aside>
+      </article>
+    </section>
   </div>
 </div>
