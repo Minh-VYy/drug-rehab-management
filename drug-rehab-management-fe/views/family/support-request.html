@@ -1,6 +1,53 @@
-<div class="module-page-header">
-    <div class="module-page-title">
-        <h1>Support Request</h1>
-        <p>Giao diện Support Request đang được xây dựng.</p>
+
+<div class="page-header" style="margin-bottom: 20px;">
+    <div class="page-title-group">
+        <h2 class="page-title"><i class="fa-solid fa-headset"></i> Yêu cầu hỗ trợ</h2>
+        <p class="page-subtitle">Gửi câu hỏi hoặc yêu cầu hỗ trợ đến ban quản lý trung tâm.</p>
+    </div>
+</div>
+
+<div class="support-layout">
+    <!-- Left Col -->
+    <div class="ticket-list-col">
+        <div class="ticket-list-header">
+            <h4 style="margin:0; font-size:1.1em; color:var(--text-dark);">Danh sách yêu cầu</h4>
+            <button class="btn btn-primary btn-sm" onclick="SupportRequestPage.openNewTicketModal()">
+                <i class="fa-solid fa-plus"></i> Tạo mới
+            </button>
+        </div>
+        <div class="ticket-list-body" id="ticket-list-container">
+            <!-- JS Rendered -->
+        </div>
+    </div>
+
+    <!-- Right Col -->
+    <div class="ticket-detail-col" id="ticket-detail-container">
+        <!-- JS Rendered -->
+    </div>
+</div>
+
+<!-- Modal: New Ticket -->
+<div class="modal-overlay" id="newTicketModal">
+    <div class="modal-container" style="max-width:500px;">
+        <div class="modal-header">
+            <h3 class="modal-title">Tạo yêu cầu mới</h3>
+            <button class="modal-close" onclick="Modal.close('newTicketModal')"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">Tiêu đề yêu cầu <span class="required">*</span></label>
+                <input type="text" class="form-control" id="new-ticket-title" placeholder="Ví dụ: Xin hỏi về lịch gửi đồ">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Nội dung <span class="required">*</span></label>
+                <textarea class="form-control" id="new-ticket-content" rows="4" placeholder="Nhập nội dung cần hỗ trợ..."></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="Modal.close('newTicketModal')">Hủy</button>
+            <button class="btn btn-primary" onclick="SupportRequestPage.submitNewTicket()">
+                <i class="fa-solid fa-paper-plane"></i> Gửi yêu cầu
+            </button>
+        </div>
     </div>
 </div>

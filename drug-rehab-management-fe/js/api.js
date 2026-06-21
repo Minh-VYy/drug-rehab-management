@@ -98,8 +98,12 @@ const Api = {
         return this.get('/admin/dashboard');
     },
 
-    getRoleDashboard(role) {
-        return this.get(`/public/dashboards/${role}`);
+    getRoleDashboard(role = 'common') {
+        return this.get(`/public/dashboards/${encodeURIComponent(role)}`);
+    },
+
+    getDashboard(role = 'common') {
+        return this.getRoleDashboard(role);
     },
 
     // ==========================================
@@ -235,5 +239,50 @@ const Api = {
 
     getManagerReport() {
         return this.get('/manager/reports/overview');
+    },
+
+    // ==========================================
+    // SUPPORT REQUEST APIS
+    // ==========================================
+    createSupportRequest(data) {
+        return this.post('/support-requests', data);
+    },
+
+    getSupportRequestsByRelative(relativeId) {
+        return this.get(`/support-requests/relative/${relativeId}`);
+    },
+
+    getAllSupportRequests() {
+        return this.get('/support-requests');
+    },
+
+    replyToSupportRequest(id, data) {
+        return this.put(`/support-requests/${id}/reply`, data);
+    },
+
+    // ==========================================
+    // FAMILY APIS (PHASE 2)
+    // ==========================================
+    createVoluntaryAdmission(data) {
+        return this.post('/voluntary-admissions', data);
+    },
+
+    getVoluntaryAdmissionsByRelative(relativeId) {
+        return this.get(`/voluntary-admissions/relative/${relativeId}`);
+    },
+
+    createVisitRequest(data) {
+        return this.post('/visit-requests', data);
+    },
+
+    getVisitRequestsByRelative(relativeId) {
+        return this.get(`/visit-requests/relative/${relativeId}`);
+    },
+
+    getRecoveryPathByPatient(patientId) {
+        return this.get(`/recovery-path/patient/${patientId}`);
     }
 };
+
+window.Api = Api;
+window.API = Api;

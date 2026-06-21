@@ -111,7 +111,7 @@ public class DatabaseSeeder implements CommandLineRunner {
 
         seedTreatmentStageDefinitions();
         seedStaffProfiles();
-        seedHandoverTestData();
+        // seedHandoverTestData();
         // Treatment demo data depends on admission-source rows that differ between DB versions.
         // Keep the app startup stable and load treatment data from the SQL script instead.
     }
@@ -639,10 +639,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                         .identityNumber(identityNumber)
                         .issueDate(LocalDate.now().minusYears(5))
                         .issuePlace("Cục Cảnh sát quản lý hành chính về trật tự xã hội")
-                        .legacyAddress("123 Nguyễn Huệ, Quận 1, TP.HCM")
-                        .address(Address.builder()
-                                .streetAddress("123 Nguyễn Huệ")
-                                .build())
+                        .address("123 Nguyễn Huệ, Quận 1, TP.HCM")
                         .occupation("Lao động tự do")
                         .build()));
     }

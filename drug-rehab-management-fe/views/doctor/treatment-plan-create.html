@@ -1,6 +1,197 @@
-<div class="module-page-header">
-    <div class="module-page-title">
-        <h1>Treatment Plan Create</h1>
-        <p>Giao diện Treatment Plan Create đang được xây dựng.</p>
+<div class="page-header doctor-plan-header">
+  <div>
+    <h2 class="page-title">Tạo <span class="text-highlight">phác đồ điều trị</span></h2>
+    <p class="page-subtitle">Lập phác đồ điều trị cho hồ sơ bệnh án và gửi cán bộ quản lý phê duyệt.</p>
+  </div>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-orange"><i class="fa-solid fa-clipboard-list"></i></div>
+    <div class="stat-value" id="statPlanWaiting">0</div>
+    <div class="stat-label">Hồ sơ chờ lập phác đồ</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-blue"><i class="fa-solid fa-pen-to-square"></i></div>
+    <div class="stat-value" id="statPlanDraft">0</div>
+    <div class="stat-label">Phác đồ nháp</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-purple"><i class="fa-solid fa-hourglass-half"></i></div>
+    <div class="stat-value" id="statPlanPending">0</div>
+    <div class="stat-label">Chờ quản lý duyệt</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-green"><i class="fa-solid fa-circle-check"></i></div>
+    <div class="stat-value" id="statPlanActive">0</div>
+    <div class="stat-label">Đang áp dụng</div>
+  </div>
+</div>
+
+<div class="card doctor-plan-card">
+  <div class="card-header">
+    <div>
+      <span class="card-title">Danh sách hồ sơ cần lập phác đồ</span>
+      <p class="card-subtitle">Hồ sơ bệnh án đang được bạn phụ trách điều trị</p>
     </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="planSearchInput" placeholder="Tìm mã hồ sơ, họ tên học viên..." />
+    </div>
+
+    <select id="planStageFilter" class="filter-select">
+      <option value="all">Tất cả giai đoạn</option>
+      <option value="GiaiDoan1">Giai đoạn 1 - Cắt cơn</option>
+      <option value="GiaiDoan2">Giai đoạn 2 - Phục hồi</option>
+      <option value="GiaiDoan3">Giai đoạn 3 - Tái hòa nhập</option>
+    </select>
+
+    <select id="planStatusFilter" class="filter-select">
+      <option value="all">Tất cả trạng thái</option>
+      <option value="ChuaLap">Chưa lập phác đồ</option>
+      <option value="Nhap">Nháp</option>
+      <option value="ChoDuyet">Chờ duyệt</option>
+      <option value="DangApDung">Đang áp dụng</option>
+    </select>
+  </div>
+
+  <div class="table-wrapper">
+    <table class="table doctor-plan-table">
+      <thead>
+        <tr>
+          <th>Mã hồ sơ</th>
+          <th>Họ tên học viên</th>
+          <th>Loại ma túy</th>
+          <th>Giai đoạn hiện tại</th>
+          <th>Phác đồ gần nhất</th>
+          <th>Trạng thái</th>
+          <th>Thao tác</th>
+        </tr>
+      </thead>
+      <tbody id="planTableBody"></tbody>
+    </table>
+  </div>
+
+  <div class="table-loading" id="planLoadingState" style="display:none;">
+    Đang tải dữ liệu...
+  </div>
+
+  <div class="table-empty" id="planEmptyState" style="display:none;">
+    Không tìm thấy hồ sơ phù hợp.
+  </div>
+</div>
+
+<!-- Modal xem chi tiết phác đồ -->
+<div class="modal-overlay" id="planDetailModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h3>Chi tiết phác đồ điều trị</h3>
+      <button class="modal-close" id="planDetailCloseBtn"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="modal-body" id="planDetailBody"></div>
+
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="planDetailCloseBtn2">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal tạo phác đồ điều trị (form lớn) -->
+<div class="modal-overlay" id="planFormModal">
+  <div class="modal modal-lg doctor-plan-form-modal">
+    <div class="modal-header">
+      <h3>Lập phác đồ điều trị</h3>
+      <button class="modal-close" id="planFormCloseBtn"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="modal-body">
+      <!-- Thông tin học viên đã chọn -->
+      <div class="doctor-plan-patient-summary" id="planPatientSummary"></div>
+
+      <div class="form-section">
+        <h4 class="form-section-title"><i class="fa-solid fa-circle-info"></i> Thông tin chung phác đồ</h4>
+
+        <div class="module-form-grid">
+          <div class="form-group">
+            <label>Loại ma túy <span class="required">*</span></label>
+            <select id="formLoaiMaTuy" class="form-control">
+              <option value="Heroin">Heroin</option>
+              <option value="MaTuyDa">Ma túy đá (Methamphetamine)</option>
+              <option value="CanSa">Cần sa</option>
+              <option value="ThuocPhien">Thuốc phiện</option>
+              <option value="Khac">Khác</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Giai đoạn điều trị <span class="required">*</span></label>
+            <select id="formGiaiDoan" class="form-control">
+              <option value="GiaiDoan1">Giai đoạn 1 - Cắt cơn</option>
+              <option value="GiaiDoan2">Giai đoạn 2 - Phục hồi</option>
+              <option value="GiaiDoan3">Giai đoạn 3 - Tái hòa nhập</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Ngày bắt đầu <span class="required">*</span></label>
+            <input type="date" id="formNgayBatDau" class="form-control" />
+            <span class="form-error" id="errNgayBatDau"></span>
+          </div>
+
+          <div class="form-group">
+            <label>Ngày kết thúc dự kiến <span class="required">*</span></label>
+            <input type="date" id="formNgayKetThuc" class="form-control" />
+            <span class="form-error" id="errNgayKetThuc"></span>
+          </div>
+
+          <div class="form-group form-group-full">
+            <label>Mục tiêu điều trị <span class="required">*</span></label>
+            <textarea id="formMucTieu" class="form-control" rows="2" placeholder="VD: Ổn định thể trạng, cắt cơn an toàn, không còn triệu chứng cấp tính..."></textarea>
+            <span class="form-error" id="errMucTieu"></span>
+          </div>
+
+          <div class="form-group form-group-full">
+            <label>Nội dung phác đồ tổng quát <span class="required">*</span></label>
+            <textarea id="formNoiDungPhacDo" class="form-control" rows="3" placeholder="Mô tả tổng quát nội dung điều trị, phương pháp áp dụng..."></textarea>
+            <span class="form-error" id="errNoiDungPhacDo"></span>
+          </div>
+
+          <div class="form-group form-group-full">
+            <label>Ghi chú bác sĩ</label>
+            <textarea id="formGhiChuBacSi" class="form-control" rows="2" placeholder="Ghi chú thêm (không bắt buộc)"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Repeater các giai đoạn nhỏ trong phác đồ -->
+      <div class="form-section">
+        <div class="doctor-plan-steps-header">
+          <h4 class="form-section-title"><i class="fa-solid fa-list-ol"></i> Các giai đoạn trong phác đồ</h4>
+          <button type="button" class="btn btn-outline btn-sm" id="btnAddPlanStep">
+            <i class="fa-solid fa-plus"></i> Thêm giai đoạn
+          </button>
+        </div>
+
+        <div id="planStepsContainer" class="doctor-plan-steps-container"></div>
+        <span class="form-error" id="errPlanSteps"></span>
+      </div>
+    </div>
+
+    <div class="modal-footer doctor-plan-form-footer">
+      <button class="btn btn-outline" id="planFormCancelBtn">Hủy</button>
+      <button class="btn btn-secondary" id="planFormDraftBtn">
+        <i class="fa-solid fa-floppy-disk"></i> Lưu nháp
+      </button>
+      <button class="btn btn-primary" id="planFormSubmitBtn">
+        <i class="fa-solid fa-paper-plane"></i> Gửi quản lý duyệt
+      </button>
+    </div>
+  </div>
 </div>

@@ -33,18 +33,93 @@ const AdvancedRoleDashboard = {
   },
 
   async renderRole(rootId, role) {
-    const fallback = this.getPreset(role);
-    this.render(rootId, fallback);
+    const normalizedRole = this.normalizeRole(role);
+    const fallback = this.getPreset(normalizedRole);
+    this.renderLoading(rootId, fallback);
 
-    if (!window.Api || typeof Api.getRoleDashboard !== "function") return;
+    const fetchDashboard = this.getDashboardFetcher();
+    if (!fetchDashboard) {
+      this.render(rootId, this.withApiFallback(fallback, "Dashboard API client chưa sẵn sàng."));
+      return;
+    }
 
     try {
-      const remoteConfig = await Api.getRoleDashboard(role);
+      const remoteConfig = await fetchDashboard(normalizedRole);
       const mergedConfig = this.mergeDashboardConfig(fallback, remoteConfig);
       this.render(rootId, mergedConfig);
     } catch (error) {
-      console.warn(`Không tải được dashboard ${role} từ API, giữ dữ liệu dự phòng:`, error);
+      console.warn(`Không tải được dashboard ${normalizedRole} từ API, dùng dữ liệu dự phòng:`, error);
+      this.render(rootId, this.withApiFallback(fallback, error));
     }
+  },
+
+  renderLoading(rootId, config) {
+    const root = document.getElementById(rootId);
+    if (!root || !config) return;
+
+    root.innerHTML = `
+      <section class="ard-page ard-theme-${this.escape(config.theme || "blue")}">
+        <div class="ard-hero">
+          <div class="ard-hero-copy">
+            <div class="ard-kicker">
+              <i class="fa-solid ${this.escape(config.icon || "fa-chart-line")}"></i>
+              ${this.escape(config.roleLabel || "Dashboard")}
+            </div>
+            <h1>Đang tải <span>dữ liệu API</span></h1>
+            <p>Dashboard đang đồng bộ số liệu mới nhất từ backend.</p>
+          </div>
+          <div class="ard-hero-side">
+            <div class="ard-command-card">
+              <small>Nguồn dữ liệu</small>
+              <strong>API</strong>
+              <span><i class="fa-solid fa-circle-notch fa-spin"></i> Đang kết nối /api/v1/public/dashboards...</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    `;
+  },
+
+  getDashboardFetcher() {
+    if (window.DashboardService && typeof window.DashboardService.getRoleDashboard === "function") {
+      return (role) => window.DashboardService.getRoleDashboard(role);
+    }
+
+    if (window.Api && typeof window.Api.getRoleDashboard === "function") {
+      return (role) => window.Api.getRoleDashboard(role);
+    }
+
+    return null;
+  },
+
+  normalizeRole(role) {
+    if (window.DashboardService && typeof window.DashboardService.normalizeRole === "function") {
+      return window.DashboardService.normalizeRole(role);
+    }
+
+    const value = String(role || "common").trim().toLowerCase();
+    return value === "director" ? "leader" : value || "common";
+  },
+
+  withApiFallback(fallback, error) {
+    const detail = typeof error === "string"
+      ? error
+      : (error?.message || "Không thể tải dữ liệu dashboard từ backend.");
+
+    return {
+      ...fallback,
+      commandLabel: "Nguồn dữ liệu",
+      commandValue: "Dữ liệu dự phòng",
+      commandText: detail,
+      signals: [
+        {
+          text: "Dashboard đang hiển thị dữ liệu dự phòng vì API chưa phản hồi.",
+          icon: "fa-triangle-exclamation",
+          tone: "red",
+        },
+        ...(fallback.signals || []),
+      ],
+    };
   },
 
   mergeDashboardConfig(fallback, remote = {}) {

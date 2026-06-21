@@ -9,7 +9,6 @@ const Sidebar = {
         if (role === ROLES.FAMILY) {
             menuItems = [
                 { path: '/',               icon: 'fa-solid fa-house',          text: 'Dashboard' },
-                { path: '/profile',        icon: 'fa-solid fa-address-card',   text: 'Hồ sơ cá nhân' },
                 { path: '/register-rehab', icon: 'fa-solid fa-file-signature', text: 'Đăng ký cai nghiện' },
                 { path: '/visit-register', icon: 'fa-solid fa-calendar-plus',  text: 'Đăng ký thăm gặp' },
                 { path: '/treatment-path', icon: 'fa-solid fa-route',          text: 'Lộ trình phục hồi' },
@@ -28,7 +27,8 @@ const Sidebar = {
                 { path: '/patients',   icon: 'fa-solid fa-users',            text: 'Quản lý học viên' },
                 { path: '/visits',     icon: 'fa-solid fa-calendar-check',   text: 'Duyệt thăm gặp' },
                 { path: '/activities', icon: 'fa-solid fa-clipboard-list',   text: 'Lập lịch sinh hoạt' },
-                { path: '/attendance', icon: 'fa-solid fa-user-check',       text: 'Điểm danh' }
+                { path: '/attendance', icon: 'fa-solid fa-user-check',       text: 'Điểm danh' },
+                { path: '/support-management', icon: 'fa-solid fa-headset', text: 'Quản lý hỗ trợ' }
             ];
         } else if (role === ROLES.DOCTOR) {
             menuItems = [

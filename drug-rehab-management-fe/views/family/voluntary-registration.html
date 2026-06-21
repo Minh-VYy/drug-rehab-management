@@ -1,6 +1,144 @@
-<div class="module-page-header">
-    <div class="module-page-title">
-        <h1>Voluntary Registration</h1>
-        <p>Giao diện Voluntary Registration đang được xây dựng.</p>
+
+<div class="page-header">
+    <div class="page-title-group">
+        <h2 class="page-title"><i class="fa-solid fa-file-signature"></i> Đăng ký cai nghiện tự nguyện</h2>
+        <p class="page-subtitle">Thực hiện hồ sơ đăng ký cai nghiện cho người thân trực tuyến.</p>
+    </div>
+</div>
+
+<div class="wizard-container">
+    <div class="card p-lg">
+        <div class="wizard-header">
+            <div class="wizard-progress" id="wizardProgress" style="width: 0%;"></div>
+            
+            <div class="wizard-step-item active" id="stepIndicator1">
+                <div class="wizard-step-circle"><i class="fa-solid fa-user-shield"></i></div>
+                <div class="wizard-step-title">Người đăng ký</div>
+            </div>
+            <div class="wizard-step-item" id="stepIndicator2">
+                <div class="wizard-step-circle"><i class="fa-solid fa-user-injured"></i></div>
+                <div class="wizard-step-title">Người cai nghiện</div>
+            </div>
+            <div class="wizard-step-item" id="stepIndicator3">
+                <div class="wizard-step-circle"><i class="fa-solid fa-check-double"></i></div>
+                <div class="wizard-step-title">Xác nhận</div>
+            </div>
+        </div>
+
+        <div class="wizard-body">
+            <!-- Step 1: Người đăng ký -->
+            <div class="wizard-step-content active" id="stepContent1">
+                <h3 style="margin-bottom: 24px; color: var(--text-dark);">Thông tin người làm đơn (Người thân)</h3>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                    <div class="form-group">
+                        <label class="form-label">Họ và tên <span class="required">*</span></label>
+                        <input type="text" class="form-control" id="reg-name" placeholder="Nguyễn Văn A">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Số CCCD <span class="required">*</span></label>
+                        <input type="text" class="form-control" id="reg-cccd" placeholder="012345678900">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Số điện thoại <span class="required">*</span></label>
+                        <input type="tel" class="form-control" id="reg-phone" placeholder="0901234567">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Quan hệ với người cai nghiện <span class="required">*</span></label>
+                        <select class="form-control" id="reg-relation">
+                            <option value="">-- Chọn quan hệ --</option>
+                            <option value="Bố/Mẹ">Bố / Mẹ</option>
+                            <option value="Vợ/Chồng">Vợ / Chồng</option>
+                            <option value="Anh/Chị/Em">Anh / Chị / Em</option>
+                            <option value="Ông/Bà">Ông / Bà</option>
+                            <option value="Khác">Khác</option>
+                        </select>
+                    </div>
+                    <div class="form-group span-2">
+                        <label class="form-label">Địa chỉ thường trú <span class="required">*</span></label>
+                        <input type="text" class="form-control" id="reg-address" placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Người cai nghiện -->
+            <div class="wizard-step-content" id="stepContent2">
+                <h3 style="margin-bottom: 24px; color: var(--text-dark);">Thông tin người cai nghiện</h3>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                    <div class="form-group">
+                        <label class="form-label">Họ và tên <span class="required">*</span></label>
+                        <input type="text" class="form-control" id="pat-name" placeholder="Trần Văn B">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Số CCCD <span class="required">*</span></label>
+                        <input type="text" class="form-control" id="pat-cccd" placeholder="012345678901">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Ngày sinh <span class="required">*</span></label>
+                        <input type="date" class="form-control" id="pat-dob">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Giới tính <span class="required">*</span></label>
+                        <select class="form-control" id="pat-gender">
+                            <option value="Nam">Nam</option>
+                            <option value="Nữ">Nữ</option>
+                        </select>
+                    </div>
+                    <div class="form-group span-2">
+                        <label class="form-label">Hồ sơ đính kèm (Ảnh chụp CCCD, Đơn xin cai nghiện...) <span class="required">*</span></label>
+                        <div class="file-upload-box" onclick="document.getElementById('pat-file').click()">
+                            <i class="fa-solid fa-cloud-arrow-up file-upload-icon"></i>
+                            <div style="font-weight:600; margin-bottom:4px;">Nhấn để tải lên hồ sơ</div>
+                            <div style="font-size:0.85em; color:var(--text-muted);">Hỗ trợ PDF, JPG, PNG (Tối đa 5MB)</div>
+                            <input type="file" id="pat-file" style="display:none;" onchange="VoluntaryRegistrationPage.handleFileSelect(this)">
+                        </div>
+                        <div id="file-name-display" style="margin-top:8px; font-size:0.9em; color:var(--primary); font-weight:500;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Xác nhận -->
+            <div class="wizard-step-content" id="stepContent3">
+                <div style="text-align:center; padding: 20px 0;">
+                    <div style="width:64px; height:64px; background:rgba(16,185,129,0.1); color:var(--success); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:32px; margin:0 auto 16px;">
+                        <i class="fa-solid fa-clipboard-check"></i>
+                    </div>
+                    <h3 style="color:var(--text-dark); margin-bottom:8px;">Xác nhận thông tin hồ sơ</h3>
+                    <p style="color:var(--text-muted); max-width:500px; margin:0 auto 24px;">Vui lòng kiểm tra lại tính chính xác của các thông tin dưới đây. Mọi thông tin cung cấp sai sự thật sẽ chịu trách nhiệm trước pháp luật.</p>
+                </div>
+                
+                <div style="background:rgba(0,0,0,0.02); border-radius:12px; padding:24px; display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+                    <div>
+                        <h4 style="font-size:0.9em; color:var(--primary); margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px;">Thông tin người làm đơn</h4>
+                        <div style="font-size:0.95em; color:var(--text-dark); line-height:1.6;">
+                            <div><strong>Họ tên:</strong> <span id="sum-reg-name"></span></div>
+                            <div><strong>CCCD:</strong> <span id="sum-reg-cccd"></span></div>
+                            <div><strong>SĐT:</strong> <span id="sum-reg-phone"></span></div>
+                            <div><strong>Quan hệ:</strong> <span id="sum-reg-relation"></span></div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 style="font-size:0.9em; color:var(--primary); margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px;">Thông tin học viên</h4>
+                        <div style="font-size:0.95em; color:var(--text-dark); line-height:1.6;">
+                            <div><strong>Họ tên:</strong> <span id="sum-pat-name"></span></div>
+                            <div><strong>CCCD:</strong> <span id="sum-pat-cccd"></span></div>
+                            <div><strong>Ngày sinh:</strong> <span id="sum-pat-dob"></span></div>
+                            <div><strong>Tệp đính kèm:</strong> <span id="sum-pat-file" style="color:var(--success);"><i class="fa-solid fa-check"></i> Đã đính kèm</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="wizard-footer">
+            <button class="btn btn-outline" id="btnPrev" onclick="VoluntaryRegistrationPage.prevStep()" style="visibility:hidden;">
+                <i class="fa-solid fa-arrow-left"></i> Quay lại
+            </button>
+            <button class="btn btn-primary" id="btnNext" onclick="VoluntaryRegistrationPage.nextStep()">
+                Tiếp tục <i class="fa-solid fa-arrow-right"></i>
+            </button>
+            <button class="btn btn-success" id="btnSubmit" onclick="VoluntaryRegistrationPage.submitForm()" style="display:none;">
+                <i class="fa-solid fa-paper-plane"></i> Gửi hồ sơ
+            </button>
+        </div>
     </div>
 </div>

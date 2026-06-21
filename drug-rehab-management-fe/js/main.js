@@ -587,6 +587,12 @@ function registerAppRoutes() {
       AttendancePage.render('main-content');
     }
   });
+
+  Router.addRoute('/support-management', () => {
+    if (typeof SupportManagementPage !== 'undefined') {
+      SupportManagementPage.render('main-content');
+    }
+  });
 }
 
 function renderRoleDashboard() {

@@ -1,0 +1,79 @@
+<div class="page-header" style="margin-bottom: 20px;">
+    <div class="page-title-group">
+        <h2 class="page-title"><i class="fa-solid fa-headset"></i> Quản lý Yêu cầu hỗ trợ</h2>
+        <p class="page-subtitle">Tiếp nhận và phản hồi các yêu cầu từ người thân học viên.</p>
+    </div>
+</div>
+
+<div class="support-layout">
+    <!-- Cột trái: Danh sách Phiếu -->
+    <div class="ticket-list-col">
+        <div class="ticket-list-header" style="flex-direction: column; align-items: stretch; gap: 12px;">
+            <div style="display:flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin:0; font-size:1.1em; color:var(--text-dark);">Danh sách yêu cầu</h3>
+                <span class="badge badge-primary" id="ticket-count">0</span>
+            </div>
+            <select id="filterStatus" class="form-control" onchange="SupportManagementPage.renderTicketList()">
+                <option value="ALL">Tất cả</option>
+                <option value="CHO_PHAN_HOI">Chờ phản hồi</option>
+                <option value="DA_PHAN_HOI">Đã phản hồi</option>
+            </select>
+        </div>
+        <div class="ticket-list-body" id="staff-ticket-list">
+            <!-- JS Renders Here -->
+        </div>
+    </div>
+    
+    <!-- Cột phải: Chi tiết và Phản hồi -->
+    <div class="ticket-detail-col" id="staff-ticket-detail" style="display: none;">
+        <div class="ticket-detail-header">
+            <div>
+                <h3 id="detail-title">Tiêu đề</h3>
+                <div style="font-size:0.85em; color:var(--text-muted); margin-top:4px;">
+                    <i class="fa-solid fa-user"></i> Người gửi: <strong id="detail-sender">...</strong>
+                    <span style="margin: 0 8px;">|</span>
+                    <i class="fa-solid fa-clock"></i> <span id="detail-date">...</span>
+                </div>
+            </div>
+            <span id="detail-status" class="ticket-status">Trạng thái</span>
+        </div>
+        <div class="ticket-detail-body" style="background:#fff;">
+            
+            <div style="margin-bottom: 32px;">
+                <h4 style="font-size:0.9em; color:var(--text-muted); text-transform:uppercase; margin-bottom:12px;">Nội dung yêu cầu</h4>
+                <div style="background:rgba(245,158,11,0.05); border-left:4px solid var(--warning); padding:16px; border-radius:4px 12px 12px 4px; color:var(--text-dark); line-height:1.6;" id="detail-content">
+                    ...
+                </div>
+            </div>
+
+            <div id="reply-section" style="display:none;">
+                <h4 style="font-size:0.9em; color:var(--text-muted); text-transform:uppercase; margin-bottom:12px;">Phản hồi từ Trung tâm</h4>
+                <div style="background:rgba(16,185,129,0.05); border-left:4px solid var(--success); padding:16px; border-radius:4px 12px 12px 4px; color:var(--text-dark); line-height:1.6;" id="detail-reply">
+                    ...
+                </div>
+                <div style="font-size:0.85em; color:var(--text-muted); margin-top:8px; text-align:right;">
+                    Người trả lời: <strong id="detail-replier">...</strong> vào <span id="detail-reply-date">...</span>
+                </div>
+            </div>
+
+        </div>
+        
+        <div class="ticket-detail-footer" id="reply-form-section" style="display:none; flex-direction:column; align-items:stretch; padding:24px; background:rgba(0,0,0,0.02);">
+            <label class="form-label">Nội dung phản hồi <span class="required">*</span></label>
+            <textarea class="form-control" id="reply-input" rows="4" placeholder="Nhập câu trả lời chi tiết cho người thân..."></textarea>
+            <div style="text-align:right; margin-top:16px;">
+                <button class="btn btn-primary" onclick="SupportManagementPage.submitReply()">
+                    <i class="fa-solid fa-paper-plane"></i> Gửi phản hồi
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="ticket-detail-col" id="staff-ticket-empty" style="align-items:center; justify-content:center; background:#fff;">
+        <div style="text-align:center; color:var(--text-muted);">
+            <i class="fa-solid fa-envelope-open-text" style="font-size:4em; margin-bottom:16px; opacity:0.5;"></i>
+            <p>Chọn một yêu cầu để xem chi tiết</p>
+        </div>
+    </div>
+</div>

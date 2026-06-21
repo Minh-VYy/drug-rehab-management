@@ -38,12 +38,8 @@ public class VoluntaryAdmissionApplication {
     @Column(name = "NgaySinhNguoiCaiNghien", nullable = false)
     private LocalDate patientDateOfBirth;
 
-    @Embedded
-    @AttributeOverrides({
-        @AttributeOverride(name = "streetAddress", column = @Column(name = "ThuongTru_Duong", columnDefinition = "NVARCHAR(255)")),
-        @AttributeOverride(name = "ward", column = @Column(name = "ThuongTru_MaXa"))
-    })
-    private Address permanentAddress;
+    @Column(name = "DiaChiThuongTru", columnDefinition = "NVARCHAR(255)", nullable = false)
+    private String permanentAddress;
 
     @Column(name = "SoCCCDNguoiCaiNghien", length = 12, nullable = false)
     private String patientIdentityNumber;

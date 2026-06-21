@@ -22,9 +22,8 @@ public class RehabPatient {
     @JoinColumn(name = "MaDonTuNguyen", unique = true)
     private VoluntaryAdmissionApplication voluntaryApplication;
 
-    @OneToOne
-    @JoinColumn(name = "MaChiTietPhieuBanGiao", unique = true)
-    private HandoverSlipDetail handoverSlipDetail;
+    @Column(name = "MaHoSoBanGiao")
+    private String handoverSlipId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MaNguoiThan")
