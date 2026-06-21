@@ -1,6 +1,190 @@
-<div class="module-page-header">
-    <div class="module-page-title">
-        <h1>Create Notification</h1>
-        <p>Giao diện Create Notification đang được xây dựng.</p>
+<div class="page-header">
+  <div>
+    <h2 class="page-title">Tạo <span class="text-highlight">thông báo</span></h2>
+    <p class="page-subtitle">Soạn và gửi thông báo đến cá nhân hoặc nhóm vai trò trong hệ thống.</p>
+  </div>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-blue"><i class="fa-solid fa-paper-plane"></i></div>
+    <div class="stat-value" id="statNotiTotal">0</div>
+    <div class="stat-label">Đã gửi hôm nay</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-purple"><i class="fa-solid fa-users"></i></div>
+    <div class="stat-value" id="statNotiInternal">0</div>
+    <div class="stat-label">Gửi nội bộ</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-green"><i class="fa-solid fa-user"></i></div>
+    <div class="stat-value" id="statNotiPersonal">0</div>
+    <div class="stat-label">Gửi cá nhân</div>
+  </div>
+</div>
+
+<div class="card-grid-2col">
+  <!-- Form tạo thông báo -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <span class="card-title">Soạn thông báo mới</span>
+        <p class="card-subtitle">Nhập nội dung và chọn đối tượng nhận thông báo</p>
+      </div>
     </div>
+
+    <div class="module-form-grid" style="grid-template-columns: 1fr;">
+      <div class="form-group">
+        <label>Tiêu đề thông báo <span class="required">*</span></label>
+        <input type="text" id="notiTitle" class="form-control" placeholder="VD: Thông báo lịch nghỉ lễ trung tâm" />
+        <span class="form-error" id="errNotiTitle"></span>
+      </div>
+
+      <div class="form-group">
+        <label>Nội dung thông báo <span class="required">*</span></label>
+        <textarea id="notiContent" class="form-control" rows="6" placeholder="Nhập nội dung thông báo chi tiết..."></textarea>
+        <span class="form-error" id="errNotiContent"></span>
+      </div>
+
+      <div class="form-group">
+        <label>Mức độ hiển thị</label>
+        <select id="notiLevel" class="form-control">
+          <option value="ThongTin">Thông tin</option>
+          <option value="CanhBao">Cảnh báo</option>
+          <option value="QuanTrong">Quan trọng</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Loại gửi <span class="required">*</span></label>
+        <div class="noti-type-options">
+          <label class="noti-type-radio">
+            <input type="radio" name="notiType" value="TatCa" checked />
+            <span><i class="fa-solid fa-globe"></i> Tất cả</span>
+          </label>
+          <label class="noti-type-radio">
+            <input type="radio" name="notiType" value="NoiBo" />
+            <span><i class="fa-solid fa-building"></i> Nội bộ</span>
+          </label>
+          <label class="noti-type-radio">
+            <input type="radio" name="notiType" value="CaNhan" />
+            <span><i class="fa-solid fa-user-tag"></i> Cá nhân</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Block hiện khi chọn Nội bộ -->
+      <div class="form-group" id="notiGroupBlock" style="display:none;">
+        <label>Chọn nhóm vai trò nhận thông báo</label>
+        <div class="noti-role-checkboxes" id="notiRoleCheckboxes">
+          <label><input type="checkbox" value="BacSi" /> Bác sĩ</label>
+          <label><input type="checkbox" value="CanBoTrungTam" /> Nhân viên / Cán bộ trung tâm</label>
+          <label><input type="checkbox" value="CanBoQuanLy" /> Quản lý</label>
+          <label><input type="checkbox" value="LanhDao" /> Lãnh đạo</label>
+        </div>
+      </div>
+
+      <!-- Block hiện khi chọn Cá nhân -->
+      <div class="form-group" id="notiPersonalBlock" style="display:none;">
+        <label>Tìm và chọn người nhận <span class="required">*</span></label>
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="notiRecipientSearch" placeholder="Tìm theo tên hoặc tên đăng nhập..." />
+        </div>
+        <div class="noti-recipient-options" id="notiRecipientOptions"></div>
+        <span class="form-error" id="errNotiRecipients"></span>
+
+        <div class="noti-selected-recipients" id="notiSelectedRecipients"></div>
+      </div>
+    </div>
+
+    <div class="card-footer noti-form-actions">
+      <button class="btn btn-outline" id="btnNotiReset">
+        <i class="fa-solid fa-rotate-left"></i> Làm mới form
+      </button>
+      <button class="btn btn-secondary" id="btnNotiPreview">
+        <i class="fa-solid fa-eye"></i> Xem trước
+      </button>
+      <button class="btn btn-primary" id="btnNotiSubmit">
+        <i class="fa-solid fa-paper-plane"></i> Gửi thông báo
+      </button>
+    </div>
+  </div>
+
+  <!-- Danh sách thông báo đã gửi gần đây -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <span class="card-title">Thông báo đã gửi gần đây</span>
+        <p class="card-subtitle">Lịch sử thông báo do bạn gửi</p>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="sentNotiSearchInput" placeholder="Tìm tiêu đề thông báo..." />
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Tiêu đề</th>
+            <th>Loại gửi</th>
+            <th>Mức độ</th>
+            <th>Thời gian gửi</th>
+            <th>Thao tác</th>
+          </tr>
+        </thead>
+        <tbody id="sentNotiTableBody"></tbody>
+      </table>
+    </div>
+
+    <div class="table-loading" id="sentNotiLoadingState" style="display:none;">
+      Đang tải dữ liệu...
+    </div>
+
+    <div class="table-empty" id="sentNotiEmptyState" style="display:none;">
+      Chưa có thông báo nào được gửi.
+    </div>
+  </div>
+</div>
+
+<!-- Modal xem trước -->
+<div class="modal-overlay" id="notiPreviewModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h3>Xem trước thông báo</h3>
+      <button class="modal-close" id="notiPreviewCloseBtn"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="modal-body" id="notiPreviewBody"></div>
+
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="notiPreviewBackBtn">Quay lại chỉnh sửa</button>
+      <button class="btn btn-primary" id="notiPreviewSendBtn">
+        <i class="fa-solid fa-paper-plane"></i> Gửi thông báo ngay
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal chi tiết thông báo đã gửi -->
+<div class="modal-overlay" id="sentNotiDetailModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h3>Chi tiết thông báo đã gửi</h3>
+      <button class="modal-close" id="sentNotiDetailCloseBtn"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="modal-body" id="sentNotiDetailBody"></div>
+
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="sentNotiDetailCloseBtn2">Đóng</button>
+    </div>
+  </div>
 </div>

@@ -2287,10 +2287,18 @@ thead th:last-child {
   gap: 18px;
 }
 
+.ard-main-grid.single-column {
+  grid-template-columns: 1fr;
+}
+
 .ard-secondary-grid {
   display: grid;
   grid-template-columns: minmax(0, 0.95fr) minmax(320px, 0.8fr) minmax(300px, 0.75fr);
   gap: 18px;
+}
+
+.ard-secondary-grid.no-signals {
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
 }
 
 .ard-panel {
@@ -5188,6 +5196,10 @@ textarea.form-control {
   justify-content: center;
   min-width: 19px;
   padding: 0 6px;
+}
+
+.notification-filter span[hidden] {
+  display: none;
 }
 
 .notification-list {

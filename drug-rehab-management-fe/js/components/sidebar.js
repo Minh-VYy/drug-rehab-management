@@ -28,6 +28,7 @@ const Sidebar = {
                 { path: '/visits',     icon: 'fa-solid fa-calendar-check',   text: 'Duyệt thăm gặp' },
                 { path: '/activities', icon: 'fa-solid fa-clipboard-list',   text: 'Lập lịch sinh hoạt' },
                 { path: '/attendance', icon: 'fa-solid fa-user-check',       text: 'Điểm danh' },
+                { path: '/create-notification', icon: 'fa-solid fa-bullhorn', text: 'Tạo thông báo' },
                 { path: '/support-management', icon: 'fa-solid fa-headset', text: 'Quản lý hỗ trợ' }
             ];
         } else if (role === ROLES.DOCTOR) {

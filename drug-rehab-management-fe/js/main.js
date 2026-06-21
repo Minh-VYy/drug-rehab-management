@@ -593,6 +593,12 @@ function registerAppRoutes() {
       SupportManagementPage.render('main-content');
     }
   });
+
+  Router.addRoute('/create-notification', () => {
+    if (typeof CreateNotificationPage !== 'undefined') {
+      CreateNotificationPage.render('main-content');
+    }
+  });
 }
 
 function renderRoleDashboard() {

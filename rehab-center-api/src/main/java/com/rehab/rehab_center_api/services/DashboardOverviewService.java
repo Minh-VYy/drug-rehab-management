@@ -1,12 +1,15 @@
 package com.rehab.rehab_center_api.services;
 
 import com.rehab.rehab_center_api.dto.response.RoleDashboardResponse;
+import com.rehab.rehab_center_api.dto.response.FamilyDashboardResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -505,6 +508,199 @@ public class DashboardOverviewService {
             long pendingSupport,
             long handoverTotal
     ) {}
+
+    public FamilyDashboardResponseDTO getFamilyDashboardData(Integer userId) {
+        String latestAppStatus = "Không có đơn";
+        String nextVisitDate = "Chưa có lịch";
+        String nextVisitTrend = "Không có lịch sắp tới";
+        boolean nextVisitWarn = false;
+        long unreadNotifsCount = 0;
+        String currentStageName = "Chưa điều trị";
+
+        List<FamilyDashboardResponseDTO.TimelineItemDTO> timelineItems = new ArrayList<>();
+        List<FamilyDashboardResponseDTO.NotificationItemDTO> focusItems = new ArrayList<>();
+
+        // 1. Get relativeId
+        Integer relativeId = null;
+        try {
+            relativeId = jdbcTemplate.queryForObject(
+                    "SELECT MaNguoiThan FROM NguoiThan WHERE MaNguoiDung = ?",
+                    Integer.class,
+                    userId
+            );
+        } catch (Exception ignored) {}
+
+        if (relativeId != null) {
+            // Query most recent Voluntary Application Status
+            try {
+                String appStatus = jdbcTemplate.queryForObject(
+                        "SELECT TOP 1 TrangThai FROM DonDangKyTuNguyen WHERE MaNguoiThan = ? ORDER BY NgayGuiDon DESC",
+                        String.class,
+                        relativeId
+                );
+                if (appStatus != null) {
+                    latestAppStatus = switch (appStatus) {
+                        case "CHO_DUYET" -> "Chờ duyệt";
+                        case "DA_TIEP_NHAN" -> "Đã tiếp nhận";
+                        case "TU_CHOI" -> "Từ chối";
+                        case "DA_NHAP_TRAI" -> "Đã nhập trại";
+                        case "GIA_DINH_HUY" -> "Hủy đơn";
+                        default -> appStatus;
+                    };
+                }
+            } catch (Exception ignored) {}
+
+            // Query upcoming visit request
+            try {
+                List<Map<String, Object>> visits = jdbcTemplate.queryForList(
+                        "SELECT TOP 1 NgayTham, CaTham, TrangThai FROM PhieuThamGap " +
+                        "WHERE MaNguoiThan = ? AND TrangThai IN ('CHO_DUYET', 'DA_DONG_Y') " +
+                        "AND NgayTham >= CAST(GETDATE() AS DATE) " +
+                        "ORDER BY NgayTham ASC",
+                        relativeId
+                );
+                if (!visits.isEmpty()) {
+                    Map<String, Object> visit = visits.get(0);
+                    java.sql.Date date = (java.sql.Date) visit.get("NgayTham");
+                    Number shift = (Number) visit.get("CaTham");
+                    String status = (String) visit.get("TrangThai");
+
+                    java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy");
+                    nextVisitDate = sdf.format(date);
+
+                    String shiftStr = shift.intValue() == 1 ? "Ca sáng (08:30)" : "Ca chiều (14:00)";
+                    String statusStr = "CHO_DUYET".equals(status) ? "Đang chờ duyệt" : "Đã duyệt";
+                    nextVisitTrend = shiftStr + " — " + statusStr;
+                    if ("CHO_DUYET".equals(status)) {
+                        nextVisitWarn = true;
+                    }
+                }
+            } catch (Exception ignored) {}
+
+            // Query current recovery stage of patient
+            String patientId = null;
+            try {
+                List<Map<String, Object>> patients = jdbcTemplate.queryForList(
+                        "SELECT TOP 1 MaNguoiCaiNghien, MaGiaiDoanHienTai FROM NguoiCaiNghien " +
+                        "WHERE MaNguoiThan = ? ORDER BY NgayVaoTrai DESC",
+                        relativeId
+                );
+                if (!patients.isEmpty()) {
+                    Map<String, Object> p = patients.get(0);
+                    patientId = (String) p.get("MaNguoiCaiNghien");
+                    String stageId = (String) p.get("MaGiaiDoanHienTai");
+
+                    if (stageId != null) {
+                        String stageName = jdbcTemplate.queryForObject(
+                                "SELECT TenGiaiDoan FROM DanhMucGiaiDoan WHERE MaGiaiDoan = ?",
+                                String.class,
+                                stageId
+                        );
+                        if (stageName != null) {
+                            currentStageName = stageName;
+                        }
+                    } else {
+                        currentStageName = "Chưa phân giai đoạn";
+                    }
+                }
+            } catch (Exception ignored) {}
+
+            // Build recovery timeline
+            if (patientId != null) {
+                try {
+                    List<Map<String, Object>> logs = jdbcTemplate.queryForList(
+                            "SELECT TOP 5 nk.NgayGhi, nk.TinhTrangSucKhoe, nk.HuongXuLy " +
+                            "FROM NhatKyDieuTri nk " +
+                            "LEFT JOIN HoSoBenhAn ba ON ba.MaBenhAn = nk.MaBenhAn " +
+                            "WHERE ba.MaNguoiCaiNghien = ? " +
+                            "ORDER BY nk.NgayGhi DESC",
+                            patientId
+                    );
+
+                    java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm");
+                    for (Map<String, Object> log : logs) {
+                        java.sql.Timestamp ts = (java.sql.Timestamp) log.get("NgayGhi");
+                        String health = (String) log.get("TinhTrangSucKhoe");
+                        String treatment = (String) log.get("HuongXuLy");
+
+                        String timeStr = ts != null ? sdf.format(ts) : "Vừa xong";
+                        String text = health != null ? health : (treatment != null ? treatment : "");
+
+                        timelineItems.add(FamilyDashboardResponseDTO.TimelineItemDTO.builder()
+                                .time(timeStr)
+                                .title("Cập nhật sức khỏe")
+                                .text(text)
+                                .build());
+                    }
+                } catch (Exception ignored) {}
+
+                // If timeline is empty, add a default welcoming milestone
+                if (timelineItems.isEmpty()) {
+                    timelineItems.add(FamilyDashboardResponseDTO.TimelineItemDTO.builder()
+                            .time("Hệ thống")
+                            .title("Bắt đầu theo dõi")
+                            .text("Đang cập nhật quá trình điều trị của học viên từ bác sĩ trung tâm.")
+                            .build());
+                }
+            } else {
+                timelineItems.add(FamilyDashboardResponseDTO.TimelineItemDTO.builder()
+                        .time("Hệ thống")
+                        .title("Chưa liên kết học viên")
+                        .text("Vui lòng nộp đơn tự nguyện hoặc liên hệ trung tâm để đồng bộ hồ sơ học viên.")
+                        .build());
+            }
+        }
+
+        // Query unread notifications count
+        try {
+            Long countVal = jdbcTemplate.queryForObject(
+                    "SELECT COUNT(*) FROM ThongBao WHERE (MaNguoiDungNhan = ? OR MaNguoiDungNhan IS NULL) AND TrangThai = 'CHUA_DOC'",
+                    Long.class,
+                    userId
+            );
+            if (countVal != null) {
+                unreadNotifsCount = countVal;
+            }
+        } catch (Exception ignored) {}
+
+        // Query top 3 latest notifications
+        try {
+            List<Map<String, Object>> notifs = jdbcTemplate.queryForList(
+                    "SELECT TOP 3 TieuDe, NoiDung, NgayTao FROM ThongBao " +
+                    "WHERE (MaNguoiDungNhan = ? OR MaNguoiDungNhan IS NULL) " +
+                    "ORDER BY NgayTao DESC",
+                    userId
+            );
+
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy");
+            for (Map<String, Object> notif : notifs) {
+                String title = (String) notif.get("TieuDe");
+                String content = (String) notif.get("NoiDung");
+                java.sql.Timestamp created = (java.sql.Timestamp) notif.get("NgayTao");
+
+                String dateStr = created != null ? sdf.format(created) : "Hôm nay";
+                String textSnippet = content != null ? (content.length() > 60 ? content.substring(0, 57) + "..." : content) : "";
+
+                focusItems.add(FamilyDashboardResponseDTO.NotificationItemDTO.builder()
+                        .title(title != null ? title : "Thông báo mới")
+                        .content(content != null ? content : "")
+                        .contentSnippet(textSnippet)
+                        .date(dateStr)
+                        .build());
+            }
+        } catch (Exception ignored) {}
+
+        return FamilyDashboardResponseDTO.builder()
+                .trangThaiDonDangKyGanNhat(latestAppStatus)
+                .lichThamGapSapToi(nextVisitDate)
+                .lichThamGapSapToiTrend(nextVisitTrend)
+                .lichThamGapSapToiWarn(nextVisitWarn)
+                .thongBaoChuaDoc(unreadNotifsCount)
+                .giaiDoanPhucHoiHienTai(currentStageName)
+                .timeline(timelineItems)
+                .thongBaoMoiNhat(focusItems)
+                .build();
+    }
 
     private static final class DashboardBuilder {
         private final String theme;

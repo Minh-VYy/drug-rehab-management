@@ -116,7 +116,7 @@ const Api = {
     updateProfile(profileData) {
         return this.put('/users/profile', profileData);
     },
-    
+
     changePassword(passwordData) {
         return this.put('/users/profile/change-password', passwordData);
     },
@@ -124,11 +124,11 @@ const Api = {
     getNotifications() {
         return this.get('/notifications');
     },
-    
+
     markNotificationAsRead(id) {
         return this.put(`/notifications/${id}/read`);
     },
-    
+
     markAllNotificationsAsRead() {
         return this.put('/notifications/mark-all-read');
     },
@@ -282,8 +282,12 @@ const Api = {
     },
 
     // ==========================================
-    // FAMILY APIS (PHASE 2)
+    // FAMILY APIS
     // ==========================================
+    getFamilyDashboard() {
+        return this.get('/family/dashboard');
+    },
+
     createVoluntaryAdmission(data) {
         return this.post('/voluntary-admissions', data);
     },

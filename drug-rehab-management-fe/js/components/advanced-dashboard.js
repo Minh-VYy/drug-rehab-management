@@ -12,18 +12,21 @@ const AdvancedRoleDashboard = {
     const root = document.getElementById(rootId);
     if (!root || !config) return;
 
+    const hasVisual = config.visual && config.visual.data && config.visual.data.length > 0;
+    const hasSignals = config.signals && config.signals.length > 0;
+
     root.innerHTML = `
       <section class="ard-page ard-theme-${this.escape(config.theme || "blue")}">
         ${this.renderHero(config)}
         ${this.renderMetrics(config.metrics || [])}
-        <div class="ard-main-grid">
-          ${this.renderVisualPanel(config.visual)}
+        <div class="ard-main-grid ${!hasVisual ? "single-column" : ""}">
+          ${hasVisual ? this.renderVisualPanel(config.visual) : ""}
           ${this.renderFocusPanel(config.focus)}
         </div>
-        <div class="ard-secondary-grid">
+        <div class="ard-secondary-grid ${!hasSignals ? "no-signals" : ""}">
           ${this.renderTimeline(config.timeline)}
           ${this.renderActions(config.actions || [])}
-          ${this.renderSignalPanel(config.signals || [])}
+          ${hasSignals ? this.renderSignalPanel(config.signals) : ""}
         </div>
       </section>
     `;
@@ -240,8 +243,9 @@ const AdvancedRoleDashboard = {
     `;
   },
 
-  renderVisualPanel(visual = {}) {
-    const data = visual.data || [];
+  renderVisualPanel(visual) {
+    if (!visual || !visual.data || !visual.data.length) return "";
+    const data = visual.data;
     const total = data.reduce((sum, item) => sum + Number(item.value || 0), 0) || 1;
     const colors = data.map((item) => item.color || this.tones[item.tone] || this.tones.blue);
     let cursor = 0;
@@ -270,8 +274,8 @@ const AdvancedRoleDashboard = {
           </div>
           <div class="ard-legend-list">
             ${data.map((item, index) => {
-              const percent = Math.round((Number(item.value || 0) / total) * 100);
-              return `
+      const percent = Math.round((Number(item.value || 0) / total) * 100);
+      return `
                 <div class="ard-legend-item">
                   <div>
                     <span style="background:${colors[index]}"></span>
@@ -281,15 +285,16 @@ const AdvancedRoleDashboard = {
                   <div class="ard-progress"><i style="width:${percent}%; background:${colors[index]}"></i></div>
                 </div>
               `;
-            }).join("")}
+    }).join("")}
           </div>
         </div>
       </section>
     `;
   },
 
-  renderFocusPanel(focus = {}) {
-    const items = focus.items || [];
+  renderFocusPanel(focus) {
+    if (!focus || !focus.items || !focus.items.length) return "";
+    const items = focus.items;
     return `
       <section class="ard-panel ard-focus-panel" data-ard-depth data-depth-power="5">
         <div class="ard-panel-header">
@@ -314,8 +319,9 @@ const AdvancedRoleDashboard = {
     `;
   },
 
-  renderTimeline(timeline = {}) {
-    const items = timeline.items || [];
+  renderTimeline(timeline) {
+    if (!timeline || !timeline.items || !timeline.items.length) return "";
+    const items = timeline.items;
     return `
       <section class="ard-panel ard-timeline-panel" data-ard-depth data-depth-power="4">
         <div class="ard-panel-header compact">
@@ -364,6 +370,7 @@ const AdvancedRoleDashboard = {
   },
 
   renderSignalPanel(signals) {
+    if (!signals || !signals.length) return "";
     return `
       <section class="ard-panel ard-signal-panel" data-ard-depth data-depth-power="4">
         <div class="ard-panel-header compact">
@@ -707,54 +714,55 @@ const AdvancedRoleDashboard = {
     return {
       theme: "green",
       icon: "fa-hands-holding-heart",
-      roleLabel: "Người thân",
+      roleLabel: "Người thân học viên",
       title: "Xin chào",
       name,
-      subtitle: "Theo dõi lộ trình phục hồi, đăng ký thăm gặp và gửi yêu cầu hỗ trợ.",
-      commandLabel: "Lộ trình",
-      commandValue: "Đang phục hồi",
-      commandText: "Thông tin được cập nhật từ hồ sơ điều trị của trung tâm.",
+      subtitle: "Theo dõi tiến trình phục hồi của người thân, đặt lịch thăm gặp và gửi yêu cầu hỗ trợ tới trung tâm.",
+      commandLabel: "Giai đoạn điều trị hiện tại",
+      commandValue: "Cắt cơn & Giải độc",
+      commandText: "Học viên: Nguyễn Minh Hoàng — Giai đoạn 1/3 (Đang tiến triển tốt)",
       metrics: [
-        { label: "Đơn tự nguyện", value: "1", icon: "fa-file-signature", tone: "blue", trend: "Đang theo dõi" },
-        { label: "Lịch thăm gặp", value: "2", icon: "fa-calendar-check", tone: "green", trend: "1 lịch sắp tới" },
-        { label: "Yêu cầu hỗ trợ", value: "1", icon: "fa-headset", tone: "orange", trend: "Đang phản hồi" },
-        { label: "Tiến độ phục hồi", value: "68%", icon: "fa-road", tone: "purple", trend: "+8% tháng này" },
+        { label: "Đơn tự nguyện gần nhất", value: "Chờ duyệt", icon: "fa-file-signature", tone: "orange", trend: "Đang xét duyệt", warn: true },
+        { label: "Lịch thăm gặp sắp tới", value: "25/06/2026", icon: "fa-calendar-check", tone: "green", trend: "Ca sáng (08:30)", warn: false },
+        { label: "Thông báo chưa đọc", value: "3", icon: "fa-bell", tone: "red", trend: "Tin mới", warn: true },
+        { label: "Giai đoạn phục hồi", value: "Cắt cơn", icon: "fa-route", tone: "blue", trend: "Giai đoạn 1/3", warn: false },
       ],
       visual: {
-        title: "Lộ trình phục hồi",
-        subtitle: "Các mốc gia đình cần theo dõi",
-        centerValue: "68%",
+        title: "Tiến trình phục hồi",
+        subtitle: "Lộ trình 3 giai đoạn cai nghiện & phục hồi",
+        centerValue: "33%",
         centerLabel: "tiến độ",
         data: [
-          { label: "Ổn định", value: 42, tone: "green" },
-          { label: "Tư vấn", value: 18, tone: "blue" },
-          { label: "Tái hòa nhập", value: 8, tone: "purple" },
+          { label: "GĐ 1: Cắt cơn giải độc", value: 10, tone: "blue" },
+          { label: "GĐ 2: Điều trị phục hồi", value: 0, tone: "orange" },
+          { label: "GĐ 3: Lao động trị liệu", value: 0, tone: "purple" },
         ],
       },
       focus: {
-        title: "Việc gia đình có thể làm",
-        subtitle: "Các thao tác hỗ trợ người cai nghiện",
+        title: "3 thông báo mới nhất",
+        subtitle: "Cập nhật từ Ban quản lý trung tâm",
         items: [
-          { title: "Đăng ký thăm gặp", text: "Chọn ngày và người đi cùng", meta: "Mở", icon: "fa-calendar-plus", tone: "green", route: "/visit-register" },
-          { title: "Xem lộ trình", text: "Theo dõi tiến trình phục hồi", meta: "68%", icon: "fa-route", tone: "purple", route: "/treatment-path" },
-          { title: "Gửi hỗ trợ", text: "Trao đổi với trung tâm", meta: "Nhanh", icon: "fa-headset", tone: "orange", route: "/support" },
+          { title: "Thông báo lịch thăm gặp định kỳ tháng 6", text: "Trung tâm tổ chức thăm gặp vào các ngày Thứ Bảy và Chủ Nhật...", meta: "Hôm nay", icon: "fa-bell", tone: "blue", route: "/notifications" },
+          { title: "Cập nhật tiến trình phục hồi học viên", text: "Học viên đã hoàn thành tuần đầu trị liệu cắt cơn giải độc an toàn...", meta: "2 ngày trước", icon: "fa-chart-line", tone: "green", route: "/notifications" },
+          { title: "Nhắc nhở hoàn thiện hồ sơ tự nguyện", text: "Vui lòng cung cấp bản chụp CCCD học viên để hoàn tất đối chiếu...", meta: "5 ngày trước", icon: "fa-file-circle-exclamation", tone: "orange", route: "/notifications" },
         ],
       },
       timeline: {
+        title: "Tiến trình phục hồi của người cai nghiện",
+        subtitle: "Các mốc lịch sử phát triển thể trạng học viên",
         items: [
-          { time: "Tuần 1", title: "Cập nhật hồ sơ", text: "Hoàn thiện thông tin người thân" },
-          { time: "Tuần 2", title: "Thăm gặp định kỳ", text: "Đặt lịch và chờ xác nhận" },
-          { time: "Tuần 4", title: "Đánh giá phục hồi", text: "Theo dõi phản hồi từ bác sĩ" },
+          { time: "Hôm nay", title: "Ổn định thể trạng", text: "Học viên đã hoàn tất liệu trình cắt cơn, ăn uống tốt" },
+          { time: "3 ngày trước", title: "Kiểm tra sức khỏe đầu vào", text: "Bác sĩ hoàn thành bệnh án lâm sàng tổng quát" },
+          { time: "5 ngày trước", title: "Tiếp nhận học viên", text: "Học viên nhập trại tự nguyện thành công" },
         ],
       },
       actions: [
-        { label: "Đăng ký cai nghiện", text: "Tạo hồ sơ tự nguyện", icon: "fa-file-circle-plus", tone: "blue", route: "/register-rehab" },
-        { label: "Đăng ký thăm", text: "Chọn ca thăm gặp", icon: "fa-calendar-plus", tone: "green", route: "/visit-register" },
-        { label: "Yêu cầu hỗ trợ", text: "Gửi phản hồi", icon: "fa-headset", tone: "orange", route: "/support" },
+        { label: "Đăng ký thăm gặp", text: "Đặt lịch hẹn thăm gặp người thân", icon: "fa-calendar-plus", tone: "green", route: "/visit-register" },
+        { label: "Gửi yêu cầu hỗ trợ", text: "Gửi phản hồi, câu hỏi tới trung tâm", icon: "fa-headset", tone: "orange", route: "/support" },
       ],
       signals: [
-        { text: "Lộ trình phục hồi đang tiến triển tích cực.", icon: "fa-heart-circle-check", tone: "green" },
-        { text: "Nên đặt lịch thăm gặp trước ít nhất 48 giờ.", icon: "fa-clock", tone: "orange" },
+        { text: "Học viên Nguyễn Minh Hoàng có tiến triển phục hồi tích cực.", icon: "fa-circle-check", tone: "green" },
+        { text: "Bạn có 1 lịch thăm gặp đang chờ phê duyệt từ cán bộ trung tâm.", icon: "fa-clock", tone: "orange" },
       ],
     };
   },

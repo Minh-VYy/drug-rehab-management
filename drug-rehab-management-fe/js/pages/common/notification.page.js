@@ -378,13 +378,12 @@ const NotificationPage = {
     },
 
     updateBadge() {
-        const totalCount = this.notifications.length;
         const unreadCount = this.notifications.filter((item) => !item.isRead).length;
-        const priorityCount = this.notifications.filter((item) => this.isPriorityNotification(item)).length;
-
-        this.setText("allCountBadge", totalCount);
-        this.setText("unreadCountBadge", unreadCount);
-        this.setText("priorityCountBadge", priorityCount);
+        const unreadBadge = document.getElementById("unreadCountBadge");
+        if (unreadBadge) {
+            unreadBadge.textContent = unreadCount;
+            unreadBadge.hidden = unreadCount === 0;
+        }
 
         if (typeof Topbar !== "undefined" && typeof Topbar.updateNotificationCount === "function") {
             Topbar.updateNotificationCount(unreadCount);
