@@ -160,34 +160,55 @@ CREATE TABLE DonDangKyTuNguyen (
 );
 GO
 
-CREATE TABLE HoSoBanGiao (
-    MaHoSoBanGiao VARCHAR(20) NOT NULL,
-    MaCanBoCongAn NVARCHAR(100) NOT NULL,
-    HoTenDoiTuong NVARCHAR(100) NOT NULL,
-    CCCD VARCHAR(12) NULL,
-    NgaySinh DATE NULL,
-    QueQuan NVARCHAR(255) NULL,
-    NoiO_HienTai NVARCHAR(255) NULL,
-    HoTenNguoiThan NVARCHAR(100) NULL,
-    SdtNguoiThan VARCHAR(15) NULL,
-    QuanHeVoiDoiTuong NVARCHAR(50) NULL,
-    HanhViViPham NVARCHAR(500) NOT NULL,
+CREATE TABLE PhieuBanGiao (
+    MaPhieuBanGiao VARCHAR(20) NOT NULL,
+    MaCanBoCongAn CHAR(10) NOT NULL,
+    SoQuyetDinh NVARCHAR(50) NOT NULL,
+    NgayQuyetDinh DATE NOT NULL,
     FileQuyetDinh VARCHAR(255) NOT NULL,
-    TrangThaiDuyet VARCHAR(30) NULL CONSTRAINT DF_HoSoBanGiao_TrangThaiDuyet DEFAULT ('ChoDuyet'),
-    MaNhanSuDuyet CHAR(10) NULL,
-    NgayDuyet DATETIME NULL,
-    MaCBQL CHAR(10) NOT NULL,
-    CONSTRAINT PK_HoSoBanGiao PRIMARY KEY (MaHoSoBanGiao),
-    CONSTRAINT FK_HoSoBanGiao_NhanSuDuyet FOREIGN KEY (MaNhanSuDuyet) REFERENCES NhanSu(MaNhanSu),
-    CONSTRAINT FK_HoSoBanGiao_CanBoQuanLyHoSo FOREIGN KEY (MaCBQL) REFERENCES CanBoQuanLyHoSo(MaCanBoCongAn),
-    CONSTRAINT CK_HoSoBanGiao_TrangThaiDuyet CHECK (TrangThaiDuyet IN ('ChoDuyet', 'DaTiepNhan', 'TuChoi'))
+    NgayGui DATETIME NULL,
+    TrangThaiPhieu VARCHAR(30) NOT NULL CONSTRAINT DF_PhieuBanGiao_TrangThaiPhieu DEFAULT ('BAN_NHAP'),
+    TongSoDoiTuong INT NOT NULL CONSTRAINT DF_PhieuBanGiao_TongSoDoiTuong DEFAULT (0),
+    GhiChu NVARCHAR(500) NULL,
+    NgayTao DATETIME NOT NULL CONSTRAINT DF_PhieuBanGiao_NgayTao DEFAULT (GETDATE()),
+    NgayCapNhat DATETIME NULL,
+    CONSTRAINT PK_PhieuBanGiao PRIMARY KEY (MaPhieuBanGiao),
+    CONSTRAINT FK_PhieuBanGiao_CanBoQuanLyHoSo FOREIGN KEY (MaCanBoCongAn) REFERENCES CanBoQuanLyHoSo(MaCanBoCongAn),
+    CONSTRAINT CK_PhieuBanGiao_TrangThaiPhieu CHECK (TrangThaiPhieu IN ('BAN_NHAP', 'DA_GUI', 'DANG_TIEP_NHAN', 'TIEP_NHAN_MOT_PHAN', 'DA_TIEP_NHAN', 'TU_CHOI', 'DA_HUY')),
+    CONSTRAINT CK_PhieuBanGiao_TongSoDoiTuong CHECK (TongSoDoiTuong >= 0)
+);
+GO
+
+CREATE TABLE ChiTietPhieuBanGiao (
+    MaChiTietPhieuBanGiao VARCHAR(25) NOT NULL,
+    MaPhieuBanGiao VARCHAR(20) NOT NULL,
+    HoTenDoiTuong NVARCHAR(100) NOT NULL,
+    CCCD VARCHAR(12) NOT NULL,
+    NgaySinh DATE NOT NULL,
+    QueQuan_MaHuyen VARCHAR(20) NULL,
+    QueQuan NVARCHAR(255) NULL,
+    NoiO_Duong NVARCHAR(255) NULL,
+    NoiO_MaXa VARCHAR(20) NULL,
+    NoiO_HienTai NVARCHAR(255) NULL,
+    HoTenNguoiThan NVARCHAR(100) NOT NULL,
+    SdtNguoiThan VARCHAR(15) NOT NULL,
+    QuanHeVoiDoiTuong NVARCHAR(50) NOT NULL,
+    HanhViViPham NVARCHAR(500) NOT NULL,
+    TrangThaiChiTiet VARCHAR(30) NOT NULL CONSTRAINT DF_ChiTietPhieuBanGiao_TrangThaiChiTiet DEFAULT ('CHO_TIEP_NHAN'),
+    MaNhanSuTiepNhan CHAR(10) NULL,
+    NgayTiepNhan DATETIME NULL,
+    LyDoTuChoi NVARCHAR(500) NULL,
+    CONSTRAINT PK_ChiTietPhieuBanGiao PRIMARY KEY (MaChiTietPhieuBanGiao),
+    CONSTRAINT FK_ChiTietPhieuBanGiao_PhieuBanGiao FOREIGN KEY (MaPhieuBanGiao) REFERENCES PhieuBanGiao(MaPhieuBanGiao) ON DELETE CASCADE,
+    CONSTRAINT FK_ChiTietPhieuBanGiao_NhanSuTiepNhan FOREIGN KEY (MaNhanSuTiepNhan) REFERENCES NhanSu(MaNhanSu),
+    CONSTRAINT CK_ChiTietPhieuBanGiao_TrangThaiChiTiet CHECK (TrangThaiChiTiet IN ('CHO_TIEP_NHAN', 'DA_TIEP_NHAN', 'TU_CHOI', 'CHO_XAC_NHAN_GAP', 'DA_NHAP_TRAI'))
 );
 GO
 
 CREATE TABLE NguoiCaiNghien (
     MaNguoiCaiNghien VARCHAR(20) NOT NULL,
     MaDonTuNguyen INT NULL,
-    MaHoSoBanGiao VARCHAR(20) NULL,
+    MaChiTietPhieuBanGiao VARCHAR(25) NULL,
     MaNguoiThan INT NOT NULL,
     HoTen NVARCHAR(100) NOT NULL,
     CCCD VARCHAR(12) NULL,
@@ -196,11 +217,11 @@ CREATE TABLE NguoiCaiNghien (
     TrangThai VARCHAR(30) NULL CONSTRAINT DF_NguoiCaiNghien_TrangThai DEFAULT ('DANG_CAI_NGHIEN'),
     CONSTRAINT PK_NguoiCaiNghien PRIMARY KEY (MaNguoiCaiNghien),
     CONSTRAINT FK_NguoiCaiNghien_DonDangKyTuNguyen FOREIGN KEY (MaDonTuNguyen) REFERENCES DonDangKyTuNguyen(MaDonTuNguyen),
-    CONSTRAINT FK_NguoiCaiNghien_HoSoBanGiao FOREIGN KEY (MaHoSoBanGiao) REFERENCES HoSoBanGiao(MaHoSoBanGiao),
+    CONSTRAINT FK_NguoiCaiNghien_ChiTietPhieuBanGiao FOREIGN KEY (MaChiTietPhieuBanGiao) REFERENCES ChiTietPhieuBanGiao(MaChiTietPhieuBanGiao),
     CONSTRAINT FK_NguoiCaiNghien_NguoiThan FOREIGN KEY (MaNguoiThan) REFERENCES NguoiThan(MaNguoiThan),
     CONSTRAINT FK_NguoiCaiNghien_GiaiDoanHienTai FOREIGN KEY (MaGiaiDoanHienTai) REFERENCES DanhMucGiaiDoan(MaGiaiDoan),
     CONSTRAINT CK_NguoiCaiNghien_TrangThai CHECK (TrangThai IN ('DANG_KHAM_SUC_KHOE', 'DANG_CAI_NGHIEN', 'TAM_NGUNG_DIEU_TRI', 'DA_HOAN_THANH', 'TRON_TRAI', 'DA_CHUYEN_VIEN')),
-    CONSTRAINT CK_NguoiCaiNghien_NguonHoSo CHECK (MaDonTuNguyen IS NOT NULL OR MaHoSoBanGiao IS NOT NULL)
+    CONSTRAINT CK_NguoiCaiNghien_NguonHoSo CHECK (MaDonTuNguyen IS NOT NULL OR MaChiTietPhieuBanGiao IS NOT NULL)
 );
 GO
 
@@ -503,11 +524,15 @@ GO
 CREATE INDEX IX_NguoiDung_MaVaiTro ON NguoiDung(MaVaiTro);
 CREATE INDEX IX_DonDangKyTuNguyen_MaNguoiThan ON DonDangKyTuNguyen(MaNguoiThan);
 CREATE INDEX IX_DonDangKyTuNguyen_MaNhanSu ON DonDangKyTuNguyen(MaNhanSu);
-CREATE INDEX IX_HoSoBanGiao_MaCBQL ON HoSoBanGiao(MaCBQL);
-CREATE INDEX IX_HoSoBanGiao_MaNhanSuDuyet ON HoSoBanGiao(MaNhanSuDuyet);
+CREATE INDEX IX_PhieuBanGiao_MaCanBoCongAn ON PhieuBanGiao(MaCanBoCongAn);
+CREATE INDEX IX_PhieuBanGiao_TrangThaiPhieu ON PhieuBanGiao(TrangThaiPhieu);
+CREATE INDEX IX_ChiTietPhieuBanGiao_MaPhieuBanGiao ON ChiTietPhieuBanGiao(MaPhieuBanGiao);
+CREATE INDEX IX_ChiTietPhieuBanGiao_TrangThaiChiTiet ON ChiTietPhieuBanGiao(TrangThaiChiTiet);
+CREATE UNIQUE INDEX UQ_ChiTietPhieuBanGiao_CCCD_Active ON ChiTietPhieuBanGiao(CCCD)
+WHERE TrangThaiChiTiet <> 'TU_CHOI';
 CREATE INDEX IX_NguoiCaiNghien_MaNguoiThan ON NguoiCaiNghien(MaNguoiThan);
 CREATE INDEX IX_NguoiCaiNghien_MaDonTuNguyen ON NguoiCaiNghien(MaDonTuNguyen);
-CREATE INDEX IX_NguoiCaiNghien_MaHoSoBanGiao ON NguoiCaiNghien(MaHoSoBanGiao);
+CREATE INDEX IX_NguoiCaiNghien_MaChiTietPhieuBanGiao ON NguoiCaiNghien(MaChiTietPhieuBanGiao);
 CREATE INDEX IX_NguoiCaiNghien_MaGiaiDoanHienTai ON NguoiCaiNghien(MaGiaiDoanHienTai);
 CREATE UNIQUE INDEX UQ_NguoiCaiNghien_CCCD_NotNull ON NguoiCaiNghien(CCCD) WHERE CCCD IS NOT NULL;
 CREATE INDEX IX_PhieuThamGap_MaNguoiThan ON PhieuThamGap(MaNguoiThan);
@@ -609,24 +634,32 @@ INSERT INTO DonDangKyTuNguyen (MaNguoiThan, HoTenNguoiCaiNghien, NgaySinhNguoiCa
 (1, N'Nguyễn Văn C', '1992-04-05', N'123 Nguyễn Huệ, Quận 1, TP.HCM', '079200044444', N'Em trai', N'Cần sa', N'Ngơ ngác, không tập trung', 'cccd_front_4.jpg', 'cccd_back_4.jpg', DATEADD(day, -10, GETDATE()), 'TU_CHOI', 'NV001');
 GO
 
--- 9.10 Bảng HoSoBanGiao
-INSERT INTO HoSoBanGiao (MaHoSoBanGiao, MaCanBoCongAn, HoTenDoiTuong, CCCD, NgaySinh, QueQuan, NoiO_HienTai, HoTenNguoiThan, SdtNguoiThan, QuanHeVoiDoiTuong, HanhViViPham, FileQuyetDinh, TrangThaiDuyet, MaNhanSuDuyet, NgayDuyet, MaCBQL) VALUES
-('HSBG20260001', N'CBQLHS001', N'Phạm Văn Dũng', '079200055555', '1997-08-10', N'Long An', N'Quận 7, TP.HCM', N'Phạm Văn Cha', '0912345001', N'Cha', N'Sử dụng ma túy công cộng trái phép', 'quyetdinh_dung.pdf', 'DaTiepNhan', 'NV001', DATEADD(day, -60, GETDATE()), 'CBQLHS001'),
-('HSBG20260002', N'CBQLHS002', N'Hoàng Thị Em', '079200066666', '1999-03-25', N'Tiền Giang', N'Quận 8, TP.HCM', N'Hoàng Văn Mẹ', '0912345002', N'Mẹ', N'Tụ tập sử dụng chất cấm', 'quyetdinh_em.pdf', 'DaTiepNhan', 'NV001', DATEADD(day, -20, GETDATE()), 'CBQLHS002'),
-('HSBG20260003', N'CBQLHS001', N'Vũ Văn Phúc', '079200077777', '1994-12-05', N'Đồng Nai', N'Quận Bình Thạnh, TP.HCM', N'Vũ Thị Chị', '0912345003', N'Chị', N'Dương tính với chất kích thích nhiều lần', 'quyetdinh_phuc.pdf', 'DaTiepNhan', 'NV001', DATEADD(day, -75, GETDATE()), 'CBQLHS001'),
-('HSBG20260004', N'CBQLHS002', N'Đặng Thị Giang', '079200088888', '2001-05-18', N'Bến Tre', N'Quận 12, TP.HCM', N'Đặng Văn Anh', '0912345004', N'Anh', N'Tàng trữ và sử dụng trái phép ma túy', 'quyetdinh_giang.pdf', 'DaTiepNhan', 'NV001', DATEADD(day, -25, GETDATE()), 'CBQLHS002'),
-('HSBG20260005', N'CBQLHS002', N'Lê Văn Thử', '079200099099', '2002-09-15', N'Tây Ninh', N'Quận 10, TP.HCM', N'Lê Văn Ba', '0912345005', N'Cha', N'Sử dụng trái phép chất ma túy', 'quyetdinh_thu.pdf', 'ChoDuyet', NULL, NULL, 'CBQLHS002');
+-- 9.10 Bảng PhieuBanGiao và ChiTietPhieuBanGiao
+INSERT INTO PhieuBanGiao (MaPhieuBanGiao, MaCanBoCongAn, SoQuyetDinh, NgayQuyetDinh, FileQuyetDinh, NgayGui, TrangThaiPhieu, TongSoDoiTuong, GhiChu, NgayTao, NgayCapNhat) VALUES
+('PBG20260001', 'CBQLHS001', N'QD-2026-001', DATEADD(day, -62, GETDATE()), 'quyetdinh_dung.pdf', DATEADD(day, -61, GETDATE()), 'DA_TIEP_NHAN', 1, N'Hồ sơ đã được tiếp nhận.', DATEADD(day, -62, GETDATE()), DATEADD(day, -60, GETDATE())),
+('PBG20260002', 'CBQLHS002', N'QD-2026-002', DATEADD(day, -22, GETDATE()), 'quyetdinh_em.pdf', DATEADD(day, -21, GETDATE()), 'DA_TIEP_NHAN', 1, N'Hồ sơ đã được tiếp nhận.', DATEADD(day, -22, GETDATE()), DATEADD(day, -20, GETDATE())),
+('PBG20260003', 'CBQLHS001', N'QD-2026-003', DATEADD(day, -77, GETDATE()), 'quyetdinh_phuc.pdf', DATEADD(day, -76, GETDATE()), 'DA_TIEP_NHAN', 1, N'Hồ sơ đã được tiếp nhận.', DATEADD(day, -77, GETDATE()), DATEADD(day, -75, GETDATE())),
+('PBG20260004', 'CBQLHS002', N'QD-2026-004', DATEADD(day, -27, GETDATE()), 'quyetdinh_giang.pdf', DATEADD(day, -26, GETDATE()), 'DA_TIEP_NHAN', 1, N'Hồ sơ đã được tiếp nhận.', DATEADD(day, -27, GETDATE()), DATEADD(day, -25, GETDATE())),
+('PBG20260005', 'CBQLHS002', N'QD-2026-005', DATEADD(day, -3, GETDATE()), 'quyetdinh_thu.pdf', DATEADD(day, -2, GETDATE()), 'DA_GUI', 1, N'Hồ sơ đang chờ trung tâm xử lý.', DATEADD(day, -3, GETDATE()), NULL);
+GO
+
+INSERT INTO ChiTietPhieuBanGiao (MaChiTietPhieuBanGiao, MaPhieuBanGiao, HoTenDoiTuong, CCCD, NgaySinh, QueQuan, NoiO_HienTai, HoTenNguoiThan, SdtNguoiThan, QuanHeVoiDoiTuong, HanhViViPham, TrangThaiChiTiet, MaNhanSuTiepNhan, NgayTiepNhan, LyDoTuChoi) VALUES
+('CTPBG20260001001', 'PBG20260001', N'Phạm Văn Dũng', '079200055555', '1997-08-10', N'Long An', N'Quận 7, TP.HCM', N'Phạm Văn Cha', '0912345001', N'Cha', N'Sử dụng ma túy công cộng trái phép', 'DA_TIEP_NHAN', 'NV001', DATEADD(day, -60, GETDATE()), NULL),
+('CTPBG20260002001', 'PBG20260002', N'Hoàng Thị Em', '079200066666', '1999-03-25', N'Tiền Giang', N'Quận 8, TP.HCM', N'Hoàng Văn Mẹ', '0912345002', N'Mẹ', N'Tụ tập sử dụng chất cấm', 'DA_TIEP_NHAN', 'NV001', DATEADD(day, -20, GETDATE()), NULL),
+('CTPBG20260003001', 'PBG20260003', N'Vũ Văn Phúc', '079200077777', '1994-12-05', N'Đồng Nai', N'Quận Bình Thạnh, TP.HCM', N'Vũ Thị Chị', '0912345003', N'Chị', N'Dương tính với chất kích thích nhiều lần', 'DA_TIEP_NHAN', 'NV001', DATEADD(day, -75, GETDATE()), NULL),
+('CTPBG20260004001', 'PBG20260004', N'Đặng Thị Giang', '079200088888', '2001-05-18', N'Bến Tre', N'Quận 12, TP.HCM', N'Đặng Văn Anh', '0912345004', N'Anh', N'Tàng trữ và sử dụng trái phép ma túy', 'DA_TIEP_NHAN', 'NV001', DATEADD(day, -25, GETDATE()), NULL),
+('CTPBG20260005001', 'PBG20260005', N'Lê Văn Thử', '079200099099', '2002-09-15', N'Tây Ninh', N'Quận 10, TP.HCM', N'Lê Văn Ba', '0912345005', N'Cha', N'Sử dụng trái phép chất ma túy', 'CHO_TIEP_NHAN', NULL, NULL, NULL);
 GO
 
 -- 9.11 Bảng NguoiCaiNghien
-INSERT INTO NguoiCaiNghien (MaNguoiCaiNghien, MaDonTuNguyen, MaHoSoBanGiao, MaNguoiThan, HoTen, CCCD, NgayVaoTrai, MaGiaiDoanHienTai, TrangThai) VALUES
+INSERT INTO NguoiCaiNghien (MaNguoiCaiNghien, MaDonTuNguyen, MaChiTietPhieuBanGiao, MaNguoiThan, HoTen, CCCD, NgayVaoTrai, MaGiaiDoanHienTai, TrangThai) VALUES
 ('NCN-SEED001', 1, NULL, 1, N'Nguyễn Văn Test', '001234567890', DATEADD(day, -30, GETDATE()), 'GD001', 'DANG_CAI_NGHIEN'),
 ('NCN-SEED002', 2, NULL, 2, N'Trần Văn Bình', '001234567891', DATEADD(day, -45, GETDATE()), 'GD001', 'DANG_CAI_NGHIEN'),
 ('NCN-SEED003', 3, NULL, 3, N'Lê Thị Chi', '001234567892', DATEADD(day, -90, GETDATE()), 'GD002', 'DANG_CAI_NGHIEN'),
-('NCN-SEED004', NULL, 'HSBG20260001', 1, N'Phạm Văn Dũng', '079200055555', DATEADD(day, -60, GETDATE()), 'GD002', 'DANG_CAI_NGHIEN'),
-('NCN-SEED005', NULL, 'HSBG20260002', 2, N'Hoàng Thị Em', '079200066666', DATEADD(day, -20, GETDATE()), 'GD001', 'DANG_CAI_NGHIEN'),
-('NCN-SEED006', NULL, 'HSBG20260003', 3, N'Vũ Văn Phúc', '079200077777', DATEADD(day, -75, GETDATE()), 'GD002', 'DANG_CAI_NGHIEN'),
-('NCN-SEED007', NULL, 'HSBG20260004', 1, N'Đặng Thị Giang', '079200088888', DATEADD(day, -25, GETDATE()), 'GD001', 'DANG_CAI_NGHIEN');
+('NCN-SEED004', NULL, 'CTPBG20260001001', 1, N'Phạm Văn Dũng', '079200055555', DATEADD(day, -60, GETDATE()), 'GD002', 'DANG_CAI_NGHIEN'),
+('NCN-SEED005', NULL, 'CTPBG20260002001', 2, N'Hoàng Thị Em', '079200066666', DATEADD(day, -20, GETDATE()), 'GD001', 'DANG_CAI_NGHIEN'),
+('NCN-SEED006', NULL, 'CTPBG20260003001', 3, N'Vũ Văn Phúc', '079200077777', DATEADD(day, -75, GETDATE()), 'GD002', 'DANG_CAI_NGHIEN'),
+('NCN-SEED007', NULL, 'CTPBG20260004001', 1, N'Đặng Thị Giang', '079200088888', DATEADD(day, -25, GETDATE()), 'GD001', 'DANG_CAI_NGHIEN');
 GO
 
 -- 9.12 Bảng PhanCongPhuTrach
@@ -751,15 +784,20 @@ INSERT INTO LichTuVanTamLy (MaLichTuVan, MaNguoiCaiNghien, MaBacSi, ThoiGianBatD
 GO
 
 -- 9.27 Du lieu mau bo sung cho giao dien lanh dao trung tam
-IF NOT EXISTS (SELECT 1 FROM HoSoBanGiao WHERE MaHoSoBanGiao = 'HSBG001')
+IF NOT EXISTS (SELECT 1 FROM PhieuBanGiao WHERE MaPhieuBanGiao = 'PBG001')
 BEGIN
-    INSERT INTO HoSoBanGiao (MaHoSoBanGiao, MaCanBoCongAn, HoTenDoiTuong, CCCD, NgaySinh, QueQuan, NoiO_HienTai, HoTenNguoiThan, SdtNguoiThan, QuanHeVoiDoiTuong, HanhViViPham, FileQuyetDinh, TrangThaiDuyet, MaNhanSuDuyet, NgayDuyet, MaCBQL) VALUES
-    ('HSBG001', N'CBQLHS001', N'Nguyễn Văn B', '048201001234', '1998-03-12', N'Đà Nẵng', N'Quận Hải Châu, Đà Nẵng', N'Nguyễn Thị Lan', '0905123456', N'Mẹ', N'Sử dụng trái phép chất ma túy, bị phát hiện trong đợt kiểm tra hành chính.', 'seed/HSBG001.pdf', 'ChoDuyet', NULL, NULL, 'CBQLHS001'),
-    ('HSBG002', N'CBQLHS001', N'Lê Văn D', '048201005678', '1995-11-05', N'Quảng Nam', N'Quận Thanh Khê, Đà Nẵng', N'Lê Thị Hoa', '0918765432', N'Vợ', N'Sử dụng ma túy đá, vi phạm trật tự công cộng.', 'seed/HSBG002.pdf', 'ChoDuyet', NULL, NULL, 'CBQLHS001'),
-    ('HSBG003', N'CBQLHS001', N'Phạm Thị E', '048201009012', '2000-07-20', N'Đà Nẵng', N'Quận Sơn Trà, Đà Nẵng', N'Phạm Văn Sơn', '0934567890', N'Anh trai', N'Tái sử dụng chất gây nghiện sau cai nghiện tại gia.', 'seed/HSBG003.pdf', 'DaTiepNhan', 'NV001', DATEADD(day, -8, GETDATE()), 'CBQLHS001'),
-    ('HSBG004', N'CBQLHS001', N'Hoàng Văn F', '048201003344', '1992-01-15', N'Huế', N'Quận Liên Chiểu, Đà Nẵng', N'Hoàng Thị Mai', '0978123456', N'Chị gái', N'Hồ sơ chưa đầy đủ giấy tờ xác minh, thiếu xét nghiệm y tế.', 'seed/HSBG004.pdf', 'TuChoi', 'NV001', DATEADD(day, -13, GETDATE()), 'CBQLHS001');
+    INSERT INTO PhieuBanGiao (MaPhieuBanGiao, MaCanBoCongAn, SoQuyetDinh, NgayQuyetDinh, FileQuyetDinh, NgayGui, TrangThaiPhieu, TongSoDoiTuong, GhiChu, NgayTao, NgayCapNhat) VALUES
+    ('PBG001', 'CBQLHS001', N'QD-SEED-001', DATEADD(day, -2, GETDATE()), 'seed/HSBG001.pdf', DATEADD(day, -1, GETDATE()), 'DA_GUI', 1, N'Hồ sơ chờ lãnh đạo phê duyệt.', DATEADD(day, -2, GETDATE()), NULL),
+    ('PBG002', 'CBQLHS001', N'QD-SEED-002', DATEADD(day, -3, GETDATE()), 'seed/HSBG002.pdf', DATEADD(day, -2, GETDATE()), 'DA_GUI', 1, N'Hồ sơ chờ lãnh đạo phê duyệt.', DATEADD(day, -3, GETDATE()), NULL),
+    ('PBG003', 'CBQLHS001', N'QD-SEED-003', DATEADD(day, -9, GETDATE()), 'seed/HSBG003.pdf', DATEADD(day, -8, GETDATE()), 'DA_TIEP_NHAN', 1, N'Hồ sơ đã tiếp nhận.', DATEADD(day, -9, GETDATE()), DATEADD(day, -8, GETDATE())),
+    ('PBG004', 'CBQLHS001', N'QD-SEED-004', DATEADD(day, -14, GETDATE()), 'seed/HSBG004.pdf', DATEADD(day, -13, GETDATE()), 'TU_CHOI', 1, N'Hồ sơ bị từ chối do thiếu giấy tờ.', DATEADD(day, -14, GETDATE()), DATEADD(day, -13, GETDATE()));
+
+    INSERT INTO ChiTietPhieuBanGiao (MaChiTietPhieuBanGiao, MaPhieuBanGiao, HoTenDoiTuong, CCCD, NgaySinh, QueQuan, NoiO_HienTai, HoTenNguoiThan, SdtNguoiThan, QuanHeVoiDoiTuong, HanhViViPham, TrangThaiChiTiet, MaNhanSuTiepNhan, NgayTiepNhan, LyDoTuChoi) VALUES
+    ('CTPBG001001', 'PBG001', N'Nguyễn Văn B', '048201001234', '1998-03-12', N'Đà Nẵng', N'Quận Hải Châu, Đà Nẵng', N'Nguyễn Thị Lan', '0905123456', N'Mẹ', N'Sử dụng trái phép chất ma túy, bị phát hiện trong đợt kiểm tra hành chính.', 'CHO_TIEP_NHAN', NULL, NULL, NULL),
+    ('CTPBG002001', 'PBG002', N'Lê Văn D', '048201005678', '1995-11-05', N'Quảng Nam', N'Quận Thanh Khê, Đà Nẵng', N'Lê Thị Hoa', '0918765432', N'Vợ', N'Sử dụng ma túy đá, vi phạm trật tự công cộng.', 'CHO_TIEP_NHAN', NULL, NULL, NULL),
+    ('CTPBG003001', 'PBG003', N'Phạm Thị E', '048201009012', '2000-07-20', N'Đà Nẵng', N'Quận Sơn Trà, Đà Nẵng', N'Phạm Văn Sơn', '0934567890', N'Anh trai', N'Tái sử dụng chất gây nghiện sau cai nghiện tại gia.', 'DA_TIEP_NHAN', 'NV001', DATEADD(day, -8, GETDATE()), NULL),
+    ('CTPBG004001', 'PBG004', N'Hoàng Văn F', '048201003344', '1992-01-15', N'Huế', N'Quận Liên Chiểu, Đà Nẵng', N'Hoàng Thị Mai', '0978123456', N'Chị gái', N'Hồ sơ chưa đầy đủ giấy tờ xác minh, thiếu xét nghiệm y tế.', 'TU_CHOI', 'NV001', DATEADD(day, -13, GETDATE()), N'Hồ sơ thiếu giấy tờ xác minh và xét nghiệm y tế.');
 END
 GO
-
 PRINT N'Tao database rehab_center_db va du lieu mau thanh cong.';
 GO

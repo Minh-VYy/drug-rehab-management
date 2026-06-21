@@ -9,4 +9,6 @@ import java.util.Optional;
 public interface MedicalRecordRepository extends org.springframework.data.jpa.repository.JpaRepository<MedicalRecord, String> {
 
     Optional<MedicalRecord> findByRehabPatient_Id(String rehabPatientId);
+    
+    java.util.List<MedicalRecord> findByDoctor_Id(String doctorId);
 }

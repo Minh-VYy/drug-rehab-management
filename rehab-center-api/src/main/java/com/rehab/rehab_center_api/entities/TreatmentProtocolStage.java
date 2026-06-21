@@ -34,7 +34,7 @@ public class TreatmentProtocolStage {
     @Column(name = "ThuTu", nullable = false)
     private Integer sequenceOrder;
 
-    @Column(name = "NoiDungPhacDoDT", columnDefinition = "NVARCHAR(500)")
+    @Column(name = "NoiDungPhacDoDT", columnDefinition = "NVARCHAR(MAX)")
     private String protocolContent;
 
     @Column(name = "MucTieu", columnDefinition = "NVARCHAR(500)")

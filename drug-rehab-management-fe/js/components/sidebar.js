@@ -33,7 +33,9 @@ const Sidebar = {
         } else if (role === ROLES.DOCTOR) {
             menuItems = [
                 { path: '/',                icon: 'fa-solid fa-house',        text: 'Dashboard' },
-                { path: '/medical-records', icon: 'fa-solid fa-file-medical', text: 'Cập nhật hồ sơ bệnh án' }
+                { path: '/medical-records', icon: 'fa-solid fa-file-medical', text: 'Cập nhật hồ sơ bệnh án' },
+                { path: '/treatment-plan-create', icon: 'fa-solid fa-file-signature', text: 'Lập phác đồ điều trị' },
+                { path: '/treatment-diary', icon: 'fa-solid fa-book-medical', text: 'Nhật ký điều trị' }
             ];
         } else if (role === ROLES.MANAGER) {
             menuItems = [
@@ -68,7 +70,6 @@ const Sidebar = {
             ? displayName.split(' ').filter(Boolean).map(w => w[0]).slice(-2).join('').toUpperCase()
             : 'U';
 
-        // Build menu HTML — href="#/path" for router compatibility
         const menuHtml = menuItems.map(item => `
             <div class="nav-item">
                 <a href="#${item.path}" class="nav-link" data-link>

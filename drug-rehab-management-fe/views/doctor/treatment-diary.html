@@ -1,6 +1,202 @@
-<div class="module-page-header">
-    <div class="module-page-title">
-        <h1>Treatment Diary</h1>
-        <p>Giao diện Treatment Diary đang được xây dựng.</p>
+<div class="page-header doctor-diary-header">
+  <div>
+    <h2 class="page-title">Nhật ký <span class="text-highlight">điều trị</span></h2>
+    <p class="page-subtitle">Ghi nhận tình trạng sức khỏe, triệu chứng và hướng xử lý theo từng chi tiết phác đồ đang áp dụng.</p>
+  </div>
+  <button class="btn btn-primary" id="btnCreateDiary">
+    <i class="fa-solid fa-plus"></i> Ghi nhật ký mới
+  </button>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-blue"><i class="fa-solid fa-calendar-day"></i></div>
+    <div class="stat-value" id="statDiaryToday">0</div>
+    <div class="stat-label">Nhật ký hôm nay</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-purple"><i class="fa-solid fa-user-injured"></i></div>
+    <div class="stat-value" id="statDiaryPatients">0</div>
+    <div class="stat-label">Học viên đang theo dõi</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-orange"><i class="fa-solid fa-stethoscope"></i></div>
+    <div class="stat-value" id="statDiaryFollowUp">0</div>
+    <div class="stat-label">Ca cần tái khám</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon stat-icon-red"><i class="fa-solid fa-triangle-exclamation"></i></div>
+    <div class="stat-value" id="statDiarySevere">0</div>
+    <div class="stat-label">Mức độ nghiện nặng</div>
+  </div>
+</div>
+
+<div class="card doctor-diary-card">
+  <div class="card-header">
+    <div>
+      <span class="card-title">Danh sách nhật ký điều trị</span>
+      <p class="card-subtitle">Lịch sử ghi nhận tình trạng sức khỏe học viên theo hồ sơ bệnh án</p>
     </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="diarySearchInput" placeholder="Tìm mã nhật ký, mã bệnh án, họ tên học viên..." />
+    </div>
+
+    <select id="diaryLevelFilter" class="filter-select">
+      <option value="all">Tất cả mức độ</option>
+      <option value="Nhe">Nhẹ</option>
+      <option value="TrungBinh">Trung bình</option>
+      <option value="Nang">Nặng</option>
+    </select>
+
+    <input type="date" id="diaryDateFilter" class="filter-select" title="Lọc theo ngày ghi" />
+  </div>
+
+  <div class="table-wrapper">
+    <table class="table doctor-diary-table">
+      <thead>
+        <tr>
+          <th>Mã nhật ký</th>
+          <th>Mã bệnh án</th>
+          <th>Họ tên học viên</th>
+          <th>Mã chi tiết phác đồ</th>
+          <th>Ngày ghi</th>
+          <th>Tình trạng sức khỏe</th>
+          <th>Mức độ</th>
+          <th>Chẩn đoán</th>
+          <th>Thao tác</th>
+        </tr>
+      </thead>
+      <tbody id="diaryTableBody"></tbody>
+    </table>
+  </div>
+
+  <div class="table-loading" id="diaryLoadingState" style="display:none;">
+    Đang tải dữ liệu nhật ký...
+  </div>
+
+  <div class="table-empty" id="diaryEmptyState" style="display:none;">
+    Không tìm thấy nhật ký phù hợp.
+  </div>
+</div>
+
+<div class="modal-overlay" id="diaryDetailModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h3>Chi tiết nhật ký điều trị</h3>
+      <button class="modal-close" id="diaryDetailCloseBtn" title="Đóng">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="modal-body" id="diaryDetailBody"></div>
+
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="diaryDetailCloseBtn2">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="diaryFormModal">
+  <div class="modal modal-lg doctor-diary-form-modal">
+    <div class="modal-header">
+      <h3 id="diaryFormTitle">Ghi nhật ký điều trị mới</h3>
+      <button class="modal-close" id="diaryFormCloseBtn" title="Đóng">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="doctor-diary-form-grid">
+        <div class="form-group">
+          <label class="form-label">Mã bệnh án <span class="required">*</span></label>
+          <select id="formMaBenhAn" class="form-control"></select>
+          <span class="form-error" id="errMaBenhAn"></span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Mã chi tiết phác đồ</label>
+          <input type="text" id="formMaChiTietPhacDo" class="form-control" readonly />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Ngày ghi <span class="required">*</span></label>
+          <input type="date" id="formNgayGhi" class="form-control" />
+          <span class="form-error" id="errNgayGhi"></span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Mức độ nghiện <span class="required">*</span></label>
+          <select id="formMucDoNghien" class="form-control">
+            <option value="">-- Chọn mức độ --</option>
+            <option value="Nhe">Nhẹ</option>
+            <option value="TrungBinh">Trung bình</option>
+            <option value="Nang">Nặng</option>
+          </select>
+          <span class="form-error" id="errMucDoNghien"></span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Nhiệt độ (°C)</label>
+          <input type="text" id="formNhietDo" class="form-control" placeholder="VD: 37.0" />
+          <span class="form-error" id="errNhietDo"></span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Huyết áp</label>
+          <input type="text" id="formHuyetAp" class="form-control" placeholder="VD: 120/80" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Nhịp tim (lần/phút)</label>
+          <input type="text" id="formNhipTim" class="form-control" placeholder="VD: 78" />
+          <span class="form-error" id="errNhipTim"></span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Thuốc sử dụng</label>
+          <input type="text" id="formThuocSuDung" class="form-control" placeholder="VD: Methadone" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Liều lượng</label>
+          <input type="text" id="formLieuLuong" class="form-control" placeholder="VD: 30mg/ngày" />
+        </div>
+
+        <div class="form-group doctor-diary-form-full">
+          <label class="form-label">Tình trạng sức khỏe <span class="required">*</span></label>
+          <textarea id="formTinhTrangSucKhoe" class="form-control" rows="2" placeholder="Mô tả tình trạng sức khỏe tổng quát"></textarea>
+          <span class="form-error" id="errTinhTrangSucKhoe"></span>
+        </div>
+
+        <div class="form-group doctor-diary-form-full">
+          <label class="form-label">Triệu chứng</label>
+          <textarea id="formTrieuChung" class="form-control" rows="2" placeholder="Các triệu chứng ghi nhận được"></textarea>
+        </div>
+
+        <div class="form-group doctor-diary-form-full">
+          <label class="form-label">Chẩn đoán</label>
+          <textarea id="formChanDoan" class="form-control" rows="2" placeholder="Chẩn đoán của bác sĩ"></textarea>
+        </div>
+
+        <div class="form-group doctor-diary-form-full">
+          <label class="form-label">Hướng xử lý</label>
+          <textarea id="formHuongXuLy" class="form-control" rows="2" placeholder="Hướng xử lý hoặc điều trị tiếp theo"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="diaryFormCancelBtn">Hủy</button>
+      <button class="btn btn-primary" id="diaryFormSaveBtn">
+        <i class="fa-solid fa-floppy-disk"></i> Lưu nhật ký
+      </button>
+    </div>
+  </div>
 </div>

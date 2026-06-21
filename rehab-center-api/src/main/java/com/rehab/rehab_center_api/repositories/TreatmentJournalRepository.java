@@ -8,5 +8,6 @@ import java.util.List;
 
 @Repository
 public interface TreatmentJournalRepository extends JpaRepository<TreatmentJournal, String> {
+    List<TreatmentJournal> findByDoctor_IdOrderByRecordedAtDesc(String doctorId);
     List<TreatmentJournal> findByMedicalRecord_IdOrderByRecordedAtDesc(String medicalRecordId);
 }

@@ -37,11 +37,11 @@ public class DashboardOverviewService {
         long completedPatients = count("SELECT COUNT(*) FROM NguoiCaiNghien WHERE TrangThai = 'DA_HOAN_THANH'");
         long pausedPatients = count("SELECT COUNT(*) FROM NguoiCaiNghien WHERE TrangThai = 'TAM_NGUNG_DIEU_TRI'");
 
-        long pendingIntakes = count("SELECT COUNT(*) FROM HoSoBanGiao WHERE TrangThaiDuyet = 'ChoDuyet'")
+        long pendingIntakes = count("SELECT COUNT(*) FROM PhieuBanGiao WHERE TrangThaiPhieu = 'DA_GUI'")
                 + count("SELECT COUNT(*) FROM DonDangKyTuNguyen WHERE TrangThai = 'CHO_DUYET'");
-        long approvedIntakes = count("SELECT COUNT(*) FROM HoSoBanGiao WHERE TrangThaiDuyet = 'DaTiepNhan'")
+        long approvedIntakes = count("SELECT COUNT(*) FROM PhieuBanGiao WHERE TrangThaiPhieu IN ('DANG_TIEP_NHAN', 'TIEP_NHAN_MOT_PHAN', 'DA_TIEP_NHAN')")
                 + count("SELECT COUNT(*) FROM DonDangKyTuNguyen WHERE TrangThai IN ('DA_TIEP_NHAN', 'DA_NHAP_TRAI')");
-        long rejectedIntakes = count("SELECT COUNT(*) FROM HoSoBanGiao WHERE TrangThaiDuyet = 'TuChoi'")
+        long rejectedIntakes = count("SELECT COUNT(*) FROM PhieuBanGiao WHERE TrangThaiPhieu = 'TU_CHOI'")
                 + count("SELECT COUNT(*) FROM DonDangKyTuNguyen WHERE TrangThai = 'TU_CHOI'");
 
         long pendingPlans = count("SELECT COUNT(*) FROM ChiTietPhacDoDieuTri WHERE TrangThai = 'CHO_PHE_DUYET'");
@@ -95,7 +95,7 @@ public class DashboardOverviewService {
                 WHERE CAST(ThoiGianBatDau AS date) = CAST(GETDATE() AS date)
                 """);
         long pendingSupport = count("SELECT COUNT(*) FROM PhieuHoTro WHERE TrangThai = 'CHO_PHAN_HOI'");
-        long handoverTotal = count("SELECT COUNT(*) FROM HoSoBanGiao");
+        long handoverTotal = count("SELECT COUNT(*) FROM PhieuBanGiao");
 
         return new DashboardStats(
                 totalPatients, activePatients, completedPatients, pausedPatients,

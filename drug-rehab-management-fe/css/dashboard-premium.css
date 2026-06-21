@@ -4747,3 +4747,223 @@ textarea.form-control {
   color: var(--danger);
   border: 1px solid rgba(239, 68, 68, 0.3);
 }
+
+/* Treatment plan create - Doctor */
+.doctor-plan-patient-summary-inner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+  padding: 14px 18px;
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(99, 102, 241, 0.05));
+}
+
+.doctor-plan-patient-avatar {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #3b82f6;
+  color: #fff;
+  font-size: 18px;
+}
+
+.doctor-plan-patient-name {
+  color: #1e293b;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.doctor-plan-patient-meta {
+  margin-top: 2px;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.doctor-plan-steps-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.doctor-plan-steps-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.doctor-plan-step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #f8fafc;
+  transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+
+.doctor-plan-step-item:hover {
+  border-color: rgba(59, 130, 246, 0.22);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+  transform: translateY(-1px);
+}
+
+.doctor-plan-step-index {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin-top: 4px;
+  border-radius: 50%;
+  background: #3b82f6;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.doctor-plan-step-fields {
+  display: grid;
+  flex: 1;
+  grid-template-columns: 1fr 1fr 120px;
+  gap: 12px;
+  min-width: 0;
+}
+
+.doctor-plan-step-fields .form-group {
+  margin-bottom: 0;
+}
+
+.doctor-plan-step-remove {
+  margin-top: 4px;
+}
+
+.doctor-plan-detail-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.doctor-plan-form-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.btn-icon-primary {
+  color: #3b82f6;
+}
+
+.btn-icon-primary:hover {
+  background: rgba(59, 130, 246, 0.12);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+}
+
+.doctor-plan-step-remove:hover {
+  background: rgba(239, 68, 68, 0.12);
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+}
+
+@media (max-width: 1024px) {
+  .doctor-plan-step-fields {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .doctor-plan-step-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .doctor-plan-step-item,
+  .doctor-plan-steps-header,
+  .doctor-plan-form-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .doctor-plan-step-remove {
+    align-self: flex-end;
+  }
+
+  .modal.modal-lg {
+    width: 95vw;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+}
+
+/* ===== Treatment Diary - Doctor ===== */
+.doctor-diary-header {
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.doctor-diary-card .toolbar {
+  align-items: center;
+}
+
+.doctor-diary-table {
+  min-width: 1060px;
+}
+
+.doctor-diary-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.doctor-diary-form-full {
+  grid-column: 1 / -1;
+}
+
+.doctor-diary-form-modal {
+  max-width: 760px;
+}
+
+.doctor-diary-cell-truncate {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .doctor-diary-header {
+    flex-direction: column;
+  }
+
+  .doctor-diary-header .btn {
+    width: 100%;
+  }
+
+  .doctor-diary-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .doctor-diary-cell-truncate {
+    max-width: 140px;
+  }
+
+  .doctor-diary-form-modal {
+    width: 95vw;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+}

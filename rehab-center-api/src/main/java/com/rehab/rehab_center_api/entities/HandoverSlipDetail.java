@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 public class HandoverSlipDetail {
 
     @Id
-    @Column(name = "MaChiTiet", length = 25)
+    @Column(name = "MaChiTietPhieuBanGiao", length = 25)
     private String id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

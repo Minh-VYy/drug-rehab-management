@@ -1,346 +1,335 @@
-# Tiến độ giao diện còn lại - Rehab Center
+# Tien Do Va Dieu Phoi Giao Dien Rehab Center
 
-Tài liệu này là bản cập nhật theo trạng thái thực tế trong project `drug-rehab-management-fe`.
+Tai lieu nay dung de giam viec phai giai thich lai cho Claude/Gemini/Kiro. Khi giao viec cho AI khac, chi can dua file nay kem dung 2 file man hinh mau va yeu cau cu the.
 
-Mục tiêu:
-- Biết màn nào đã làm, màn nào còn placeholder.
-- Dùng đúng route hiện tại của `dashboard.html` và `js/main.js`.
-- Chia việc tiếp theo cho Claude / Gemini / Kiro hiệu quả hơn.
-- Sau khi UI ổn mới chuyển từng nhóm sang gọi API thật.
+## 1. Cach Lam De Tiet Kiem Token
 
----
+Dung nhieu AI co hao token khong?
+- Neu moi lan dua toan bo source/context dai cho tung AI thi hao rat nhieu.
+- Neu chi giao prompt ngan, dua dung file lien quan, va de Codex kiem tra/sua lai thi tiet kiem hon.
+- Cach toi uu: Claude/Gemini/Kiro code tung man rieng, Codex giu vai tro "reviewer + integrator": kiem tra route, import, syntax, UI, luong DB/API, roi sua loi can thiet.
 
-## 1. Quy ước chung
+Quy tac giao viec:
+- Khong bat AI doc ca project.
+- Chi dua: file HTML/JS cua man can lam, 1 man mau cung nhom, `dashboard.html`, `js/main.js`, `js/components/sidebar.js` neu can gan route/menu.
+- Moi task chi giao 1-2 man. Khong giao ca role lon trong mot lan.
+- Yeu cau AI tra ve: file da sua, route/import/menu can them, CSS can bo sung, API can co sau nay.
+- Sau khi AI lam xong, Codex kiem: `node --check`, route, sidebar, modal, tieng Viet, mock/API-ready.
 
-| Nội dung | Quy ước hiện tại |
+Nen dung AI nao:
+- Claude: man kho, can UI dep, form dai, timeline, dashboard, workflow phuc tap.
+- Gemini: man bang nghiep vu tam trung, search/filter/modal duyet-tu choi.
+- Kiro: man don gian, history/list/profile/forbidden/notification.
+- Codex: kiem tra, sua loi tich hop, sua DB/API mapping, chot ket qua.
+
+## 2. Convention Project
+
+| Noi dung | Quy uoc |
 |---|---|
-| Layout sau đăng nhập | Chỉ dùng `dashboard.html` |
+| Layout sau dang nhap | `dashboard.html` |
 | Partial HTML | `views/{role}/{screen}.html` |
 | Logic JS | `js/pages/{role}/{screen}.page.js` |
-| CSS chính | `css/dashboard-premium.css`, có thêm CSS module nếu cần |
-| Router | Hash route dạng `dashboard.html#/path` |
+| CSS chinh | `css/dashboard-premium.css` |
+| Router | Hash route: `dashboard.html#/path` |
 | Sidebar | `js/components/sidebar.js` |
-| Route thật | Khai báo trong `registerAppRoutes()` của `js/main.js` |
-| Dữ liệu tạm | Mock data trong chính page hoặc `js/data/`, API-ready |
-| Gọi API thật | Làm sau khi UI chạy ổn |
+| Route | Khai bao trong `registerAppRoutes()` cua `js/main.js` |
+| Dashboard 3D | `js/components/advanced-dashboard.js` |
+| Mock data | Tam thoi trong page/service, phai API-ready |
+| API | Sau khi UI va DB/ERD on dinh moi chuyen sang API that |
 
-Lưu ý quan trọng: tài liệu cũ dùng route kiểu `#/leader/report`, `#/admin/users`, `#/staff/intake-confirmation`. App hiện tại đang dùng route ngắn hơn, ví dụ `#/reports`, `#/users`, `#/receive`.
+Khong mo truc tiep file partial nhu `views/staff/x.html` tren Go Live. Luon mo qua `dashboard.html#/route`.
 
----
+## 3. Trang Thai Hien Tai
 
-## 2. Tổng quan tiến độ hiện tại
+### Da Tuong Doi On
 
-### 2.1. Đã làm tương đối đầy đủ
-
-| Vai trò | Route | Màn hình | File chính | Trạng thái |
-|---|---|---|---|---|
-| Admin | `#/` | Dashboard quản trị | `views/admin/admin-dashboard.html` | Đã có |
-| Admin | `#/users` | Quản lý tài khoản | `views/admin/user-management.html` | Đã có UI/JS |
-| Admin | `#/roles` | Quản lý vai trò | `views/admin/role-management.html` | Đã có UI/JS |
-| Admin | `#/medicines` | Danh mục thuốc | `views/admin/medicine-category.html` | Đã có UI/JS |
-| Admin | `#/system-logs` | Hoạt động hệ thống | `views/admin/system-log.html` | Đã có UI/JS |
-| Leader | `#/` | Dashboard lãnh đạo | `views/leader/leader-dashboard.html` | Đã có UI/JS |
-| Leader | `#/reports` | Báo cáo tổng quan | `views/leader/leader-report.html` | Đã có UI/JS |
-| Leader | `#/approvals-receive` | Phê duyệt tiếp nhận | `views/leader/intake-approval.html` | Đã có UI/JS |
-| Leader | `#/approvals-complete` | Phê duyệt hoàn thành | `views/leader/completion-approval.html` | Đã có UI/JS |
-| Manager | `#/` | Dashboard quản lý | `views/manager/manager-dashboard.html` | Đã có UI/JS |
-| Manager | `#/treatment-approval` | Phê duyệt phác đồ | `views/manager/treatment-approval.html` | Đã có UI/JS |
-| Doctor | `#/` | Dashboard bác sĩ | `views/doctor/doctor-dashboard.html` | Đã có UI/JS |
-| Doctor | `#/medical-records` | Cập nhật hồ sơ bệnh án | `views/doctor/medical-record.html` | Đã có UI/JS |
-| Staff | `#/receive` | Xác nhận tiếp nhận | `views/staff/intake-confirmation.html` | Đã có UI/JS |
-| Police | `#/transfer` | Gửi hồ sơ bàn giao | `views/police/handover-create.html` | Đã có UI/JS, cần sửa tiếng Việt không dấu |
-| Family | `#/` | Dashboard người thân | `views/family/family-dashboard.html` | Có UI đơn giản |
-
-### 2.2. Có file tốt nhưng chưa gắn route/menu
-
-| Vai trò | Màn hình | File | Việc cần làm |
+| Role | Route | Man | Ghi chu |
 |---|---|---|---|
-| Admin | Quản lý nhân sự | `views/admin/staff-management.html`, `js/pages/admin/staff-management.page.js` | Nếu muốn dùng: import JS, thêm route `#/staff` hoặc `#/admin-staff`, thêm menu admin |
+| Admin | `#/` | Dashboard admin | Da co dashboard dep/advanced |
+| Admin | `#/users` | Quan ly tai khoan | Da co UI/JS |
+| Admin | `#/roles` | Quan ly vai tro | Da co UI/JS |
+| Admin | `#/medicines` | Danh muc thuoc | Da co UI/JS |
+| Admin | `#/system-logs` | Hoat dong he thong | Da co UI/JS |
+| Admin | chua chac menu | Quan ly nhan su | Da co file, can quyet dinh co gan menu khong |
+| Leader | `#/` | Dashboard lanh dao | Da co dashboard dep/advanced |
+| Leader | `#/reports` | Bao cao tong quan | Da co UI/JS |
+| Leader | `#/approvals-receive` | Phe duyet tiep nhan | Da co UI/JS, can dong bo API theo `PhieuBanGiao` moi |
+| Leader | `#/approvals-complete` | Phe duyet hoan thanh | Da co UI/JS |
+| Manager | `#/` | Dashboard quan ly | Da co dashboard dep/advanced |
+| Manager | `#/treatment-approval` | Phe duyet phac do | Da co UI/JS |
+| Manager | `#/stage-approval` | Duyet chuyen giai doan | Da co UI/JS |
+| Manager | `#/assignment` | Phan cong phu trach | Da co UI/JS |
+| Manager | `#/overview-report` | Bao cao quan ly | Da co UI/JS |
+| Doctor | `#/` | Dashboard bac si | Da co dashboard dep/advanced |
+| Doctor | `#/medical-records` | Ho so benh an | Da co UI/JS, co API |
+| Doctor | `#/treatment-plan-create` | Tao phac do | Da co UI/JS, can chinh field map DB va them API tao/luu nhap/gui duyet |
+| Staff | `#/` | Dashboard staff | Da co dashboard dep/advanced |
+| Staff | `#/receive` | Xac nhan tiep nhan | Da co UI/JS |
+| Staff | `#/patients` | Quan ly hoc vien | Da co UI/JS |
+| Staff | `#/visits` | Duyet tham gap | Da co UI/JS |
+| Staff | `#/activities` | Lap lich sinh hoat | Da co UI/JS |
+| Staff | `#/attendance` | Diem danh | Da co UI/JS |
+| Police | `#/` | Dashboard cong an | Da co dashboard dep/advanced |
+| Police | `#/transfer` | Gui phieu ban giao | Co UI, can sua tieng Viet/field theo DB moi |
+| Family | `#/` | Dashboard nguoi than | Da co dashboard dep/advanced |
 
-### 2.3. Còn placeholder hoặc chưa dùng được qua route
+### Con Thieu Hoac Con Placeholder
 
-| Vai trò | Màn còn thiếu | File hiện có | Ghi chú |
-|---|---|---|---|
-| Admin | Danh mục hoạt động | `views/admin/activity-category.html` | Placeholder |
-| Staff | Dashboard cán bộ trung tâm | `views/staff/staff-dashboard.html` | Placeholder |
-| Staff | Quản lý học viên | `views/staff/patient-management.html` | Placeholder |
-| Staff | Duyệt thăm gặp | `views/staff/visit-approval.html` | Placeholder |
-| Staff | Xác nhận thăm gặp | `views/staff/visit-checkin.html` | Placeholder, chưa có menu |
-| Staff | Lập lịch sinh hoạt | `views/staff/activity-schedule.html` | Placeholder |
-| Staff | Điểm danh | `views/staff/attendance.html` | Placeholder |
-| Staff | Tạo thông báo | `views/staff/create-notification.html` | Placeholder, chưa có menu |
-| Staff | Phản hồi hỗ trợ | `views/staff/support-response.html` | Placeholder, chưa có menu |
-| Family | Hồ sơ cá nhân | `views/common/profile.html` | Placeholder, menu đang trỏ `#/profile` |
-| Family | Đăng ký cai nghiện | `views/family/voluntary-registration.html` | Placeholder, menu đang trỏ `#/register-rehab` |
-| Family | Đăng ký thăm gặp | `views/family/visit-registration.html` | Placeholder, menu đang trỏ `#/visit-register` |
-| Family | Lộ trình phục hồi | `views/family/recovery-path.html` | Placeholder, menu đang trỏ `#/treatment-path` |
-| Family | Yêu cầu hỗ trợ | `views/family/support-request.html` | Placeholder, menu đang trỏ `#/support` |
-| Family | Lịch sử đơn tự nguyện | `views/family/voluntary-history.html` | Placeholder, chưa có menu |
-| Family | Lịch sử thăm gặp | `views/family/visit-history.html` | Placeholder, chưa có menu |
-| Family | Xem hồ sơ bệnh án | `views/family/medical-record-view.html` | Placeholder, chưa có menu |
-| Doctor | Tạo phác đồ | `views/doctor/treatment-plan-create.html` | Placeholder, chưa có menu/route |
-| Doctor | Nhật ký điều trị | `views/doctor/treatment-diary.html` | Placeholder, chưa có menu/route |
-| Doctor | Lịch thuốc | `views/doctor/medicine-schedule.html` | Placeholder, chưa có menu/route |
-| Doctor | Lịch tư vấn | `views/doctor/counseling-schedule.html` | Placeholder, chưa có menu/route |
-| Doctor | Đề xuất chuyển giai đoạn | `views/doctor/stage-proposal.html` | Placeholder, chưa có menu/route |
-| Doctor | Đề xuất hoàn thành | `views/doctor/completion-proposal.html` | Placeholder, chưa có menu/route |
-| Manager | Duyệt chuyển giai đoạn | `views/manager/stage-approval.html` | Placeholder, chưa có menu/route |
-| Manager | Phân công | `views/manager/assignment.html` | Placeholder, chưa có menu/route |
-| Manager | Báo cáo quản lý | `views/manager/overview-report.html` | Placeholder, chưa có menu/route |
-| Police | Dashboard công an | `views/police/police-dashboard.html` | Placeholder |
-| Police | Danh sách hồ sơ bàn giao | `views/police/handover-management.html` | Placeholder, menu hiện đang trỏ `#/transfer-list` nhưng file tên khác |
-| Police | Lịch sử bàn giao | `views/police/handover-history.html` | Placeholder |
-| Common | Thông báo | `views/common/notification.html` | Placeholder |
-| Common | Forbidden | `views/common/forbidden.html` | Placeholder |
-
----
-
-## 3. Route thật hiện tại trong sidebar
-
-### Family
-
-| Menu | Route hiện tại | Tình trạng |
-|---|---|---|
-| Dashboard | `#/` | Có dashboard đơn giản |
-| Hồ sơ cá nhân | `#/profile` | Chưa có route trong `main.js` |
-| Đăng ký cai nghiện | `#/register-rehab` | Chưa có route trong `main.js` |
-| Đăng ký thăm gặp | `#/visit-register` | Chưa có route trong `main.js` |
-| Lộ trình phục hồi | `#/treatment-path` | Chưa có route trong `main.js` |
-| Yêu cầu hỗ trợ | `#/support` | Chưa có route trong `main.js` |
-
-### Police
-
-| Menu | Route hiện tại | Tình trạng |
-|---|---|---|
-| Dashboard | `#/` | Có file nhưng chưa render theo role police |
-| Gửi hồ sơ bàn giao | `#/transfer` | Đã có route |
-| DS hồ sơ bàn giao | `#/transfer-list` | Chưa có route, chưa khớp file `handover-management` |
-
-### Staff
-
-| Menu | Route hiện tại | Tình trạng |
-|---|---|---|
-| Dashboard | `#/` | Chưa render `StaffDashboardPage`, fallback dashboard |
-| Tiếp nhận hồ sơ | `#/receive` | Đã có route |
-| Quản lý học viên | `#/patients` | Chưa có route |
-| Duyệt thăm gặp | `#/visits` | Chưa có route |
-| Lập lịch sinh hoạt | `#/activities` | Chưa có route |
-| Điểm danh | `#/attendance` | Chưa có route |
-
-### Doctor
-
-| Menu | Route hiện tại | Tình trạng |
-|---|---|---|
-| Dashboard | `#/` | Đã render dashboard bác sĩ |
-| Cập nhật hồ sơ bệnh án | `#/medical-records` | Đã có route |
-
-### Manager
-
-| Menu | Route hiện tại | Tình trạng |
-|---|---|---|
-| Dashboard | `#/` | Đã render dashboard quản lý |
-| Phê duyệt phác đồ | `#/treatment-approval` | Đã có route |
-
-### Leader
-
-| Menu | Route hiện tại | Tình trạng |
-|---|---|---|
-| Dashboard | `#/` | Đã render dashboard lãnh đạo |
-| Báo cáo tổng quan | `#/reports` | Đã có route |
-| Phê duyệt tiếp nhận | `#/approvals-receive` | Đã có route |
-| Phê duyệt hoàn thành | `#/approvals-complete` | Đã có route |
-
-### Admin
-
-| Menu | Route hiện tại | Tình trạng |
-|---|---|---|
-| Dashboard | `#/` | Đã render dashboard admin |
-| Quản lý tài khoản | `#/users` | Đã có route |
-| Quản lý vai trò | `#/roles` | Đã có route |
-| Danh mục thuốc | `#/medicines` | Đã có route |
-| Hoạt động hệ thống | `#/system-logs` | Đã có route |
-
----
-
-## 4. Kế hoạch hoàn thành phần giao diện còn lại
-
-### Giai đoạn 1 - Hoàn thiện Staff vì đây là luồng vận hành chính
-
-Ưu tiên cao nhất sau admin/leader.
-
-| Thứ tự | Màn | Route đề xuất | Giao AI | Lý do |
+| Uu tien | Role | Route de xuat | Man | File |
 |---:|---|---|---|---|
-| 1 | Quản lý học viên | `#/patients` | Claude | Màn quan trọng, cần UI đẹp, nhiều thông tin |
-| 2 | Duyệt thăm gặp | `#/visits` | Gemini | Dạng bảng + modal duyệt/từ chối |
-| 3 | Lập lịch sinh hoạt | `#/activities` | Gemini | Dạng lịch/bảng, tương đối chuẩn |
-| 4 | Điểm danh | `#/attendance` | Gemini/Kiro | Bảng trạng thái, thao tác lặp |
-| 5 | Dashboard staff | `#/` theo role staff | Claude/Gemini | Tổng hợp số liệu từ các màn staff |
-| 6 | Xác nhận thăm gặp | `#/visit-checkin` | Kiro/Gemini | Dạng bảng check-in đơn giản |
-| 7 | Tạo thông báo | `#/notifications-create` | Kiro | Form + bảng đơn giản |
-| 8 | Phản hồi hỗ trợ | `#/support-response` | Gemini | Bảng yêu cầu + modal phản hồi |
+| 1 | Doctor | `#/treatment-diary` | Nhat ky dieu tri | `views/doctor/treatment-diary.html`, `js/pages/doctor/treatment-diary.page.js` |
+| 2 | Doctor | `#/medicine-schedule` | Lich thuoc | `views/doctor/medicine-schedule.html`, `js/pages/doctor/medicine-schedule.page.js` |
+| 3 | Doctor | `#/counseling-schedule` | Lich tu van | `views/doctor/counseling-schedule.html`, `js/pages/doctor/counseling-schedule.page.js` |
+| 4 | Doctor | `#/stage-proposal` | De xuat chuyen giai doan | `views/doctor/stage-proposal.html`, `js/pages/doctor/stage-proposal.page.js` |
+| 5 | Doctor | `#/completion-proposal` | De xuat hoan thanh | `views/doctor/completion-proposal.html`, `js/pages/doctor/completion-proposal.page.js` |
+| 6 | Police | `#/transfer-list` | Quan ly phieu ban giao | `views/police/handover-management.html`, `js/pages/police/handover-management.page.js` |
+| 7 | Police | `#/handover-history` | Lich su ban giao | `views/police/handover-history.html`, `js/pages/police/handover-history.page.js` |
+| 8 | Family | `#/medical-record-view` | Xem ho so benh an | `views/family/medical-record-view.html`, `js/pages/family/medical-record-view.page.js` |
+| 9 | Family | `#/voluntary-history` | Lich su don tu nguyen | `views/family/voluntary-history.html`, `js/pages/family/voluntary-history.page.js` |
+| 10 | Family | `#/visit-history` | Lich su tham gap | `views/family/visit-history.html`, `js/pages/family/visit-history.page.js` |
+| 11 | Staff | `#/visit-checkin` | Xac nhan tham gap | `views/staff/visit-checkin.html`, `js/pages/staff/visit-checkin.page.js` |
+| 12 | Staff | `#/notifications-create` | Tao thong bao | `views/staff/create-notification.html`, `js/pages/staff/create-notification.page.js` |
+| 13 | Staff | `#/support-response` | Phan hoi ho tro | `views/staff/support-response.html`, `js/pages/staff/support-response.page.js` |
+| 14 | Admin | `#/activities-category` | Danh muc hoat dong | `views/admin/activity-category.html`, `js/pages/admin/activity-category.page.js` |
+| 15 | Common | `#/notifications` | Thong bao | `views/common/notification.html`, `js/pages/common/notification.page.js` |
+| 16 | Common | `#/forbidden` | Forbidden | `views/common/forbidden.html`, `js/pages/common/forbidden.page.js` |
 
-Việc cần làm kèm theo:
-- Import các page JS trong `dashboard.html`.
-- Thêm route trong `main.js`.
-- Đồng bộ route với `sidebar.js`.
+Family da co cac man `voluntary-registration`, `visit-registration`, `recovery-path`, `support-request`, `profile`; can test lai route/menu va polish neu can, nhung khong uu tien bang Doctor/Police.
 
-### Giai đoạn 2 - Hoàn thiện Doctor
+## 4. Luong Nghiep Vu Chinh Phai Giu Dung
 
-| Thứ tự | Màn | Route đề xuất | Giao AI | Lý do |
-|---:|---|---|---|---|
-| 1 | Tạo phác đồ điều trị | `#/treatment-plan-create` | Claude | Nhiều form, cần trải nghiệm tốt |
-| 2 | Nhật ký điều trị | `#/treatment-diary` | Gemini | Bảng + modal ghi nhật ký |
-| 3 | Lịch thuốc | `#/medicine-schedule` | Gemini | Bảng/lịch theo ngày |
-| 4 | Lịch tư vấn | `#/counseling-schedule` | Gemini | Lịch + trạng thái |
-| 5 | Đề xuất chuyển giai đoạn | `#/stage-proposal` | Gemini | Form đề xuất + bảng |
-| 6 | Đề xuất hoàn thành | `#/completion-proposal` | Gemini | Tương tự stage proposal |
+### 4.1. Luong ban giao tu cong an
 
-Việc cần làm kèm theo:
-- Mở rộng sidebar bác sĩ.
-- Thêm route/import cho các màn doctor mới.
-- Sau UI xong, liên kết các đề xuất với màn leader phê duyệt.
+DB/ERD chuan da tach:
+- `PhieuBanGiao`: thong tin phieu, so quyet dinh, file quyet dinh, trang thai phieu.
+- `ChiTietPhieuBanGiao`: tung doi tuong trong phieu.
+- `NguoiCaiNghien.MaChiTietPhieuBanGiao`: lien ket hoc vien voi chi tiet phieu sau khi tiep nhan.
 
-### Giai đoạn 3 - Hoàn thiện Family
+Trang thai phieu:
+- `BAN_NHAP`: cong an luu nhap.
+- `DA_GUI`: da gui cho trung tam/lanh dao cho xu ly.
+- `DANG_TIEP_NHAN`: trung tam dang tiep nhan.
+- `TIEP_NHAN_MOT_PHAN`: mot so doi tuong da tiep nhan, mot so chua.
+- `DA_TIEP_NHAN`: tat ca da tiep nhan.
+- `TU_CHOI`: bi tu choi.
+- `DA_HUY`: cong an huy.
 
-| Thứ tự | Màn | Route hiện tại/đề xuất | Giao AI | Lý do |
-|---:|---|---|---|---|
-| 1 | Đăng ký cai nghiện | `#/register-rehab` | Claude | Màn public-family quan trọng, form dài |
-| 2 | Đăng ký thăm gặp | `#/visit-register` | Claude/Gemini | Form có người đi cùng, lịch/ca thăm |
-| 3 | Lộ trình phục hồi | `#/treatment-path` | Claude | Cần timeline đẹp |
-| 4 | Yêu cầu hỗ trợ | `#/support` | Gemini | Bảng + form gửi yêu cầu |
-| 5 | Hồ sơ cá nhân | `#/profile` | Kiro | Form đơn giản |
-| 6 | Lịch sử đơn tự nguyện | `#/voluntary-history` | Kiro | Bảng lịch sử |
-| 7 | Lịch sử thăm gặp | `#/visit-history` | Kiro | Bảng lịch sử |
-| 8 | Xem hồ sơ bệnh án | `#/medical-record-view` | Gemini | Chỉ xem, cần kiểm soát thông tin hiển thị |
+Trang thai chi tiet:
+- `CHO_TIEP_NHAN`
+- `DA_TIEP_NHAN`
+- `TU_CHOI`
+- `CHO_XAC_NHAN_GAP`
+- `DA_NHAP_TRAI`
 
-Việc cần làm kèm theo:
-- Thống nhất sidebar family: có thêm lịch sử hay không.
-- Thêm route/import cho các màn đang có trong menu trước.
+Man lien quan:
+- Police `#/transfer`: tao/lap phieu ban giao.
+- Police `#/transfer-list`: quan ly phieu da lap.
+- Leader `#/approvals-receive`: phe duyet/tiep nhan phieu ban giao.
+- Staff `#/receive`: xac nhan tiep nhan tung doi tuong.
+- Staff `#/patients`: sau khi tiep nhan, hoc vien xuat hien trong danh sach.
 
-### Giai đoạn 4 - Hoàn thiện Police
+Can tranh:
+- Khong dung lai `HoSoBanGiao` vi SQL da chuyen theo ERD sang `PhieuBanGiao` va `ChiTietPhieuBanGiao`.
+- Khong goi API/count theo `TrangThaiDuyet` nua. Dung `TrangThaiPhieu` va `TrangThaiChiTiet`.
 
-| Thứ tự | Màn | Route đề xuất | Giao AI | Lý do |
-|---:|---|---|---|---|
-| 1 | Sửa form gửi hồ sơ bàn giao | `#/transfer` | Kiro/Gemini | Đã có UI, cần sửa tiếng Việt không dấu và polish |
-| 2 | Dashboard công an | `#/` theo role police | Gemini | Stat cards + danh sách gần đây |
-| 3 | Quản lý hồ sơ bàn giao | `#/transfer-list` hoặc `#/handover-management` | Gemini | Bảng + modal chi tiết |
-| 4 | Lịch sử bàn giao | `#/handover-history` | Kiro | Bảng lọc theo đã xử lý |
+### 4.2. Luong phac do dieu tri
 
-Việc cần làm kèm theo:
-- Khớp route menu `#/transfer-list` với file `handover-management`.
-- Render dashboard police trong `renderRoleDashboard()`.
+DB da co:
+- `HoSoBenhAn`: ho so y te cua hoc vien.
+- `PhacDoDieuTri`: phac do tong, co `TrangThai` = `BAN_NHAP`, `DANG_AP_DUNG`, `DA_HOAN_THANH`, `DA_HUY`.
+- `ChiTietPhacDoDieuTri`: chi tiet theo giai doan, co `TrangThai` = `CHO_PHE_DUYET`, `DANG_AP_DUNG`, `DA_HOAN_THANH`, `TAM_DUNG`, `TU_CHOI`.
+- `NhatKyDieuTri`: nhat ky bac si ghi, co the gan voi `MaChiTietPhacDo`.
+- `HoSoDeXuat`: de xuat chuyen giai doan/ra trai.
 
-### Giai đoạn 5 - Hoàn thiện các phần phụ
+Luong dung:
+1. Bac si mo `#/medical-records` de xem/cap nhat benh an.
+2. Bac si tao phac do o `#/treatment-plan-create`.
+3. Luu nhap: tao/cap nhat `PhacDoDieuTri.TrangThai = BAN_NHAP`.
+4. Gui duyet: tao/cap nhat `ChiTietPhacDoDieuTri.TrangThai = CHO_PHE_DUYET`.
+5. Quan ly duyet o `#/treatment-approval`: set chi tiet sang `DANG_AP_DUNG` hoac `TU_CHOI`.
+6. Bac si ghi `#/treatment-diary`, tham chieu `MaChiTietPhacDo` dang ap dung.
+7. Bac si tao `#/stage-proposal` khi can chuyen giai doan, ghi vao `HoSoDeXuat`.
+8. Bac si tao `#/completion-proposal` khi hoc vien du dieu kien hoan thanh/ra trai, ghi vao `HoSoDeXuat` loai `RA_TRAI`.
+9. Manager/Leader duyet de xuat tuy theo luong man hinh hien co.
 
-| Màn | Giao AI | Ghi chú |
-|---|---|---|
-| Admin - Danh mục hoạt động | Gemini | Có thể tương tự danh mục thuốc |
-| Admin - Quản lý nhân sự | Kiro/Gemini | Đã có UI, chỉ cần gắn route/menu nếu muốn |
-| Common - Thông báo | Kiro | Card/list đơn giản |
-| Common - Forbidden | Kiro | Màn lỗi quyền truy cập |
-| Common - Dashboard Home | Có thể bỏ | Nếu mỗi role đã có dashboard riêng thì không cần |
+Can chinh UI `treatment-plan-create` truoc khi goi API:
+- Khong nen de "giai doan nho" tu do vi DB unique `(MaPhacDoDT, MaGiaiDoan)`.
+- Field nen map DB:
+  - `MaGiaiDoan`: select tu `DanhMucGiaiDoan`.
+  - `ThuTu`.
+  - `NoiDungPhacDoDT`.
+  - `MucTieu`.
+  - `NgayBatDau`.
+  - `NgayKetThucDuKien`.
+- Neu muon nhieu buoc nho trong 1 giai doan, DB can them bang con moi. Neu khong them DB, moi giai doan chi nen co 1 chi tiet.
 
----
+API backend con thieu cho bac si tao phac do:
+- `GET /api/v1/doctor/treatment-plan-create/patients`
+- `POST /api/v1/doctor/treatment-plans/draft`
+- `POST /api/v1/doctor/treatment-plans/submit`
 
-## 5. Prompt mẫu cho từng AI
+Backend da co API duyet phac do:
+- `GET /api/v1/treatment-plans`
+- `GET /api/v1/treatment-plans/{id}`
+- `PUT /api/v1/treatment-plans/{id}/approve`
+- `PUT /api/v1/treatment-plans/{id}/reject`
 
-### Claude - màn khó, cần UI đẹp
+### 4.3. Luong tham gap
+
+DB lien quan:
+- `PhieuThamGap`
+- `NguoiDiCung`
+
+Luong:
+1. Family dang ky tham gap o `#/visit-register`.
+2. Staff duyet/từ choi o `#/visits`.
+3. Staff xac nhan check-in o `#/visit-checkin`.
+4. Family xem lich su o `#/visit-history`.
+
+Trang thai nen dung thong nhat:
+- `CHO_DUYET`
+- `DA_DONG_Y`
+- `TU_CHOI`
+- `HOAN_THANH`
+- `DA_HUY`
+
+### 4.4. Luong ho tro/thong bao
+
+DB lien quan:
+- `PhieuHoTro`
+- `ThongBao`
+
+Luong:
+1. Family gui yeu cau ho tro o `#/support`.
+2. Staff phan hoi o `#/support-response` hoac `#/support-management`.
+3. Common notification hien thong bao theo user/role.
+
+## 5. Kinh Nghiem Thiet Ke Giao Dien
+
+Nguyen tac chung:
+- Luon lam man dung nghiep vu, khong lam landing page.
+- Dashboard co the dep/3D/dong, nhung man nghiep vu phai ro rang, de thao tac, khong qua mau me.
+- Khong lap card trong card. Section lon nen la layout/band, card chi dung cho item, modal, stat.
+- Dung icon Font Awesome/lucide neu project da co, button icon phai co `title`.
+- Tieng Viet phai co dau, khong de text kieu "Nhap ghi chu", "ma tuy da".
+- Bang nghiep vu phai co empty state, loading state, error state.
+- Moi modal phai dong duoc bang nut X, nut Huy/Dong, va click overlay neu pattern hien tai co.
+- Search/filter phai cap nhat bang ngay, khong reload trang.
+- Action icon nen dong bo style: hover, shadow nhe, mau theo y nghia.
+- Giao dien mobile: toolbar xuong dong, bang co wrapper scroll, modal gioi han chieu cao.
+
+Man nghiep vu nen co cau truc:
+1. Page header: title + subtitle + badge/ngay/he thong.
+2. Stat cards: 3-4 card neu man co so lieu.
+3. Toolbar: search + filter + nut tao moi neu co.
+4. Bang/list: badge trang thai, action icon.
+5. Modal chi tiet: chia nhom thong tin.
+6. Modal xac nhan: noi dung ro, validation ro, toast sau thao tac.
+
+Mau class/pattern nen bat chuoc:
+- Staff intake: `views/staff/intake-confirmation.html`, `js/pages/staff/intake-confirmation.page.js`.
+- Staff patient: `views/staff/patient-management.html`, `js/pages/staff/patient-management.page.js`.
+- Doctor medical record: `views/doctor/medical-record.html`, `js/pages/doctor/medical-record.page.js`.
+- Manager approval: `views/manager/treatment-approval.html`, `js/pages/manager/treatment-approval.page.js`.
+- Dashboard advanced: `js/components/advanced-dashboard.js`.
+
+## 6. Prompt Mau Cho AI Khac
+
+### Claude - man kho/UI dep
 
 ```text
-Tiếp tục làm giao diện theo tài liệu tiến độ mới.
+Lam tiep man [TEN_MAN] theo file dieu phoi `Mo_ta_day_du_giao_dien_con_lai_Rehab_Center.md`.
 
-Ưu tiên màn: [TÊN MÀN]
-File cần sửa:
+File can sua:
 - [views/...html]
 - [js/pages/...page.js]
-- nếu cần thì thêm import vào dashboard.html, route vào js/main.js, menu vào js/components/sidebar.js
+- neu can: `dashboard.html`, `js/main.js`, `js/components/sidebar.js`
 
-Yêu cầu:
-- Giữ style dashboard-premium hiện tại.
-- Không tạo full HTML mới.
-- UI phải đẹp, có header, stat cards nếu phù hợp, bảng/card, search/filter, modal chi tiết.
-- Dữ liệu dùng mock API-ready, chưa gọi API thật.
-- Tiếng Việt đầy đủ dấu.
-- Không phá các màn đã hoàn thiện.
-- Sau khi xong chạy node --check file JS.
+Doc mau style:
+- [file mau HTML]
+- [file mau JS]
+
+Yeu cau:
+- Giu style `dashboard-premium.css`.
+- UI phai nhin kho va dep nhung van de thao tac: header, stat cards neu hop ly, toolbar search/filter, bang/list, modal chi tiet, modal xac nhan.
+- Dung tieng Viet co dau.
+- Mock data API-ready, dat ten field gan DB/API.
+- Khong sua layout chung neu khong can.
+- Khong tao full HTML doc lap, chi lam partial view.
+- Neu can CSS, them prefix rieng theo man.
+- Cuoi cung bao cao: file da sua, route/import/menu can them, API can co, va ket qua `node --check`.
 ```
 
-### Gemini - màn bảng nghiệp vụ tầm trung
+### Gemini - bang nghiep vu tam trung
 
 ```text
-Làm màn nghiệp vụ dạng bảng + modal theo cấu trúc hiện tại.
+Lam man [TEN_MAN] route [#/route].
 
-Màn: [TÊN MÀN]
-Route: [#/route]
 File:
 - [views/...html]
 - [js/pages/...page.js]
 
-Yêu cầu:
-- Header + subtitle.
-- Toolbar gồm search/filter.
-- Bảng dữ liệu có badge trạng thái và action icon.
-- Modal xem chi tiết, modal xác nhận nếu có thao tác duyệt/từ chối.
-- Mock data trong JS, API-ready.
-- Thêm route/import/menu nếu màn nằm trong sidebar.
-- Chạy node --check sau khi xong.
+Yeu cau:
+- Bang + modal theo pattern cac man Staff/Manager hien co.
+- Co search/filter, badge trang thai, action icon dep.
+- Co empty/loading state.
+- Mock data API-ready.
+- Neu thao tac duyet/tu choi/cap nhat thi co modal xac nhan va validation.
+- Them route/import/menu neu con thieu.
+- Chay `node --check` file JS.
 ```
 
-### Kiro - màn đơn giản
+### Kiro - man don gian
 
 ```text
-Làm màn đơn giản theo style dashboard hiện tại.
+Lam man don gian [TEN_MAN].
 
-Màn: [TÊN MÀN]
 File:
 - [views/...html]
 - [js/pages/...page.js]
 
-Yêu cầu:
-- Không placeholder.
-- Có header, card hoặc bảng đơn giản.
-- Dữ liệu mock.
-- Tiếng Việt đầy đủ dấu.
-- Không sửa layout chung nếu không cần.
+Yeu cau:
+- Xoa placeholder.
+- Co header, card/list/bang don gian.
+- Tieng Viet co dau.
+- Dung class san co trong dashboard.
+- Khong sua file chung neu khong can.
 ```
 
----
+## 7. Checklist Codex Kiem Sau Khi AI Code
 
-## 6. Checklist kiểm thử sau mỗi màn
+Lenh can chay:
+- `node --check drug-rehab-management-fe/js/pages/{role}/{screen}.page.js`
+- Neu sua backend: `mvn -DskipTests compile` trong `rehab-center-api`
 
-Sau khi một AI làm xong một màn, cần kiểm:
+Can kiem bang mat:
+- Route mo qua `dashboard.html#/route`.
+- Sidebar bam dung man.
+- Khong con placeholder.
+- Khong loi font/tieng Viet.
+- Search/filter dung.
+- Modal mo/dong dung.
+- Nut thao tac dep va co hover/title.
+- Bang khong tran mobile.
+- Mock field dat ten gan DB/API.
+- Khong dung bang/cot DB da bo, vi du `HoSoBanGiao`.
 
-| Việc kiểm | Cách kiểm |
-|---|---|
-| JS không lỗi cú pháp | `node --check drug-rehab-management-fe/js/pages/...page.js` |
-| Route mở được | `dashboard.html#/route` |
-| Không mở trực tiếp partial | Không dùng link `views/...html` trên Go Live |
-| Menu đúng | Bấm sidebar thấy màn tương ứng |
-| Không còn placeholder | Không có câu “đang được xây dựng” |
-| Tiếng Việt có dấu | Kiểm tra title, placeholder, toast, modal |
-| Modal hoạt động | Mở/đóng bằng nút và click overlay |
-| Search/filter hoạt động | Nhập keyword, đổi filter |
-| Không phá màn khác | Vào lại dashboard và màn vừa làm trước đó |
+## 8. Thu Tu Lam Tiep Khuyen Nghi
 
----
+1. Chot lai Doctor `treatment-plan-create`: sua field map DB, sau do moi goi API.
+2. Lam Doctor `treatment-diary`.
+3. Lam Doctor `medicine-schedule`.
+4. Lam Doctor `counseling-schedule`.
+5. Lam Doctor `stage-proposal` va `completion-proposal`.
+6. Lam Police `handover-management` theo DB moi `PhieuBanGiao` / `ChiTietPhieuBanGiao`.
+7. Sua Police `handover-create` tieng Viet va field theo DB moi.
+8. Lam Staff `visit-checkin`, `create-notification`, `support-response`.
+9. Lam Family history/view con thieu.
+10. Lam Admin `activity-category` va Common notification/forbidden.
 
-## 7. Thứ tự làm khuyến nghị từ bây giờ
-
-| Ưu tiên | Nhóm | Màn |
-|---:|---|---|
-| 1 | Staff | Quản lý học viên |
-| 2 | Staff | Duyệt thăm gặp |
-| 3 | Staff | Lập lịch sinh hoạt |
-| 4 | Staff | Điểm danh |
-| 5 | Staff | Dashboard staff |
-| 6 | Doctor | Tạo phác đồ điều trị |
-| 7 | Doctor | Nhật ký điều trị |
-| 8 | Doctor | Đề xuất chuyển giai đoạn / hoàn thành |
-| 9 | Family | Đăng ký cai nghiện |
-| 10 | Family | Đăng ký thăm gặp |
-| 11 | Family | Lộ trình phục hồi |
-| 12 | Police | Sửa gửi hồ sơ bàn giao + danh sách hồ sơ |
-| 13 | Admin phụ | Danh mục hoạt động |
-| 14 | Common | Profile / Notification / Forbidden |
-
-Khi các màn trên đã có UI ổn, bước tiếp theo là chuyển từng nhóm sang gọi API thật, bắt đầu từ các màn đang nằm trong demo chính: Leader, Admin, Staff, Doctor.
+Sau khi UI on, chuyen API theo thu tu:
+1. Dashboard da co API tong quan, tiep tuc sua cac count/API theo DB moi neu can.
+2. Leader/Staff tiep nhan theo `PhieuBanGiao`.
+3. Doctor phac do/nhat ky/lich thuoc.
+4. Police ban giao.
+5. Family dang ky/tham gap/ho tro.
