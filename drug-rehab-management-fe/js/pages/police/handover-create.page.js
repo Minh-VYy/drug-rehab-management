@@ -26,7 +26,7 @@ const HandoverCreatePage = {
 
     init() {
         if (typeof Topbar !== 'undefined') {
-            Topbar.setTitle('Tao ho so ban giao');
+            Topbar.setTitle('Tạo hồ sơ bàn giao');
         }
 
         this.state.status = 'Nhap';
@@ -90,7 +90,7 @@ const HandoverCreatePage = {
         this.state.status = 'Nhap';
         this.state.pendingPayload = this.collectPayload();
         this.updateSummary();
-        this.showToast('Da luu nhap ho so.', 'success');
+        this.showToast('Đã lưu nháp hồ sơ.', 'success');
     },
 
     handleSubmit() {
@@ -99,7 +99,7 @@ const HandoverCreatePage = {
 
         this.updateSummary();
         if (!isValid) {
-            this.showToast('Vui long kiem tra cac truong bat buoc.', 'warning');
+            this.showToast('Vui lòng kiểm tra các trường bắt buộc.', 'warning');
             return;
         }
 
@@ -118,7 +118,7 @@ const HandoverCreatePage = {
         this.closeConfirmModal();
         this.updateSummary();
         this.renderCreatedCard(created);
-        this.showToast('Da gui ho so ban giao.', 'success');
+        this.showToast('Đã gửi hồ sơ bàn giao.', 'success');
     },
 
     async createHandoverRecord(payload) {
@@ -150,18 +150,18 @@ const HandoverCreatePage = {
 
         this.requiredFields.forEach(field => {
             if (!payload[field]) {
-                this.setFieldError(field, 'Truong nay bat buoc.');
+                this.setFieldError(field, 'Trường này bắt buộc.');
                 valid = false;
             }
         });
 
         if (payload.citizenId && !/^\d{12}$/.test(payload.citizenId)) {
-            this.setFieldError('citizenId', 'CCCD phai gom dung 12 chu so.');
+            this.setFieldError('citizenId', 'CCCD phải gồm đúng 12 chữ số.');
             valid = false;
         }
 
         if (payload.relativePhone && !/^\d{10}$/.test(payload.relativePhone)) {
-            this.setFieldError('relativePhone', 'So dien thoai phai gom dung 10 chu so.');
+            this.setFieldError('relativePhone', 'Số điện thoại phải gồm đúng 10 chữ số.');
             valid = false;
         }
 
@@ -175,11 +175,11 @@ const HandoverCreatePage = {
 
         body.innerHTML = `
             <div class="module-detail-grid">
-                ${this.renderDetailItem('Nguoi cai nghien', payload.patientName)}
+                ${this.renderDetailItem('Người cai nghiện', payload.patientName)}
                 ${this.renderDetailItem('CCCD', payload.citizenId)}
-                ${this.renderDetailItem('Nguoi than', payload.relativeName)}
-                ${this.renderDetailItem('So quyet dinh', payload.decisionNumber)}
-                ${this.renderDetailItem('Hanh vi vi pham', payload.violationBehavior, true)}
+                ${this.renderDetailItem('Người thân', payload.relativeName)}
+                ${this.renderDetailItem('Số quyết định', payload.decisionNumber)}
+                ${this.renderDetailItem('Hành vi vi phạm', payload.violationBehavior, true)}
             </div>
         `;
         modal.classList.add('active');
@@ -191,7 +191,7 @@ const HandoverCreatePage = {
     },
 
     resetForm() {
-        const confirmed = window.confirm('Ban co chac muon lam moi form? Du lieu dang nhap se bi xoa.');
+        const confirmed = window.confirm('Bạn có chắc muốn làm mới form? Dữ liệu đang nhập sẽ bị xóa.');
         if (!confirmed) return;
 
         const form = this.getForm();
@@ -208,7 +208,7 @@ const HandoverCreatePage = {
     },
 
     updateSummary() {
-        this.setText('handoverStatusValue', this.state.status);
+        this.setText('handoverStatusValue', this.getStatusLabel(this.state.status));
         this.setText('handoverCreatedDate', this.state.createdDate
             ? this.state.createdDate.toLocaleDateString('vi-VN')
             : '--/--/----');
@@ -226,12 +226,20 @@ const HandoverCreatePage = {
         if (!card || !summary) return;
 
         summary.innerHTML = `
-            ${this.renderDetailItem('Ma ho so', record.code)}
-            ${this.renderDetailItem('Ho ten', record.patientName)}
-            ${this.renderDetailItem('Trang thai', record.status)}
-            ${this.renderDetailItem('Ngay gui', record.sentDate)}
+            ${this.renderDetailItem('Mã hồ sơ', record.code)}
+            ${this.renderDetailItem('Họ tên', record.patientName)}
+            ${this.renderDetailItem('Trạng thái', this.getStatusLabel(record.status))}
+            ${this.renderDetailItem('Ngày gửi', record.sentDate)}
         `;
         card.style.display = 'block';
+    },
+
+    getStatusLabel(status) {
+        const labels = {
+            Nhap: 'Nháp',
+            ChoDuyet: 'Chờ duyệt'
+        };
+        return labels[status] || status || '-';
     },
 
     renderDetailItem(label, value, full = false) {

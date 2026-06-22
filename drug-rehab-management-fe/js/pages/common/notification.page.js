@@ -209,7 +209,7 @@ const NotificationPage = {
                         <span class="notification-item-title">${this.escapeHtml(item.title)}</span>
                         <span class="notification-item-time">${this.escapeHtml(item.time)}</span>
                     </span>
-                    <span class="notification-item-desc">${this.escapeHtml(item.desc)}</span>
+                    <span class="notification-item-desc">${this.escapeHtml(this.stripHtml(item.desc))}</span>
                     <span class="notification-item-foot">
                         <span>${tone.label}</span>
                         <span>${item.isRead ? "Đã đọc" : "Chưa đọc"}</span>
@@ -256,7 +256,7 @@ const NotificationPage = {
 
         this.setText("notificationDetailTitle", item.title);
         this.setText("notificationDetailTime", item.time);
-        this.setText("notificationDetailBody", item.desc);
+        this.setRichHtml("notificationDetailBody", item.desc);
         this.setText("notificationDetailId", item.id);
         this.setText("notificationDetailType", tone.label);
 
@@ -431,6 +431,75 @@ const NotificationPage = {
         if (el) {
             el.textContent = value ?? "";
         }
+    },
+
+    setRichHtml(id, value) {
+        const el = document.getElementById(id);
+        if (el) {
+            el.innerHTML = this.sanitizeRichHtml(value ?? "");
+        }
+    },
+
+    stripHtml(value) {
+        const div = document.createElement("div");
+        div.innerHTML = value || "";
+        return div.textContent || div.innerText || "";
+    },
+
+    sanitizeRichHtml(value) {
+        const template = document.createElement("template");
+        template.innerHTML = value || "";
+        const allowedTags = new Set(["H1", "H2", "H3", "P", "BR", "STRONG", "B", "EM", "I", "U", "MARK", "UL", "OL", "LI", "BLOCKQUOTE", "SPAN", "FONT", "DIV"]);
+        const allowedStyles = new Set(["background-color", "color"]);
+
+        const walk = (node) => {
+            Array.from(node.childNodes).forEach((child) => {
+                if (child.nodeType !== Node.ELEMENT_NODE) return;
+
+                if (!allowedTags.has(child.tagName)) {
+                    child.replaceWith(document.createTextNode(child.textContent || ""));
+                    return;
+                }
+
+                Array.from(child.attributes).forEach((attr) => {
+                    if (child.tagName === "FONT" && attr.name === "color") {
+                        return;
+                    }
+
+                    if (attr.name !== "style") {
+                        child.removeAttribute(attr.name);
+                        return;
+                    }
+
+                    const keptStyles = child
+                        .getAttribute("style")
+                        .split(";")
+                        .map((rule) => rule.trim())
+                        .filter((rule) => {
+                            const [name, value] = rule.split(":");
+                            const cleanValue = (value || "").trim();
+                            return allowedStyles.has(name?.trim().toLowerCase()) && (/^#[0-9a-fA-F]{3,6}$/.test(cleanValue) || /^rgb\(/.test(cleanValue));
+                        });
+
+                    if (keptStyles.length) {
+                        child.setAttribute("style", keptStyles.join("; "));
+                    } else {
+                        child.removeAttribute("style");
+                    }
+                });
+
+                walk(child);
+            });
+        };
+
+        walk(template.content);
+        template.content.querySelectorAll("font[color]").forEach((font) => {
+            const span = document.createElement("span");
+            span.style.color = font.getAttribute("color");
+            span.innerHTML = font.innerHTML;
+            font.replaceWith(span);
+        });
+        return template.innerHTML.trim();
     },
 
     escapeHtml(value) {

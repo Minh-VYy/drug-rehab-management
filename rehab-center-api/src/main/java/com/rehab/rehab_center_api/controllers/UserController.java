@@ -4,6 +4,7 @@ import com.rehab.rehab_center_api.dto.ApiResponse;
 import com.rehab.rehab_center_api.dto.request.ChangePasswordRequest;
 import com.rehab.rehab_center_api.dto.request.UpdateProfileRequest;
 import com.rehab.rehab_center_api.dto.response.UserProfileResponse;
+import com.rehab.rehab_center_api.dto.response.UserOptionResponse;
 import com.rehab.rehab_center_api.entities.User;
 import com.rehab.rehab_center_api.exceptions.AppException;
 import com.rehab.rehab_center_api.exceptions.ErrorCode;
@@ -17,6 +18,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
@@ -25,6 +28,22 @@ public class UserController {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<UserOptionResponse>>> getUsers() {
+        List<UserOptionResponse> users = userRepository.findAllWithRoleOrderByFullName()
+                .stream()
+                .map(user -> UserOptionResponse.builder()
+                        .id(user.getId())
+                        .username(user.getUsername())
+                        .fullName(user.getFullName())
+                        .role(user.getRole() != null ? user.getRole().getName() : null)
+                        .status(user.getStatus() != null ? user.getStatus().name() : null)
+                        .build())
+                .toList();
+
+        return ResponseEntity.ok(ApiResponse.success(users, "Lấy danh sách người dùng thành công"));
+    }
 
     @GetMapping("/profile")
     public ResponseEntity<ApiResponse<UserProfileResponse>> getProfile() {

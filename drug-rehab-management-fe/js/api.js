@@ -222,17 +222,6 @@ const Api = {
     },
 
     // --- MANAGER (CÁN BỘ QUẢN LÝ) ---
-    getTreatmentPlans() {
-        return this.get('/manager/treatment-plans');
-    },
-
-    approveTreatmentPlan(id, data) {
-        return this.put(`/manager/treatment-plans/${id}/approve`, data);
-    },
-
-    rejectTreatmentPlan(id, data) {
-        return this.put(`/manager/treatment-plans/${id}/reject`, data);
-    },
 
     getPatientsForAssignment() {
         return this.get('/manager/patients');

@@ -1,8 +1,8 @@
 window.CreateNotificationPage = (function () {
   // ====== ENDPOINTS (API thật theo chuẩn project) ======
-  const ENDPOINT_SUBMIT = "/api/v1/notifications";
-  const ENDPOINT_USERS = "/api/v1/users";
-  const ENDPOINT_SENT = "/api/v1/notifications/sent";
+  const ENDPOINT_SUBMIT = "/notifications";
+  const ENDPOINT_USERS = "/users";
+  const ENDPOINT_SENT = "/notifications/sent";
 
   // ====== HELPER ĐỌC RESPONSE LINH HOẠT ======
   function extractList(res) {
@@ -20,6 +20,72 @@ window.CreateNotificationPage = (function () {
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#39;");
+  }
+
+  function stripHtml(value) {
+    const div = document.createElement("div");
+    div.innerHTML = value || "";
+    return div.textContent || div.innerText || "";
+  }
+
+  function sanitizeRichHtml(value) {
+    const template = document.createElement("template");
+    template.innerHTML = value || "";
+    const allowedTags = new Set(["H1", "H2", "H3", "P", "BR", "STRONG", "B", "EM", "I", "U", "MARK", "UL", "OL", "LI", "BLOCKQUOTE", "SPAN", "FONT", "DIV"]);
+    const allowedStyles = new Set(["background-color", "color"]);
+
+    const walk = (node) => {
+      Array.from(node.childNodes).forEach((child) => {
+        if (child.nodeType !== Node.ELEMENT_NODE) return;
+
+        if (!allowedTags.has(child.tagName)) {
+          child.replaceWith(document.createTextNode(child.textContent || ""));
+          return;
+        }
+
+        Array.from(child.attributes).forEach((attr) => {
+          if (child.tagName === "FONT" && attr.name === "color") {
+            return;
+          }
+
+          if (attr.name !== "style") {
+            child.removeAttribute(attr.name);
+            return;
+          }
+
+          const keptStyles = child
+            .getAttribute("style")
+            .split(";")
+            .map((rule) => rule.trim())
+            .filter((rule) => {
+              const [name, value] = rule.split(":");
+              const cleanValue = (value || "").trim();
+              return allowedStyles.has(name?.trim().toLowerCase()) && (/^#[0-9a-fA-F]{3,6}$/.test(cleanValue) || /^rgb\(/.test(cleanValue));
+            });
+
+          if (keptStyles.length) {
+            child.setAttribute("style", keptStyles.join("; "));
+          } else {
+            child.removeAttribute("style");
+          }
+        });
+
+        walk(child);
+      });
+    };
+
+    walk(template.content);
+    template.content.querySelectorAll("font[color]").forEach((font) => {
+      const span = document.createElement("span");
+      span.style.color = font.getAttribute("color");
+      span.innerHTML = font.innerHTML;
+      font.replaceWith(span);
+    });
+    return template.innerHTML.trim();
+  }
+
+  function renderRichHtml(value) {
+    return sanitizeRichHtml(value || "").replace(/\n/g, "<br/>");
   }
 
   // ====== MOCK FALLBACK (chỉ dùng khi chưa có API) ======
@@ -61,6 +127,8 @@ window.CreateNotificationPage = (function () {
   let usingSentFallback = false;
   let selectedRecipients = []; // [{id, hoTen, tenDangNhap}]
   let currentSentSearch = "";
+  let editingNotificationId = null;
+  let savedEditorRange = null;
 
   // ====== HELPERS HIỂN THỊ ======
   function getTypeLabel(type) {
@@ -85,8 +153,107 @@ window.CreateNotificationPage = (function () {
       CanBoTrungTam: "Cán bộ trung tâm",
       LanhDao: "Lãnh đạo",
       CongAn: "Công an",
+      DOCTOR: "Bác sĩ",
+      MANAGER: "Cán bộ quản lý",
+      STAFF: "Cán bộ trung tâm",
+      LEADER: "Lãnh đạo",
+      DIRECTOR: "Lãnh đạo",
+      POLICE: "Công an",
+      FAMILY: "Người thân",
     };
     return map[role] || role;
+  }
+
+  function normalizeUser(user) {
+    return {
+      id: user.id ?? user.maNguoiDung ?? user.userId,
+      hoTen: user.hoTen || user.fullName || user.name || "Người dùng",
+      tenDangNhap: user.tenDangNhap || user.username || "",
+      vaiTro: user.vaiTro || user.role || "",
+    };
+  }
+
+  function normalizeSentNotification(item) {
+    return {
+      id: item.id || item.maThongBao,
+      tieuDe: item.tieuDe || item.title || "",
+      noiDung: item.noiDung || item.desc || item.content || "",
+      loaiGui: item.loaiGui || item.notificationType || item.type || "TatCa",
+      nhomVaiTro: item.nhomVaiTro || [],
+      mucDo: item.mucDo || "ThongTin",
+      thoiGianGui: item.thoiGianGui || item.time || item.createdAt || "",
+      soNguoiNhan: item.soNguoiNhan || item.recipientCount || 0,
+    };
+  }
+
+  function getEditor() {
+    return document.getElementById("notiContentEditor");
+  }
+
+  function saveEditorSelection() {
+    const editor = getEditor();
+    const selection = window.getSelection();
+    if (!editor || !selection || selection.rangeCount === 0) return;
+
+    const range = selection.getRangeAt(0);
+    if (editor.contains(range.commonAncestorContainer)) {
+      savedEditorRange = range.cloneRange();
+    }
+  }
+
+  function restoreEditorSelection() {
+    const editor = getEditor();
+    const selection = window.getSelection();
+    if (!editor || !selection) return;
+
+    editor.focus();
+    if (savedEditorRange) {
+      selection.removeAllRanges();
+      selection.addRange(savedEditorRange);
+    }
+  }
+
+  function applyEditorCommand(command, value) {
+    restoreEditorSelection();
+    document.execCommand(command, false, value || null);
+    saveEditorSelection();
+    syncEditorToTextarea();
+  }
+
+  function syncEditorToTextarea() {
+    const editor = getEditor();
+    const textarea = document.getElementById("notiContent");
+    if (editor && textarea) {
+      textarea.value = sanitizeRichHtml(editor.innerHTML);
+    }
+  }
+
+  function setEditorContent(value) {
+    const html = sanitizeRichHtml(value || "");
+    const editor = getEditor();
+    const textarea = document.getElementById("notiContent");
+    if (editor) editor.innerHTML = html;
+    if (textarea) textarea.value = html;
+  }
+
+  function setEditMode(notification) {
+    editingNotificationId = notification ? notification.id : null;
+    const isEditing = Boolean(notification);
+
+    document.getElementById("notiFormTitle").textContent = isEditing ? "Chỉnh sửa thông báo" : "Soạn thông báo mới";
+    document.getElementById("notiFormSubtitle").textContent = isEditing
+      ? "Cập nhật tiêu đề và nội dung thông báo đã gửi"
+      : "Nhập nội dung, định dạng và chọn đối tượng nhận thông báo";
+    document.getElementById("notiEditBanner").style.display = isEditing ? "flex" : "none";
+    document.getElementById("btnNotiSubmit").innerHTML = isEditing
+      ? '<i class="fa-solid fa-floppy-disk"></i> Cập nhật thông báo'
+      : '<i class="fa-solid fa-paper-plane"></i> Gửi thông báo';
+
+    document.querySelectorAll('input[name="notiType"], #notiRoleCheckboxes input').forEach((el) => {
+      el.disabled = isEditing;
+    });
+    const recipientSearch = document.getElementById("notiRecipientSearch");
+    if (recipientSearch) recipientSearch.disabled = isEditing;
   }
 
   function getCurrentSenderName() {
@@ -108,11 +275,11 @@ window.CreateNotificationPage = (function () {
   function loadRecipients() {
     return Api.get(ENDPOINT_USERS)
       .then((res) => {
-        allUsers = extractList(res);
+        allUsers = extractList(res).map(normalizeUser).filter((u) => u.id);
         usingUserFallback = false;
       })
       .catch((err) => {
-        console.warn("Chưa có API GET /api/v1/users, dùng mock fallback:", err);
+        console.warn("Chưa có API GET /users, dùng mock fallback:", err);
         allUsers = JSON.parse(JSON.stringify(MOCK_USERS));
         usingUserFallback = true;
       });
@@ -128,7 +295,7 @@ window.CreateNotificationPage = (function () {
       if (selected) return false;
       if (!kw) return true;
       return (
-        u.hoTen.toLowerCase().includes(kw) || u.tenDangNhap.toLowerCase().includes(kw)
+        (u.hoTen || "").toLowerCase().includes(kw) || (u.tenDangNhap || "").toLowerCase().includes(kw)
       );
     });
 
@@ -223,7 +390,8 @@ window.CreateNotificationPage = (function () {
     let valid = true;
 
     const title = document.getElementById("notiTitle").value.trim();
-    const content = document.getElementById("notiContent").value.trim();
+    syncEditorToTextarea();
+    const content = stripHtml(document.getElementById("notiContent").value).trim();
     const type = document.querySelector('input[name="notiType"]:checked').value;
 
     if (!title) {
@@ -246,6 +414,7 @@ window.CreateNotificationPage = (function () {
 
   function buildPayload() {
     const type = document.querySelector('input[name="notiType"]:checked').value;
+    syncEditorToTextarea();
 
     return {
       tieuDe: document.getElementById("notiTitle").value.trim(),
@@ -279,7 +448,7 @@ window.CreateNotificationPage = (function () {
           <span class="badge badge-gray">${escapeHtml(getTypeLabel(payload.loaiGui))}</span>
         </div>
         <h3 class="noti-preview-title">${escapeHtml(payload.tieuDe)}</h3>
-        <p class="noti-preview-content">${escapeHtml(payload.noiDung).replace(/\n/g, "<br/>")}</p>
+        <div class="noti-preview-content rich-notification-content">${renderRichHtml(payload.noiDung)}</div>
         <div class="noti-preview-meta">
           <div><i class="fa-solid fa-users"></i> Người nhận: ${escapeHtml(recipientSummary)}</div>
           <div><i class="fa-solid fa-user-pen"></i> Người gửi: ${escapeHtml(payload.nguoiGui)}</div>
@@ -301,42 +470,57 @@ window.CreateNotificationPage = (function () {
     const payload = buildPayload();
     const submitBtn = document.getElementById("btnNotiSubmit");
     const previewSendBtn = document.getElementById("notiPreviewSendBtn");
+    const wasEditing = Boolean(editingNotificationId);
     if (submitBtn) submitBtn.disabled = true;
     if (previewSendBtn) previewSendBtn.disabled = true;
 
-    Api.post(ENDPOINT_SUBMIT, payload)
+    const request = editingNotificationId
+      ? Api.put(`${ENDPOINT_SENT}/${encodeURIComponent(editingNotificationId)}`, {
+          tieuDe: payload.tieuDe,
+          noiDung: payload.noiDung,
+          mucDo: payload.mucDo,
+        })
+      : Api.post(ENDPOINT_SUBMIT, payload);
+
+    request
       .then((res) => {
-        const created = (res && res.data) || payload;
-        sentNotifications.unshift(
-          Object.assign(
-            {
-              id: created.id || "TB" + String(sentNotifications.length + 1).padStart(3, "0"),
-              tieuDe: payload.tieuDe,
-              noiDung: payload.noiDung,
-              loaiGui: payload.loaiGui,
-              nhomVaiTro: payload.nhomVaiTro,
-              mucDo: payload.mucDo,
-              thoiGianGui: new Date().toLocaleString("vi-VN"),
-              soNguoiNhan:
-                payload.loaiGui === "CaNhan" ? selectedRecipients.length : payload.nhomVaiTro.length || 0,
-            },
-            created.id ? created : {}
-          )
-        );
+        const created = normalizeSentNotification((res && (res.data || res)) || payload);
+        if (editingNotificationId) {
+          sentNotifications = sentNotifications.map((item) =>
+            item.id === editingNotificationId ? Object.assign({}, item, created, payload) : item
+          );
+        } else {
+          sentNotifications.unshift(
+            Object.assign(
+              {
+                id: created.id || "TB" + String(sentNotifications.length + 1).padStart(3, "0"),
+                tieuDe: payload.tieuDe,
+                noiDung: payload.noiDung,
+                loaiGui: payload.loaiGui,
+                nhomVaiTro: payload.nhomVaiTro,
+                mucDo: payload.mucDo,
+                thoiGianGui: new Date().toLocaleString("vi-VN"),
+                soNguoiNhan:
+                  payload.loaiGui === "CaNhan" ? selectedRecipients.length : payload.nhomVaiTro.length || 0,
+              },
+              created.id ? created : {}
+            )
+          );
+        }
 
         closePreviewModal();
         resetForm();
-        renderStats();
         renderSentNotifications();
 
         if (window.Toast && Toast.show) {
-          Toast.show("Đã gửi thông báo thành công.", "success");
+          Toast.show(wasEditing ? "Đã cập nhật thông báo thành công." : "Đã gửi thông báo thành công.", "success");
         }
       })
       .catch((err) => {
         console.error("Lỗi gửi thông báo:", err);
         if (window.Toast && Toast.show) {
-          Toast.show("Gửi thông báo thất bại, vui lòng thử lại.", "error");
+          const detail = err?.message ? `: ${err.message}` : "";
+          Toast.show(wasEditing ? `Cập nhật thông báo thất bại${detail}` : `Gửi thông báo thất bại${detail}`, "error");
         }
       })
       .finally(() => {
@@ -348,7 +532,7 @@ window.CreateNotificationPage = (function () {
   // ====== RESET FORM ======
   function resetForm() {
     document.getElementById("notiTitle").value = "";
-    document.getElementById("notiContent").value = "";
+    setEditorContent("");
     document.getElementById("notiLevel").value = "ThongTin";
     document.querySelector('input[name="notiType"][value="TatCa"]').checked = true;
     document.querySelectorAll("#notiRoleCheckboxes input").forEach((cb) => (cb.checked = false));
@@ -356,6 +540,7 @@ window.CreateNotificationPage = (function () {
     selectedRecipients = [];
     renderSelectedRecipients();
     clearFormErrors();
+    setEditMode(null);
     handleTypeChange();
   }
 
@@ -372,11 +557,11 @@ window.CreateNotificationPage = (function () {
 
     return Api.get(ENDPOINT_SENT)
       .then((res) => {
-        sentNotifications = extractList(res);
+        sentNotifications = extractList(res).map(normalizeSentNotification);
         usingSentFallback = false;
       })
       .catch((err) => {
-        console.warn("Chưa có API GET /api/v1/notifications/sent, dùng mock fallback:", err);
+        console.warn("Chưa có API GET /notifications/sent, dùng mock fallback:", err);
         sentNotifications = JSON.parse(JSON.stringify(MOCK_SENT_NOTIFICATIONS));
         usingSentFallback = true;
         showFallbackNotice("Chưa có API lịch sử thông báo, đang hiển thị dữ liệu mẫu để demo giao diện.");
@@ -389,20 +574,13 @@ window.CreateNotificationPage = (function () {
   }
 
   function renderStats() {
-    const todayStr = new Date().toLocaleDateString("vi-VN");
-    const todayCount = sentNotifications.filter((n) => (n.thoiGianGui || "").startsWith(todayStr)).length;
-    const internalCount = sentNotifications.filter((n) => n.loaiGui === "NoiBo").length;
-    const personalCount = sentNotifications.filter((n) => n.loaiGui === "CaNhan").length;
-
-    document.getElementById("statNotiTotal").textContent = todayCount;
-    document.getElementById("statNotiInternal").textContent = internalCount;
-    document.getElementById("statNotiPersonal").textContent = personalCount;
+    return;
   }
 
   function getFilteredSent() {
     const kw = currentSentSearch.trim().toLowerCase();
     if (!kw) return sentNotifications;
-    return sentNotifications.filter((n) => n.tieuDe.toLowerCase().includes(kw));
+    return sentNotifications.filter((n) => (n.tieuDe || "").toLowerCase().includes(kw));
   }
 
   function renderSentNotifications() {
@@ -424,7 +602,10 @@ window.CreateNotificationPage = (function () {
       .map(
         (n) => `
         <tr>
-          <td><span class="text-link">${escapeHtml(n.tieuDe)}</span></td>
+          <td>
+            <span class="text-link">${escapeHtml(n.tieuDe)}</span>
+            <div class="noti-sent-snippet">${escapeHtml(stripHtml(n.noiDung)).slice(0, 80)}</div>
+          </td>
           <td>${escapeHtml(getTypeLabel(n.loaiGui))}</td>
           <td>${getLevelBadge(n.mucDo)}</td>
           <td>${escapeHtml(n.thoiGianGui)}</td>
@@ -432,6 +613,12 @@ window.CreateNotificationPage = (function () {
             <div class="table-actions">
               <button class="btn-icon" title="Xem chi tiết" data-action="view-sent" data-id="${escapeHtml(n.id)}">
                 <i class="fa-solid fa-eye"></i>
+              </button>
+              <button class="btn-icon btn-icon-primary" title="Chỉnh sửa" data-action="edit-sent" data-id="${escapeHtml(n.id)}">
+                <i class="fa-solid fa-pen"></i>
+              </button>
+              <button class="btn-icon btn-icon-danger" title="Gỡ thông báo" data-action="delete-sent" data-id="${escapeHtml(n.id)}">
+                <i class="fa-solid fa-trash"></i>
               </button>
             </div>
           </td>
@@ -460,7 +647,7 @@ window.CreateNotificationPage = (function () {
         </div>
         <div class="module-detail-item module-detail-item-full">
           <div class="module-detail-label">Nội dung</div>
-          <div class="module-detail-value">${escapeHtml(n.noiDung).replace(/\n/g, "<br/>")}</div>
+          <div class="module-detail-value rich-notification-content">${renderRichHtml(n.noiDung)}</div>
         </div>
         <div class="module-detail-item">
           <div class="module-detail-label">Loại gửi</div>
@@ -486,6 +673,45 @@ window.CreateNotificationPage = (function () {
 
   function closeSentDetailModal() {
     document.getElementById("sentNotiDetailModal").classList.remove("active");
+  }
+
+  function editSentNotification(id) {
+    const notification = sentNotifications.find((item) => item.id === id);
+    if (!notification) return;
+
+    document.getElementById("notiTitle").value = notification.tieuDe || "";
+    document.getElementById("notiLevel").value = notification.mucDo || "ThongTin";
+    const typeInput = document.querySelector(`input[name="notiType"][value="${notification.loaiGui || "TatCa"}"]`);
+    if (typeInput) typeInput.checked = true;
+    handleTypeChange();
+    setEditorContent(notification.noiDung || "");
+    setEditMode(notification);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  async function deleteSentNotification(id) {
+    const notification = sentNotifications.find((item) => item.id === id);
+    if (!notification) return;
+
+    const ok = window.confirm(`Gỡ thông báo "${notification.tieuDe}"? Người nhận sẽ không còn thấy thông báo này.`);
+    if (!ok) return;
+
+    try {
+      await Api.delete(`${ENDPOINT_SENT}/${encodeURIComponent(id)}`);
+      sentNotifications = sentNotifications.filter((item) => item.id !== id);
+      renderSentNotifications();
+      if (editingNotificationId === id) {
+        resetForm();
+      }
+      if (window.Toast && Toast.show) {
+        Toast.show("Đã gỡ thông báo.", "success");
+      }
+    } catch (error) {
+      console.error("Lỗi gỡ thông báo:", error);
+      if (window.Toast && Toast.show) {
+        Toast.show("Chưa thể gỡ thông báo, vui lòng thử lại.", "error");
+      }
+    }
   }
 
   // ====== EVENTS ======
@@ -514,6 +740,25 @@ window.CreateNotificationPage = (function () {
     document.getElementById("btnNotiPreview").addEventListener("click", previewNotification);
     document.getElementById("btnNotiSubmit").addEventListener("click", submitNotification);
 
+    const editor = getEditor();
+    if (editor) {
+      editor.addEventListener("input", syncEditorToTextarea);
+      editor.addEventListener("keyup", saveEditorSelection);
+      editor.addEventListener("mouseup", saveEditorSelection);
+      editor.addEventListener("focus", saveEditorSelection);
+    }
+
+    document.querySelectorAll("[data-format]").forEach((button) => {
+      button.addEventListener("mousedown", (event) => {
+        event.preventDefault();
+      });
+      button.addEventListener("click", () => {
+        const command = button.dataset.format;
+        const value = button.dataset.value || null;
+        applyEditorCommand(command, value);
+      });
+    });
+
     document.getElementById("notiPreviewCloseBtn").addEventListener("click", closePreviewModal);
     document.getElementById("notiPreviewBackBtn").addEventListener("click", closePreviewModal);
     document.getElementById("notiPreviewSendBtn").addEventListener("click", submitNotification);
@@ -524,9 +769,12 @@ window.CreateNotificationPage = (function () {
     });
 
     document.getElementById("sentNotiTableBody").addEventListener("click", (e) => {
-      const btn = e.target.closest('[data-action="view-sent"]');
+      const btn = e.target.closest("[data-action]");
       if (!btn) return;
-      openSentDetailModal(btn.dataset.id);
+      const action = btn.dataset.action;
+      if (action === "view-sent") openSentDetailModal(btn.dataset.id);
+      if (action === "edit-sent") editSentNotification(btn.dataset.id);
+      if (action === "delete-sent") deleteSentNotification(btn.dataset.id);
     });
 
     document.getElementById("sentNotiDetailCloseBtn").addEventListener("click", closeSentDetailModal);

@@ -19,4 +19,6 @@ public interface NotificationRepository extends JpaRepository<Notification, Stri
             ORDER BY n.createdAt DESC
             """)
     List<Notification> findVisibleForUserOrderByCreatedAtDesc(@Param("userId") Integer userId);
+
+    List<Notification> findByStaff_User_IdOrderByCreatedAtDesc(Integer userId);
 }
