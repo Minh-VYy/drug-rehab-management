@@ -5,7 +5,7 @@ const ManagerDashboardPage = {
   },
 
   init() {
-    if (typeof Topbar !== "undefined") Topbar.setTitle("Dashboard cán bộ quản lý");
+    if (typeof Topbar !== "undefined") Topbar.setTitle("Tổng quan");
     if (window.AdvancedRoleDashboard) {
       AdvancedRoleDashboard.renderRole("managerAdvancedDashboard", "manager");
     }

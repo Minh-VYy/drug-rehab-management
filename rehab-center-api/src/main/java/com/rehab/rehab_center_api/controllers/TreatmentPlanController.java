@@ -54,4 +54,26 @@ public class TreatmentPlanController {
                 "Treatment plan rejected successfully"
         ));
     }
+
+    @PutMapping("/{id}/pause")
+    public ResponseEntity<ApiResponse<TreatmentPlanResponse>> pause(
+            @PathVariable String id,
+            @Valid @RequestBody(required = false) ProcessTreatmentPlanRequest request
+    ) {
+        return ResponseEntity.ok(ApiResponse.success(
+                treatmentPlanApprovalService.pause(id, request),
+                "Treatment plan paused successfully"
+        ));
+    }
+
+    @PutMapping("/{id}/complete")
+    public ResponseEntity<ApiResponse<TreatmentPlanResponse>> complete(
+            @PathVariable String id,
+            @Valid @RequestBody(required = false) ProcessTreatmentPlanRequest request
+    ) {
+        return ResponseEntity.ok(ApiResponse.success(
+                treatmentPlanApprovalService.complete(id, request),
+                "Treatment plan completed successfully"
+        ));
+    }
 }

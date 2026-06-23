@@ -8,7 +8,7 @@ const Sidebar = {
 
         if (role === ROLES.FAMILY) {
             menuItems = [
-                { path: '/',               icon: 'fa-solid fa-house',          text: 'Dashboard' },
+                { path: '/',               icon: 'fa-solid fa-house',          text: 'Tổng quan' },
                 { path: '/register-rehab', icon: 'fa-solid fa-file-signature', text: 'Đăng ký cai nghiện' },
                 { path: '/visit-register', icon: 'fa-solid fa-calendar-plus',  text: 'Đăng ký thăm gặp' },
                 { path: '/treatment-path', icon: 'fa-solid fa-route',          text: 'Lộ trình phục hồi' },
@@ -16,13 +16,13 @@ const Sidebar = {
             ];
         } else if (role === ROLES.POLICE) {
             menuItems = [
-                { path: '/',               icon: 'fa-solid fa-house',          text: 'Dashboard' },
+                { path: '/',               icon: 'fa-solid fa-house',          text: 'Tổng quan' },
                 { path: '/transfer',       icon: 'fa-solid fa-file-export',    text: 'Gửi hồ sơ bàn giao' },
                 { path: '/transfer-list',  icon: 'fa-solid fa-list',           text: 'DS hồ sơ bàn giao' }
             ];
         } else if (role === ROLES.STAFF) {
             menuItems = [
-                { path: '/',           icon: 'fa-solid fa-house',            text: 'Dashboard' },
+                { path: '/',           icon: 'fa-solid fa-house',            text: 'Tổng quan' },
                 { path: '/receive',    icon: 'fa-solid fa-file-import',      text: 'Tiếp nhận hồ sơ' },
                 { path: '/patients',   icon: 'fa-solid fa-users',            text: 'Quản lý học viên' },
                 { path: '/visits',     icon: 'fa-solid fa-calendar-check',   text: 'Duyệt thăm gặp' },
@@ -33,14 +33,14 @@ const Sidebar = {
             ];
         } else if (role === ROLES.DOCTOR) {
             menuItems = [
-                { path: '/',                icon: 'fa-solid fa-house',        text: 'Dashboard' },
+                { path: '/',                icon: 'fa-solid fa-house',        text: 'Tổng quan' },
                 { path: '/medical-records', icon: 'fa-solid fa-file-medical', text: 'Cập nhật hồ sơ bệnh án' },
                 { path: '/treatment-plan-create', icon: 'fa-solid fa-file-signature', text: 'Lập phác đồ điều trị' },
                 { path: '/treatment-diary', icon: 'fa-solid fa-book-medical', text: 'Nhật ký điều trị' }
             ];
         } else if (role === ROLES.MANAGER) {
             menuItems = [
-                { path: '/',                   icon: 'fa-solid fa-house',        text: 'Dashboard' },
+                { path: '/',                   icon: 'fa-solid fa-house',        text: 'Tổng quan' },
                 { path: '/assignment',         icon: 'fa-solid fa-user-doctor',  text: 'Phân công phụ trách' },
                 { path: '/treatment-approval', icon: 'fa-solid fa-stamp',        text: 'Phê duyệt phác đồ' },
                 { path: '/stage-approval',     icon: 'fa-solid fa-forward-step', text: 'Duyệt chuyển giai đoạn' },
@@ -48,14 +48,14 @@ const Sidebar = {
             ];
         } else if (role === ROLES.LEADER) {
             menuItems = [
-                { path: '/',                   icon: 'fa-solid fa-house',         text: 'Dashboard' },
+                { path: '/',                   icon: 'fa-solid fa-house',         text: 'Tổng quan' },
                 { path: '/reports',            icon: 'fa-solid fa-chart-pie',     text: 'Báo cáo tổng quan' },
                 { path: '/approvals-receive',  icon: 'fa-solid fa-check-double',  text: 'Phê duyệt tiếp nhận' },
                 { path: '/approvals-complete', icon: 'fa-solid fa-award',         text: 'Phê duyệt hoàn thành' }
             ];
         } else if (role === ROLES.ADMIN) {
             menuItems = [
-                { path: '/',            icon: 'fa-solid fa-house',         text: 'Dashboard' },
+                { path: '/',            icon: 'fa-solid fa-house',         text: 'Tổng quan' },
                 { path: '/users',       icon: 'fa-solid fa-users-gear',    text: 'Quản lý tài khoản' },
                 { path: '/roles',       icon: 'fa-solid fa-user-shield',   text: 'Quản lý vai trò' },
                 { path: '/medicines',   icon: 'fa-solid fa-capsules',      text: 'Danh mục thuốc' },
@@ -87,7 +87,7 @@ const Sidebar = {
                         onerror="this.style.display='none';">
                     <div class="sidebar-logo-text">
                         <div class="brand-name">Rehab Center</div>
-                        <div class="brand-sub">Hệ thống quản lý</div>
+                        <div class="brand-sub">TP Đà Nẵng</div>
                     </div>
                 </div>
             </div>

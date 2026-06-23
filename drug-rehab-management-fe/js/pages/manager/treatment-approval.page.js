@@ -71,7 +71,50 @@ const TreatmentApprovalPage = {
     },
 
     applyFilter() {
+        this.renderSummary();
         this.renderTable(this.getFilteredPlans());
+    },
+
+    async refresh() {
+        this.plans = await this.loadPlans();
+        this.applyFilter();
+        if (typeof Toast !== 'undefined') Toast.show('Đã làm mới danh sách phác đồ.', 'success');
+    },
+
+    renderSummary() {
+        const target = document.getElementById('ta-summary');
+        if (!target) return;
+
+        const pending = this.countByStatus('ChoPheDuyet');
+        const approved = this.plans.filter(plan => ['DaPheDuyet', 'DangApDung'].includes(plan.trangThai)).length;
+        const rejected = this.countByStatus('TuChoi');
+        const total = this.plans.length;
+
+        target.innerHTML = `
+            <div class="stat-card">
+                <div class="stat-card-icon stat-icon-blue"><i class="fa-solid fa-file-medical"></i></div>
+                <div class="stat-value">${total}</div>
+                <div class="stat-label">Tổng phác đồ</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-icon stat-icon-orange"><i class="fa-solid fa-clock"></i></div>
+                <div class="stat-value">${pending}</div>
+                <div class="stat-label">Chờ phê duyệt</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-icon stat-icon-green"><i class="fa-solid fa-circle-check"></i></div>
+                <div class="stat-value">${approved}</div>
+                <div class="stat-label">Đã phê duyệt</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-icon stat-icon-red"><i class="fa-solid fa-circle-xmark"></i></div>
+                <div class="stat-value">${rejected}</div>
+                <div class="stat-label">Từ chối</div>
+            </div>`;
+    },
+
+    countByStatus(status) {
+        return this.plans.filter(plan => plan.trangThai === status).length;
     },
 
     renderTable(data) {
@@ -90,8 +133,16 @@ const TreatmentApprovalPage = {
 
         const rows = data.map(plan => {
             const canProcess = plan.trangThai === 'ChoPheDuyet';
-            const actionButtons = canProcess
-                ? `
+            const canClose = this.canCloseTreatment(plan);
+            let actionButtons = `
+                    <div class="action-btns">
+                        <button class="btn btn-sm btn-outline" onclick="TreatmentApprovalPage.openDetail('${plan.maPhacdoDT}')">
+                            <i class="fa-solid fa-eye"></i> Xem
+                        </button>
+                    </div>`;
+
+            if (canProcess) {
+                actionButtons = `
                     <div class="action-btns">
                         <button class="btn btn-sm btn-outline" onclick="TreatmentApprovalPage.openDetail('${plan.maPhacdoDT}')">
                             <i class="fa-solid fa-eye"></i> Xem
@@ -102,13 +153,21 @@ const TreatmentApprovalPage = {
                         <button class="btn btn-sm btn-danger" onclick="TreatmentApprovalPage.openRejectModal('${plan.maPhacdoDT}')">
                             <i class="fa-solid fa-xmark"></i> Từ chối
                         </button>
-                    </div>`
-                : `
+                    </div>`;
+            } else if (canClose) {
+                actionButtons = `
                     <div class="action-btns">
                         <button class="btn btn-sm btn-outline" onclick="TreatmentApprovalPage.openDetail('${plan.maPhacdoDT}')">
                             <i class="fa-solid fa-eye"></i> Xem
                         </button>
+                        <button class="btn btn-sm btn-outline" onclick="TreatmentApprovalPage.openPauseModal('${plan.maPhacdoDT}')">
+                            <i class="fa-solid fa-pause"></i> Tạm dừng
+                        </button>
+                        <button class="btn btn-sm btn-primary" onclick="TreatmentApprovalPage.openCompleteModal('${plan.maPhacdoDT}')">
+                            <i class="fa-solid fa-flag-checkered"></i> Hoàn thành
+                        </button>
                     </div>`;
+            }
 
             return [
                 `<span class="td-code">${this.escapeHtml(plan.maPhacdoDT)}</span>`,
@@ -133,6 +192,10 @@ const TreatmentApprovalPage = {
 
     getPlan(id) {
         return this.plans.find(plan => plan.maPhacdoDT === id);
+    },
+
+    canCloseTreatment(plan) {
+        return ['DaPheDuyet', 'DangApDung'].includes(plan?.trangThai);
     },
 
     openDetail(id) {
@@ -197,16 +260,26 @@ const TreatmentApprovalPage = {
                 </div>
             </div>`;
 
-        const footer = plan.trangThai === 'ChoPheDuyet'
-            ? `
+        let footer = '<button class="btn btn-outline" onclick="Modal.close()">Đóng</button>';
+        if (plan.trangThai === 'ChoPheDuyet') {
+            footer = `
                 <button class="btn btn-outline" onclick="Modal.close()">Đóng</button>
                 <button class="btn btn-success" onclick="TreatmentApprovalPage.openApproveModal('${id}')">
                     <i class="fa-solid fa-check"></i> Phê duyệt
                 </button>
                 <button class="btn btn-danger" onclick="TreatmentApprovalPage.openRejectModal('${id}')">
                     <i class="fa-solid fa-xmark"></i> Từ chối
-                </button>`
-            : '<button class="btn btn-outline" onclick="Modal.close()">Đóng</button>';
+                </button>`;
+        } else if (this.canCloseTreatment(plan)) {
+            footer = `
+                <button class="btn btn-outline" onclick="Modal.close()">Đóng</button>
+                <button class="btn btn-outline" onclick="TreatmentApprovalPage.openPauseModal('${id}')">
+                    <i class="fa-solid fa-pause"></i> Tạm dừng
+                </button>
+                <button class="btn btn-primary" onclick="TreatmentApprovalPage.openCompleteModal('${id}')">
+                    <i class="fa-solid fa-flag-checkered"></i> Hoàn thành
+                </button>`;
+        }
 
         Modal.open(`Chi tiết phác đồ ${this.escapeHtml(id)}`, content, footer);
     },
@@ -272,6 +345,64 @@ const TreatmentApprovalPage = {
         Modal.open('Từ chối phác đồ', content, footer);
     },
 
+    openPauseModal(id) {
+        const plan = this.getPlan(id);
+        if (!this.canCloseTreatment(plan) || typeof Modal === 'undefined') return;
+
+        const content = `
+            <div class="confirm-box">
+                <div class="confirm-box-icon" style="color:var(--warning);">
+                    <i class="fa-solid fa-pause"></i>
+                </div>
+                <div class="confirm-box-text">
+                    <p>Bạn sắp <strong>tạm dừng</strong> phác đồ <strong>${this.escapeHtml(id)}</strong>.
+                    Trạng thái trong CSDL sẽ chuyển sang <strong>TAM_DUNG</strong>.</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Ghi chú tạm dừng</label>
+                <textarea class="form-control" id="pause-note" rows="3"
+                    placeholder="Nhập lý do hoặc ghi chú tạm dừng..."></textarea>
+            </div>`;
+
+        const footer = `
+            <button class="btn btn-outline" onclick="Modal.close()">Hủy</button>
+            <button class="btn btn-outline" onclick="TreatmentApprovalPage.doPause('${id}')">
+                <i class="fa-solid fa-pause"></i> Xác nhận tạm dừng
+            </button>`;
+
+        Modal.open('Tạm dừng phác đồ', content, footer);
+    },
+
+    openCompleteModal(id) {
+        const plan = this.getPlan(id);
+        if (!this.canCloseTreatment(plan) || typeof Modal === 'undefined') return;
+
+        const content = `
+            <div class="confirm-box">
+                <div class="confirm-box-icon" style="color:var(--success);">
+                    <i class="fa-solid fa-flag-checkered"></i>
+                </div>
+                <div class="confirm-box-text">
+                    <p>Bạn sắp đánh dấu <strong>hoàn thành</strong> phác đồ <strong>${this.escapeHtml(id)}</strong>.
+                    Trạng thái trong CSDL sẽ chuyển sang <strong>DA_HOAN_THANH</strong>.</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Ghi chú hoàn thành</label>
+                <textarea class="form-control" id="complete-note" rows="3"
+                    placeholder="Nhập ghi chú kết quả điều trị..."></textarea>
+            </div>`;
+
+        const footer = `
+            <button class="btn btn-outline" onclick="Modal.close()">Hủy</button>
+            <button class="btn btn-primary" onclick="TreatmentApprovalPage.doComplete('${id}')">
+                <i class="fa-solid fa-flag-checkered"></i> Xác nhận hoàn thành
+            </button>`;
+
+        Modal.open('Hoàn thành phác đồ', content, footer);
+    },
+
     async doApprove(id) {
         const plan = this.getPlan(id);
         if (!plan || plan.trangThai !== 'ChoPheDuyet') return;
@@ -299,6 +430,7 @@ const TreatmentApprovalPage = {
 
         if (typeof Modal !== 'undefined') Modal.close();
         if (typeof Toast !== 'undefined') Toast.show(`Phê duyệt phác đồ ${id} thành công.`, 'success');
+        this.plans = await this.loadPlans();
         this.applyFilter();
     },
 
@@ -335,6 +467,49 @@ const TreatmentApprovalPage = {
 
         if (typeof Modal !== 'undefined') Modal.close();
         if (typeof Toast !== 'undefined') Toast.show(`Đã từ chối phác đồ ${id}.`, 'warning');
+        this.plans = await this.loadPlans();
+        this.applyFilter();
+    },
+
+    async doPause(id) {
+        const note = document.getElementById('pause-note')?.value.trim() || '';
+        await this.updateFinalStatus(id, 'pause', {
+            ghiChuPheDuyet: note || 'Tạm dừng phác đồ để theo dõi thêm.'
+        }, 'Đã tạm dừng phác đồ');
+    },
+
+    async doComplete(id) {
+        const note = document.getElementById('complete-note')?.value.trim() || '';
+        await this.updateFinalStatus(id, 'complete', {
+            ghiChuPheDuyet: note || 'Hoàn thành phác đồ theo đánh giá điều trị.'
+        }, 'Đã hoàn thành phác đồ');
+    },
+
+    async updateFinalStatus(id, action, payload, successMessage) {
+        const plan = this.getPlan(id);
+        if (!this.canCloseTreatment(plan)) return;
+
+        const requestPayload = {
+            maQuanLy: this.getCurrentManagerCode(),
+            ...payload
+        };
+
+        try {
+            if (typeof Api === 'undefined') throw new Error('Api helper chưa sẵn sàng');
+            if (action === 'pause') {
+                await Api.pauseTreatmentPlan(id, requestPayload);
+            } else {
+                await Api.completeTreatmentPlan(id, requestPayload);
+            }
+        } catch (error) {
+            console.error(`Lỗi API khi ${action} phác đồ:`, error);
+            if (typeof window.Toast !== 'undefined') window.Toast.show('Cập nhật trạng thái thất bại. Vui lòng thử lại.', 'error');
+            return;
+        }
+
+        if (typeof Modal !== 'undefined') Modal.close();
+        if (typeof Toast !== 'undefined') Toast.show(`${successMessage} ${id}.`, 'success');
+        this.plans = await this.loadPlans();
         this.applyFilter();
     },
 
@@ -343,8 +518,9 @@ const TreatmentApprovalPage = {
             ChoPheDuyet: '<span class="badge badge-warning"><i class="fa-solid fa-clock" style="font-size:9px;"></i> Chờ phê duyệt</span>',
             DaPheDuyet: '<span class="badge badge-success"><i class="fa-solid fa-circle-check" style="font-size:9px;"></i> Đã phê duyệt</span>',
             TuChoi: '<span class="badge badge-danger"><i class="fa-solid fa-circle-xmark" style="font-size:9px;"></i> Từ chối</span>',
-            DangApDung: '<span class="badge badge-blue"><i class="fa-solid fa-play" style="font-size:9px;"></i> Đang áp dụng</span>',
-            HoanThanh: '<span class="badge badge-gray"><i class="fa-solid fa-check" style="font-size:9px;"></i> Hoàn thành</span>'
+            DangApDung: '<span class="badge badge-success"><i class="fa-solid fa-circle-check" style="font-size:9px;"></i> Đã phê duyệt</span>',
+            HoanThanh: '<span class="badge badge-gray"><i class="fa-solid fa-check" style="font-size:9px;"></i> Hoàn thành</span>',
+            TamDung: '<span class="badge badge-gray"><i class="fa-solid fa-pause" style="font-size:9px;"></i> Tạm dừng</span>'
         };
         return map[status] || `<span class="badge badge-gray">${this.escapeHtml(status)}</span>`;
     },

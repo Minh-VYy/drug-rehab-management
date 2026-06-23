@@ -5,7 +5,7 @@ const PoliceDashboardPage = {
   },
 
   init() {
-    if (typeof Topbar !== "undefined") Topbar.setTitle("Dashboard công an");
+    if (typeof Topbar !== "undefined") Topbar.setTitle("Tổng quan");
     if (window.AdvancedRoleDashboard) {
       AdvancedRoleDashboard.renderRole("policeAdvancedDashboard", "police");
     }

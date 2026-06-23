@@ -5,7 +5,7 @@ const LeaderDashboardPage = {
   },
 
   init() {
-    if (typeof Topbar !== "undefined") Topbar.setTitle("Dashboard lãnh đạo");
+    if (typeof Topbar !== "undefined") Topbar.setTitle("Tổng quan");
     if (window.AdvancedRoleDashboard) {
       AdvancedRoleDashboard.renderRole("leaderAdvancedDashboard", "leader");
     }

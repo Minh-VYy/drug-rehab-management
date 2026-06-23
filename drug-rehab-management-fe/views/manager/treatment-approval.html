@@ -11,6 +11,8 @@
     </div>
 </div>
 
+<div class="stats-grid" id="ta-summary"></div>
+
 <div class="card">
     <div class="card-header" style="flex-wrap:wrap; gap:1rem;">
         <div>
@@ -35,8 +37,12 @@
                     <option value="TuChoi">Từ chối</option>
                     <option value="DangApDung">Đang áp dụng</option>
                     <option value="HoanThanh">Hoàn thành</option>
+                    <option value="TamDung">Tạm dừng</option>
                 </select>
             </div>
+            <button type="button" class="btn btn-outline" onclick="TreatmentApprovalPage.refresh()">
+                <i class="fa-solid fa-rotate"></i> Làm mới
+            </button>
         </div>
     </div>
     <div class="card-body" id="ta-table"></div>

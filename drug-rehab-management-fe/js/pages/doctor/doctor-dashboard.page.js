@@ -5,7 +5,7 @@ const DoctorDashboardPage = {
   },
 
   init() {
-    if (typeof Topbar !== "undefined") Topbar.setTitle("Dashboard bác sĩ");
+    if (typeof Topbar !== "undefined") Topbar.setTitle("Tổng quan");
     if (window.AdvancedRoleDashboard) {
       AdvancedRoleDashboard.renderRole("doctorAdvancedDashboard", "doctor");
     }

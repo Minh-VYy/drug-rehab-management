@@ -5,7 +5,7 @@ const FamilyDashboardPage = {
   },
 
   async init() {
-    if (typeof Topbar !== "undefined") Topbar.setTitle("Dashboard người thân");
+    if (typeof Topbar !== "undefined") Topbar.setTitle("Tổng quan");
     if (!window.AdvancedRoleDashboard) return;
 
     const preset = AdvancedRoleDashboard.getPreset("family");
@@ -106,12 +106,12 @@ const FamilyDashboardPage = {
         items: Array.isArray(data.timeline) && data.timeline.length
           ? data.timeline
           : [
-              {
-                time: "Hệ thống",
-                title: "Chưa có cập nhật",
-                text: "Đang đợi thông tin tiến trình từ bác sĩ trung tâm.",
-              },
-            ],
+            {
+              time: "Hệ thống",
+              title: "Chưa có cập nhật",
+              text: "Đang đợi thông tin tiến trình từ bác sĩ trung tâm.",
+            },
+          ],
       },
 
       // Danh sách ngắn: 3 thông báo mới nhất
@@ -120,23 +120,23 @@ const FamilyDashboardPage = {
         subtitle: "Cập nhật từ Ban quản lý trung tâm",
         items: Array.isArray(data.thongBaoMoiNhat) && data.thongBaoMoiNhat.length
           ? data.thongBaoMoiNhat.map(item => ({
-              title: item.title,
-              text: item.contentSnippet || item.content,
-              meta: item.date,
-              icon: "fa-bell",
-              tone: "blue",
-              route: "/notifications",
-            }))
+            title: item.title,
+            text: item.contentSnippet || item.content,
+            meta: item.date,
+            icon: "fa-bell",
+            tone: "blue",
+            route: "/notifications",
+          }))
           : [
-              {
-                title: "Không có thông báo mới",
-                text: "Bạn chưa nhận được thông báo nào từ trung tâm.",
-                meta: "Hiện tại",
-                icon: "fa-bell-slash",
-                tone: "gray",
-                route: "/notifications",
-              },
-            ],
+            {
+              title: "Không có thông báo mới",
+              text: "Bạn chưa nhận được thông báo nào từ trung tâm.",
+              meta: "Hiện tại",
+              icon: "fa-bell-slash",
+              tone: "gray",
+              route: "/notifications",
+            },
+          ],
       },
 
       // Thao tác nhanh

@@ -81,6 +81,35 @@ public class TreatmentPlanApprovalServiceImpl implements TreatmentPlanApprovalSe
         return toResponse(treatmentProtocolStageRepository.save(stage));
     }
 
+    @Override
+    @Transactional
+    public TreatmentPlanResponse pause(String id, ProcessTreatmentPlanRequest request) {
+        TreatmentProtocolStage stage = getActiveStage(id);
+        stage.setManager(resolveManager(request));
+        stage.setApprovedAt(LocalDateTime.now());
+        stage.setApprovalNote(firstNonBlank(request != null ? request.getGhiChuPheDuyet() : null, "Tam dung phac do de theo doi them."));
+        stage.setStatus(TreatmentProtocolStatus.TAM_DUNG);
+        return toResponse(treatmentProtocolStageRepository.save(stage));
+    }
+
+    @Override
+    @Transactional
+    public TreatmentPlanResponse complete(String id, ProcessTreatmentPlanRequest request) {
+        TreatmentProtocolStage stage = getActiveStage(id);
+        stage.setManager(resolveManager(request));
+        stage.setApprovedAt(LocalDateTime.now());
+        stage.setApprovalNote(firstNonBlank(request != null ? request.getGhiChuPheDuyet() : null, "Hoan thanh phac do theo danh gia dieu tri."));
+        stage.setStatus(TreatmentProtocolStatus.DA_HOAN_THANH);
+
+        TreatmentProtocol protocol = stage.getTreatmentProtocol();
+        if (protocol != null && protocol.getStages().stream()
+                .allMatch(item -> item == stage || item.getStatus() == TreatmentProtocolStatus.DA_HOAN_THANH)) {
+            protocol.setStatus(TreatmentProtocolOverallStatus.DA_HOAN_THANH);
+        }
+
+        return toResponse(treatmentProtocolStageRepository.save(stage));
+    }
+
     private TreatmentProtocolStage getStage(String id) {
         return treatmentProtocolStageRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.TREATMENT_PLAN_NOT_FOUND, "Treatment plan not found: " + id));
@@ -90,6 +119,14 @@ public class TreatmentPlanApprovalServiceImpl implements TreatmentPlanApprovalSe
         TreatmentProtocolStage stage = getStage(id);
         if (stage.getStatus() != TreatmentProtocolStatus.CHO_PHE_DUYET) {
             throw new AppException(ErrorCode.TREATMENT_PLAN_NOT_PENDING, "Only pending treatment plans can be processed");
+        }
+        return stage;
+    }
+
+    private TreatmentProtocolStage getActiveStage(String id) {
+        TreatmentProtocolStage stage = getStage(id);
+        if (stage.getStatus() != TreatmentProtocolStatus.DANG_AP_DUNG) {
+            throw new AppException(ErrorCode.VALIDATION_ERROR, "Only approved treatment plans can be paused or completed");
         }
         return stage;
     }

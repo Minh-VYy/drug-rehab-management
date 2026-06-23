@@ -1,4 +1,4 @@
-﻿const TreatmentPlanCreatePage = {
+const TreatmentPlanCreatePage = {
   // ====== ENDPOINTS ======
   ENDPOINT_LIST: "/doctor/treatment-plan-create/patients",
   ENDPOINT_PLAN_DETAIL: (maHoSo) => `/doctor/treatment-plans/${maHoSo}`,
@@ -220,7 +220,7 @@
                   : ""
               }
               ${
-                p.trangThai === "ChuaLap" || p.trangThai === "Nhap"
+                true // Tạm thời hiển thị nút Lập phác đồ cho MỌI trạng thái để bạn có thể chụp ảnh demo
                   ? `<button class="btn-icon btn-icon-primary" title="Lập/Chỉnh sửa phác đồ" data-action="create" data-id="${maHoSoSafe}">
                       <i class="fa-solid fa-file-pen"></i>
                     </button>`
@@ -235,46 +235,68 @@
   },
 
   // ====== MODAL CHI TIẾT ======
-  openDetailModal(maHoSo) {
+  async openDetailModal(maHoSo) {
     const p = this.patients.find((x) => x.maHoSo === maHoSo);
     if (!p) return;
     const self = this;
 
-    document.getElementById("planDetailBody").innerHTML = `
-      <div class="module-detail-grid">
-        <div class="module-detail-item">
-          <div class="module-detail-label">Mã hồ sơ</div>
-          <div class="module-detail-value">${self.escapeHtml(p.maHoSo)}</div>
-        </div>
-        <div class="module-detail-item">
-          <div class="module-detail-label">Họ tên học viên</div>
-          <div class="module-detail-value">${self.escapeHtml(p.hoTenHocVien)}</div>
-        </div>
-        <div class="module-detail-item">
-          <div class="module-detail-label">Loại ma túy</div>
-          <div class="module-detail-value">${self.escapeHtml(self.getDrugLabel(p.loaiMaTuy))}</div>
-        </div>
-        <div class="module-detail-item">
-          <div class="module-detail-label">Giai đoạn hiện tại</div>
-          <div class="module-detail-value">${self.escapeHtml(self.getStageLabel(p.giaiDoanHienTai))}</div>
-        </div>
-        <div class="module-detail-item">
-          <div class="module-detail-label">Mã phác đồ gần nhất</div>
-          <div class="module-detail-value">${self.escapeHtml(p.phacDoGanNhat || "-")}</div>
-        </div>
-        <div class="module-detail-item">
-          <div class="module-detail-label">Trạng thái</div>
-          <div class="module-detail-value">${self.getStatusBadge(p.trangThai)}</div>
-        </div>
-      </div>
-      <p class="doctor-plan-detail-note">
-        <i class="fa-solid fa-circle-info"></i>
-        Nội dung phác đồ chi tiết sẽ được tải khi tích hợp API <code>GET /doctor/treatment-plans/{maHoSo}</code>.
-      </p>
-    `;
-
+    const detailBody = document.getElementById("planDetailBody");
+    detailBody.innerHTML = `<div style="padding: 20px; text-align: center;">Đang tải dữ liệu chi tiết phác đồ...</div>`;
     document.getElementById("planDetailModal").classList.add("active");
+
+    try {
+      // Gọi API lấy chi tiết phác đồ
+      const detail = this.usingFallback ? null : await Api.get(this.ENDPOINT_PLAN_DETAIL(maHoSo));
+      
+      let noiDungHtml = "";
+      if (detail && detail.cacGiaiDoanNho && detail.cacGiaiDoanNho.length > 0) {
+          noiDungHtml = `<div style="margin-top: 15px;"><strong>Các giai đoạn chi tiết:</strong><ul>` + 
+              detail.cacGiaiDoanNho.map(g => `<li><b>${self.escapeHtml(g.tenGiaiDoan)}</b> (${self.escapeHtml(g.soNgay)} ngày): ${self.escapeHtml(g.noiDung)}</li>`).join("") +
+              `</ul></div>`;
+      } else if (detail && detail.noiDungPhacDo) {
+          noiDungHtml = `<div style="margin-top: 15px;"><strong>Nội dung phác đồ:</strong><p>${self.escapeHtml(detail.noiDungPhacDo)}</p></div>`;
+      }
+
+      const mucTieuHtml = detail && detail.mucTieu ? `<div style="margin-top: 15px;"><strong>Mục tiêu:</strong><p>${self.escapeHtml(detail.mucTieu)}</p></div>` : "";
+      const ghiChuHtml = detail && detail.ghiChuBacSi ? `<div style="margin-top: 15px;"><strong>Ghi chú bác sĩ:</strong><p>${self.escapeHtml(detail.ghiChuBacSi)}</p></div>` : "";
+
+      detailBody.innerHTML = `
+        <div class="module-detail-grid">
+          <div class="module-detail-item">
+            <div class="module-detail-label">Mã hồ sơ</div>
+            <div class="module-detail-value">${self.escapeHtml(p.maHoSo)}</div>
+          </div>
+          <div class="module-detail-item">
+            <div class="module-detail-label">Họ tên học viên</div>
+            <div class="module-detail-value">${self.escapeHtml(p.hoTenHocVien)}</div>
+          </div>
+          <div class="module-detail-item">
+            <div class="module-detail-label">Loại ma túy</div>
+            <div class="module-detail-value">${self.escapeHtml(self.getDrugLabel(p.loaiMaTuy))}</div>
+          </div>
+          <div class="module-detail-item">
+            <div class="module-detail-label">Giai đoạn hiện tại</div>
+            <div class="module-detail-value">${self.escapeHtml(self.getStageLabel(p.giaiDoanHienTai))}</div>
+          </div>
+          <div class="module-detail-item">
+            <div class="module-detail-label">Mã phác đồ gần nhất</div>
+            <div class="module-detail-value">${self.escapeHtml(p.phacDoGanNhat || "-")}</div>
+          </div>
+          <div class="module-detail-item">
+            <div class="module-detail-label">Trạng thái</div>
+            <div class="module-detail-value">${self.getStatusBadge(p.trangThai)}</div>
+          </div>
+        </div>
+        ${mucTieuHtml}
+        ${noiDungHtml}
+        ${ghiChuHtml}
+        ${this.usingFallback ? `<p class="doctor-plan-detail-note"><i class="fa-solid fa-circle-info"></i> Bạn đang chạy chế độ Mock (chưa có kết nối CSDL), không có dữ liệu chi tiết.</p>` : ''}
+      `;
+    } catch (err) {
+      detailBody.innerHTML = `<div style="padding: 20px; text-align: center; color: red;">Lỗi tải dữ liệu chi tiết phác đồ.</div>`;
+    }
   },
+
 
   closeDetailModal() {
     document.getElementById("planDetailModal").classList.remove("active");

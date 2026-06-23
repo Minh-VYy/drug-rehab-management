@@ -16,7 +16,10 @@ public final class SecurityConstants {
             "/api/v1/medical-records",
             "/api/v1/medical-records/**",
             "/api/v1/treatment-plans",
-            "/api/v1/treatment-plans/**"
+            "/api/v1/treatment-plans/**",
+            "/api/v1/doctor/treatment-plan-create/patients",
+            "/api/v1/doctor/treatment-plans",
+            "/api/v1/doctor/treatment-plans/**"
     };
 
     public static final String[] PUBLIC_API_PATHS = {

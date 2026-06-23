@@ -5,7 +5,7 @@ const StaffDashboardPage = {
   },
 
   init() {
-    if (typeof Topbar !== "undefined") Topbar.setTitle("Dashboard cán bộ trung tâm");
+    if (typeof Topbar !== "undefined") Topbar.setTitle("Tổng quan");
     if (window.AdvancedRoleDashboard) {
       AdvancedRoleDashboard.renderRole("staffAdvancedDashboard", "staff");
     }

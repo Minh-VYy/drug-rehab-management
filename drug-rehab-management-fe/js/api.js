@@ -72,6 +72,14 @@ const Api = {
         return this.put(`/treatment-plans/${id}/reject`, data);
     },
 
+    pauseTreatmentPlan(id, data) {
+        return this.put(`/treatment-plans/${id}/pause`, data);
+    },
+
+    completeTreatmentPlan(id, data) {
+        return this.put(`/treatment-plans/${id}/complete`, data);
+    },
+
     // ==========================================
     // LEADER APIS
     // ==========================================

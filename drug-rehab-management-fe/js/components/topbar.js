@@ -19,7 +19,7 @@ const Topbar = {
                 <i class="fa-solid fa-bars"></i>
             </button>
             <div class="topbar-title">
-                <h2 id="topbar-title">Hệ thống Quản lý</h2>
+                <h2 id="topbar-title">Trang Chủ</h2>
             </div>
             <div class="topbar-actions">
                 <a href="#/notifications" data-link class="topbar-btn has-notif" id="btn-notification" title="Thông báo" style="overflow: visible !important;">

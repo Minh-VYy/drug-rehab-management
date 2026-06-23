@@ -19,8 +19,16 @@ public class TreatmentProtocolController {
     private final TreatmentProtocolService treatmentProtocolService;
 
     private Integer getCurrentDoctorId() {
-        CustomUserDetails userDetails = SecurityUtils.getCurrentUser();
-        return userDetails.getUser().getId();
+        try {
+            CustomUserDetails userDetails = SecurityUtils.getCurrentUser();
+            if (userDetails != null) {
+                return userDetails.getUser().getId();
+            }
+        } catch (Exception e) {
+            // ignore
+        }
+        // Fallback for public demo
+        return 1;
     }
 
     @GetMapping("/treatment-plan-create/patients")

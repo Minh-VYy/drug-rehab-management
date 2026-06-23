@@ -13,4 +13,8 @@ public interface TreatmentPlanApprovalService {
     TreatmentPlanResponse approve(String id, ProcessTreatmentPlanRequest request);
 
     TreatmentPlanResponse reject(String id, ProcessTreatmentPlanRequest request);
+
+    TreatmentPlanResponse pause(String id, ProcessTreatmentPlanRequest request);
+
+    TreatmentPlanResponse complete(String id, ProcessTreatmentPlanRequest request);
 }
